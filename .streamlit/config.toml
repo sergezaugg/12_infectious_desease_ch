@@ -1,0 +1,8 @@
+[theme]
+base="dark"
+primaryColor="#0055cc"
+backgroundColor="#000000"
+secondaryBackgroundColor="#212121"
+textColor="#ffffff"
+font="sans serif"
+linkColor='#0055cc'
