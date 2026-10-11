@@ -46,108 +46,104 @@ def download_all_data(a = 1):
     return data_di , data_version, n_files
 
 
+def convert_iso_date_to_datetime(s):
+    """ helper used in data_pre_select """
+    s = str(s)
+    if "-M" in s:  # Monthly: 2013-M05
+        return pd.to_datetime(s.replace("-M", "-") + "-01")
+    elif "-W" in s:  # Weekly: 2013-W13
+        return pd.to_datetime(f"{s[:4]}-W{s[-2:]}-1", format="%G-W%V-%u")
+    elif s.isdigit() and len(s) == 4:  # Yearly: 2005
+        return pd.Timestamp(f"{s}-01-01")    
+    else:
+        return pd.NaT
+
+@st.cache_data
+def data_pre_select(df):
+    for k in df.keys():
+        # keep only cases (no precomputed summaries)
+        df[k] = df[k][df[k]["valueCategory"] == "cases"]
+        # keep only relevant variables 
+        cols_to_drop = ['georegion_type', 'agegroup_type', 'valueYearCumSum', 'valueMean3y', 'trend', 'prct', 
+            'inc14d', 'incValueMean3m',
+            'deltaValue', 'deltaIncValue', 'incValuePrctChange', 'valueMean5y', 'dataComplete']
+        df[k] = df[k].drop(columns=cols_to_drop, errors="ignore")
+        # drop rows if outcom is NA
+        df[k] = df[k].dropna(subset=["value", "incValue"], how="all")
+        # spec for years which are int already 
+        if df[k]["temporal"].dtype == "int64":
+            df[k]["temporal"] = df[k]["temporal"].astype(str)
+            df[k]["temporal"] = df[k]["temporal"].str[:4]
+        # convert nasty csv-style-strings to date    
+        df[k]['date'] = df[k]["temporal"].apply(convert_iso_date_to_datetime)
+
+    return df    
+
+@st.cache_data
+def data_select_chfl(df):
+    for k in df.keys():
+        df[k] = df[k][df[k]["georegion"] == "CHFL"] 
+    return df
+
+
+@st.cache_data
+def data_select_years(x):
+    df_year = {}
+    for k in x.keys():
+        df = x[k]
+        df = df[df["temporal_type"] == "year"] 
+        if df.shape[0] > 0:
+            df_year[k] = df
+    return(df_year)
+
+
+@st.cache_data
+def data_select_months(x):
+    df_month = {}
+    for k in x.keys():
+        df = x[k]
+        df = df[df["temporal_type"] == "month"] 
+        if df.shape[0] > 0:
+            df_month[k] = df
+    return df_month
+
+
+@st.cache_data
+def data_select_weeks(x):
+    df_iso_week = {}
+    for k in x.keys():
+        df = x[k]
+        df = df[df["temporal_type"] == "iso_week"] 
+        if df.shape[0] > 0:
+            df_iso_week[k] = df
+    return df_iso_week
+
+
+
+
+
+
+
 #---------------------------------
 # (2) function for data preparation 
 
-def convert_iso_date_to_datetime(d):
-    return(datetime.strptime(d + '-1', "%Y-W%W-%w"))
-
-@st.cache_data
-def preprocess_INFLUENZA(df):
-    df = df.copy()
-    # make a continuous time variable 
-    df['date'] = df["temporal"].apply(convert_iso_date_to_datetime)
-    # re-code  
-    df['agegroup'] = df['agegroup'].replace(to_replace='0 - 4',   value='00-04') # ,   inplace=True)
-    df['agegroup'] = df['agegroup'].replace(to_replace='5 - 14',  value='05-14') #,   inplace=True)
-    df['agegroup'] = df['agegroup'].replace(to_replace='15 - 29', value='15-29') #,   inplace=True)
-    df['agegroup'] = df['agegroup'].replace(to_replace='30 - 64', value='30-64') #,   inplace=True)
-    df['agegroup'] = df['agegroup'].replace(to_replace='65+',     value='65+') #,     inplace=True)
-    df['agegroup'] = df['agegroup'].replace(to_replace='unknown', value='Unknown') #, inplace=True)
-    # df['agegroup'] = df['agegroup'].replace(to_replace='all',     value='All') #,     inplace=True)
-    return(df)
+# def convert_iso_date_to_datetime(d):
+#     return(datetime.strptime(d + '-1', "%Y-W%W-%w"))
 
 # @st.cache_data
-# def get_all_oblig(df):
-#     df = df[df["type"]  == 'all']
-#     df = df[df["valueCategory"]  == 'cases']
-#     df = df[df["georegion"] == 'CHFL']
-#     df = df[df["agegroup"]  == 'all']
-#     df = df[df["sex"]  == 'all']
+# def preprocess_INFLUENZA(df):
+#     df = df.copy()
+#     # make a continuous time variable 
+#     df['date'] = df["temporal"].apply(convert_iso_date_to_datetime)
+#     # re-code  
+#     df['agegroup'] = df['agegroup'].replace(to_replace='0 - 4',   value='00-04') # ,   inplace=True)
+#     df['agegroup'] = df['agegroup'].replace(to_replace='5 - 14',  value='05-14') #,   inplace=True)
+#     df['agegroup'] = df['agegroup'].replace(to_replace='15 - 29', value='15-29') #,   inplace=True)
+#     df['agegroup'] = df['agegroup'].replace(to_replace='30 - 64', value='30-64') #,   inplace=True)
+#     df['agegroup'] = df['agegroup'].replace(to_replace='65+',     value='65+') #,     inplace=True)
+#     df['agegroup'] = df['agegroup'].replace(to_replace='unknown', value='Unknown') #, inplace=True)
+#     # df['agegroup'] = df['agegroup'].replace(to_replace='all',     value='All') #,     inplace=True)
 #     return(df)
-
-# @st.cache_data
-# def get_by_cantons_oblig(df):
-#     df = df[df["type"]  == 'all']
-#     df = df[df["valueCategory"]  == 'cases']
-#     df = df[df["georegion"] != 'CHFL']
-#     df = df[df["georegion"] != 'CH']
-#     df = df[df["georegion"] != 'FL']
-#     df = df[df["agegroup"]  == 'all']
-#     df = df[df["sex"]  == 'all']
-#     df = df.sort_values(by=["georegion", 'date'], ascending=True)
-#     return(df)
-
-# @st.cache_data
-# def get_by_agegroup_oblig(df):
-#     df = df[df["type"]  == 'all']
-#     df = df[df["valueCategory"]  == 'cases']
-#     df = df[df["georegion"] == 'CHFL']
-#     df = df[df["agegroup"]  != 'all']
-#     df = df[df["sex"]  == 'all']
-#     df = df.sort_values(by=["agegroup", 'date'], ascending=True)
-#     return(df)
-
-# @st.cache_data
-# def get_by_sex_oblig(df):
-#     df = df[df["type"]  == 'all']
-#     df = df[df["valueCategory"]  == 'cases']
-#     df = df[df["georegion"] == 'CHFL']
-#     df = df[df["agegroup"]  == 'all']
-#     df = df[df["sex"]  != 'all']
-#     df = df.sort_values(by=["sex", 'date'], ascending=True)
-#     return(df)
-
-# @st.cache_data
-# def get_by_type_oblig(df):
-#     df = df[df["type"] != 'all']
-#     df = df[df["valueCategory"]  == 'cases']
-#     df = df[df["georegion"] == 'CHFL']
-#     df = df[df["agegroup"]  == 'all']
-#     df = df[df["sex"]  == 'all']
-#     df = df.sort_values(by=["sex", 'date'], ascending=True)
-#     return(df)
-
-# def prepare_data():
-#     df_obli = ss["data"]["data_di"]["INFLUENZA_oblig"]
-#     df_obli = df_obli[df_obli["temporal_type"] == "iso_week"]
-#     df_obli = preprocess_INFLUENZA(df_obli)
-
-#     df_all_obli = get_all_oblig(df = df_obli)
-#     df_can_obli = get_by_cantons_oblig(df_obli)
-#     df_age_obli = get_by_agegroup_oblig(df_obli)
-#     df_sex_obli = get_by_sex_oblig(df_obli)
-#     df_typ_obli = get_by_type_oblig(df_obli)
-
-#     # merge-in '_all' info and assign to ss
-#     ss["data"]["df_all_obli"] = df_all_obli
-#     ss["data"]["df_can_obli"] = pd.merge(df_can_obli, df_all_obli[['date', 'incValue']], how='inner', on='date', suffixes=('', '_all'))
-#     ss["data"]["df_age_obli"] = pd.merge(df_age_obli, df_all_obli[['date', 'incValue']], how='inner', on='date', suffixes=('', '_all'))
-#     ss["data"]["df_sex_obli"] = pd.merge(df_sex_obli, df_all_obli[['date', 'incValue']], how='inner', on='date', suffixes=('', '_all'))
-#     ss["data"]["df_typ_obli"] = pd.merge(df_typ_obli, df_all_obli[['date', 'incValue']], how='inner', on='date', suffixes=('', '_all'))
-
-#     # get the global time range
-#     if ss["upar"]["date_range"] == 'initial':
-#         delta_time = timedelta(days=100)
-#         # concat dates from both dfs to get global min and max 
-#         df_dates = df_obli['date']
-#         time_options = df_dates.sort_values()
-#         t_sta = time_options.min() - delta_time
-#         t_sta = datetime(year = t_sta.year, month = t_sta.month, day = t_sta.day)
-#         t_end = time_options.max() + delta_time
-#         t_end = datetime(year = t_end.year, month = t_end.month, day = t_end.day)
-#         ss["upar"]["date_range"] = (t_sta, t_end)
-#         ss["upar"]["full_date_range"] = (t_sta, t_end)
 
 
 
