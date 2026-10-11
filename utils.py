@@ -7,12 +7,9 @@ import numpy as np
 import pandas as pd 
 import plotly.express as px
 import streamlit as st
-from datetime import date
-from datetime import datetime
 from streamlit import session_state as ss
 import requests
 import io
-from datetime import datetime, timedelta
 
 
 @st.cache_data(ttl=86400, show_spinner="Downloading BAG data...")
@@ -44,7 +41,6 @@ def download_all_data(a = 1):
         data_di[data_set_name] = df
           
     return data_di , data_version, n_files
-
 
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """
@@ -85,7 +81,6 @@ def data_select_chfl(df):
         df[k] = df[k][df[k]["georegion"] == "CHFL"] 
     return df
 
-
 @st.cache_data
 def data_select_years(x):
     df_year = {}
@@ -95,7 +90,6 @@ def data_select_years(x):
         if df.shape[0] > 0:
             df_year[k] = df
     return(df_year)
-
 
 @st.cache_data
 def data_select_months(x):
@@ -107,7 +101,6 @@ def data_select_months(x):
             df_month[k] = df
     return df_month
 
-
 @st.cache_data
 def data_select_weeks(x):
     df_iso_week = {}
@@ -118,36 +111,28 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
+def make_lineplot_by_age_and_sex(x, tit):
+    if "agegroup" not in x.columns:
+            x["agegroup"] = "not_defined"
+    if "sex" not in x.columns:
+            x["sex"] = "not_defined"        
+    if "type" not in x.columns:
+            x["type"] = "not_defined"        
 
+    fig = px.line(
+        data_frame = x,
+        x = "date",
+        y = "value",
+        color = "agegroup",
+        facet_row= "sex",
+        facet_col= "type",
+        title = tit,
+        height = 500
 
-
-
-
-
-#---------------------------------
-# (2) function for data preparation 
-
-# def convert_iso_date_to_datetime(d):
-#     return(datetime.strptime(d + '-1', "%Y-W%W-%w"))
-
-# @st.cache_data
-# def preprocess_INFLUENZA(df):
-#     df = df.copy()
-#     # make a continuous time variable 
-#     df['date'] = df["temporal"].apply(convert_iso_date_to_datetime)
-#     # re-code  
-#     df['agegroup'] = df['agegroup'].replace(to_replace='0 - 4',   value='00-04') # ,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='5 - 14',  value='05-14') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='15 - 29', value='15-29') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='30 - 64', value='30-64') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='65+',     value='65+') #,     inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='unknown', value='Unknown') #, inplace=True)
-#     # df['agegroup'] = df['agegroup'].replace(to_replace='all',     value='All') #,     inplace=True)
-#     return(df)
-
-
-
-
+        )
+    fig.update_xaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+    fig.update_yaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+    return fig
 
 
 
