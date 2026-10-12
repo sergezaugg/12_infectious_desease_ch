@@ -7,9 +7,6 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 
-# st.dataframe(ss.df_years_all_concat.head())
-
-
 a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
 b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
 c = ss.df_years_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
@@ -48,4 +45,7 @@ st.dataframe(
     height=1500
 )
 
+df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
+
+st.dataframe(df_descript)
 
