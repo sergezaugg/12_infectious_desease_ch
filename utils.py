@@ -64,7 +64,7 @@ def data_pre_select(df):
         df[k] = df[k][df[k]["valueCategory"] == "cases"]
         # keep only relevant variables 
         cols_to_drop = ['georegion_type', 'agegroup_type', 'valueYearCumSum', 'valueMean3y', 'trend', 'prct', 
-            'inc14d', 'incValueMean3m',
+            'inc14d', 'incValueMean3m', 'testResult', 'testResult_type',
             'deltaValue', 'deltaIncValue', 'incValuePrctChange', 'valueMean5y', 'dataComplete']
         df[k] = df[k].drop(columns=cols_to_drop, errors="ignore")
         # drop rows if outcom is NA
@@ -163,6 +163,7 @@ def make_lineplot_all_by_disease(x, height, outcome):
         title_font=dict(size=16),
         range=[0.0, None]
         ) 
+
     fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
