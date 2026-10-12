@@ -1,7 +1,7 @@
 #--------------------             
 # Author : Serge Zaugg
 # Description : Main streamlit entry point
-# Run locally : streamlit run stmain.py
+# Run locally : streamlit run app.py
 #--------------------
 
 import streamlit as st
@@ -40,20 +40,18 @@ ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
 del(di_data, di_sel)
 gc.collect()
 
-
 # build sidebar
 with st.sidebar:
-    st.markdown(f"""# :primary[**Swiss Infectious Disease Explorer**] """)
+    st.markdown(f"""#:primary[**Swiss Infectious Disease Explorer**]""")
 
 # (3) main navigation
-pages = [
-    st.Page("pages/page00.py",  title="Summary tables"),
-    st.Page("pages/page01_weeks.py",  title="Plots weekly"),
-    st.Page("pages/page02_months.py",  title="Plots monthly"),
-    st.Page("pages/page02_years.py",  title="Plots yearly"),
-    st.Page("pages/page02.py",  title="Credits"),
-    ]
-pg = st.navigation(pages, position = "top")
+p01 = st.Page("pages/page00.py",  title="Summary tables")
+p02 = st.Page("pages/page01_weeks.py",  title="Plots weekly")
+p03 = st.Page("pages/page02_months.py",  title="Plots monthly")
+p04 = st.Page("pages/page02_years.py",  title="Plots yearly")
+p05 = st.Page("pages/page02.py",  title="Credits")
+
+pg = st.navigation([p01, p02, p03, p04, p05], position = "top")
 pg.run()
 
 
