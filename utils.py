@@ -7,15 +7,12 @@ import numpy as np
 import pandas as pd 
 import plotly.express as px
 import streamlit as st
-from datetime import date
-from datetime import datetime
 from streamlit import session_state as ss
 import requests
 import io
-from datetime import datetime, timedelta
 
 
-@st.cache_data(ttl=86400, show_spinner="Downloading BAG data...")
+@st.cache_data(ttl=60*60*12, show_spinner="Downloading BAG data...")
 def download_all_data(a = 1):
     full_query_string = 'https://api.idd.bag.admin.ch/api/v1/data/version'
     r = requests.get(full_query_string, allow_redirects=True)
@@ -26,9 +23,6 @@ def download_all_data(a = 1):
     data_file_list = r.json()
 
     data_file_list =[a for a in data_file_list if "oblig" in a]
-
-    # # temp 
-    # data_file_list = data_file_list[0:10]
 
     n_files = len(data_file_list)
 
@@ -45,7 +39,6 @@ def download_all_data(a = 1):
           
     return data_di , data_version, n_files
 
-
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """
     s = str(s)
@@ -58,9 +51,15 @@ def convert_iso_date_to_datetime(s):
     else:
         return pd.NaT
 
-@st.cache_data
+@st.cache_data(show_spinner="Pre-processing data...")
 def data_pre_select(df):
     for k in df.keys():
+        if "agegroup" not in df[k].columns:
+            df[k]["agegroup"] = "all"
+        if "sex" not in df[k].columns:
+            df[k]["sex"] = "all"        
+        if "type" not in df[k].columns:
+            df[k]["type"] = "all"        
         # keep only cases (no precomputed summaries)
         df[k] = df[k][df[k]["valueCategory"] == "cases"]
         # keep only relevant variables 
@@ -85,7 +84,6 @@ def data_select_chfl(df):
         df[k] = df[k][df[k]["georegion"] == "CHFL"] 
     return df
 
-
 @st.cache_data
 def data_select_years(x):
     df_year = {}
@@ -95,7 +93,6 @@ def data_select_years(x):
         if df.shape[0] > 0:
             df_year[k] = df
     return(df_year)
-
 
 @st.cache_data
 def data_select_months(x):
@@ -107,7 +104,6 @@ def data_select_months(x):
             df_month[k] = df
     return df_month
 
-
 @st.cache_data
 def data_select_weeks(x):
     df_iso_week = {}
@@ -118,41 +114,74 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
+@st.cache_data
+def make_lineplot_by_age_and_sex(x, tit):
+    fig = px.line(
+        data_frame = x,
+        x = "date",
+        y = "value",
+        color = "agegroup",
+        facet_row= "sex",
+        facet_col= "type",
+        title = tit,
+        height = 500
+
+        )
+    fig.update_xaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+    fig.update_yaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+    return fig
 
 
+@st.cache_data(show_spinner="Rendering plot ...")
+def make_lineplot_all_by_disease(x, height, outcome):
+
+    fig = px.line(
+        data_frame = x,
+        x = "date",
+        y = outcome,
+        facet_row= "disease",
+        facet_row_spacing = 0.01,
+        markers=True,
+        height = height,
+        # render_mode="webgl",
+        )
+
+    fig.update_traces(marker=dict(size=5))   
+    fig.update_layout(
+        showlegend=True,
+        margin=dict(l=50, r=190, t=50, b=40),
+        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
+        )
+    fig.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", showgrid=True, gridcolor="#535053"
+        )   
+    fig.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+    fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 0
+
+    return fig
+
+    
+@st.cache_data
+def stack_dict_of_dfs(di):
+    return pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
 
 
-
-
-#---------------------------------
-# (2) function for data preparation 
-
-# def convert_iso_date_to_datetime(d):
-#     return(datetime.strptime(d + '-1', "%Y-W%W-%w"))
-
-# @st.cache_data
-# def preprocess_INFLUENZA(df):
-#     df = df.copy()
-#     # make a continuous time variable 
-#     df['date'] = df["temporal"].apply(convert_iso_date_to_datetime)
-#     # re-code  
-#     df['agegroup'] = df['agegroup'].replace(to_replace='0 - 4',   value='00-04') # ,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='5 - 14',  value='05-14') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='15 - 29', value='15-29') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='30 - 64', value='30-64') #,   inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='65+',     value='65+') #,     inplace=True)
-#     df['agegroup'] = df['agegroup'].replace(to_replace='unknown', value='Unknown') #, inplace=True)
-#     # df['agegroup'] = df['agegroup'].replace(to_replace='all',     value='All') #,     inplace=True)
-#     return(df)
-
-
-
-
-
-
-
-
-
-
+@st.cache_data
+def data_select_only_all_groups(df):
+    for k in df.keys():
+        df[k] = df[k][df[k]["sex"] == "all"] 
+        df[k] = df[k][df[k]["agegroup"] == "all"] 
+        df[k] = df[k][df[k]["type"] == "all"]   
+    return df
 
 
