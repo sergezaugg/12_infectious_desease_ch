@@ -9,8 +9,8 @@ from streamlit import session_state as ss
 import numpy as np
 import plotly.express as px
 import pandas as pd
-
-
+from utils import download_all_data, data_pre_select, data_select_chfl
+from utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 
 #------------------------------
 # prepare app 
@@ -19,6 +19,17 @@ st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/ser
 pd.set_option('display.max_rows', 500)
 
 
+df_data, data_version, n_files = download_all_data(22)
+
+df_sel = data_pre_select(df_data)
+df_sel = data_select_chfl(df_sel)
+
+ss.df_years  = data_select_years(df_sel)
+ss.df_weeks  = data_select_weeks(df_sel)
+
+ss.df_months = data_select_months(df_sel)
+ss.df_months_all = data_select_only_all_groups(ss.df_months)
+ss.df_months_concat = stack_dict_of_dfs(di = ss.df_months_all)
 
 # build sidebar
 with st.sidebar:

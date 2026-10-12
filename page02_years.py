@@ -7,11 +7,12 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
-from utils import make_lineplot_by_age_and_sex
+from utils import make_lineplot_by_age_and_sex, data_select_only_all_groups
 
+df_years_all = data_select_only_all_groups(ss.df_years)
 
-for k in ss.df_years.keys():
-    df = ss.df_years[k] 
+for k in df_years_all.keys():
+    df = df_years_all[k] 
     fig = make_lineplot_by_age_and_sex(df, k)
     st.plotly_chart(fig, use_container_width=True, key = k)
 

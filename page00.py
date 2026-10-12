@@ -6,23 +6,6 @@
 import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
-from utils import download_all_data, data_pre_select, data_select_chfl
-from utils import data_select_years, data_select_months, data_select_weeks
-pd.set_option("display.max_rows", 200)  # Show up to 100 rows
-
-
-
-
-
-
-df_data, data_version, n_files = download_all_data(22)
-
-df_sel = data_pre_select(df_data)
-df_sel = data_select_chfl(df_sel)
-
-ss.df_years  = data_select_years(df_sel)
-ss.df_months = data_select_months(df_sel)
-ss.df_weeks  = data_select_weeks(df_sel)
 
 df_temp = ss.df_years.copy()
 

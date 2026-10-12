@@ -12,7 +12,7 @@ import requests
 import io
 
 
-@st.cache_data(ttl=86400, show_spinner="Downloading BAG data...")
+@st.cache_data(ttl=60*60*12, show_spinner="Downloading BAG data...")
 def download_all_data(a = 1):
     full_query_string = 'https://api.idd.bag.admin.ch/api/v1/data/version'
     r = requests.get(full_query_string, allow_redirects=True)
@@ -23,9 +23,6 @@ def download_all_data(a = 1):
     data_file_list = r.json()
 
     data_file_list =[a for a in data_file_list if "oblig" in a]
-
-    # # temp 
-    # data_file_list = data_file_list[0:10]
 
     n_files = len(data_file_list)
 
@@ -57,6 +54,12 @@ def convert_iso_date_to_datetime(s):
 @st.cache_data
 def data_pre_select(df):
     for k in df.keys():
+        if "agegroup" not in df[k].columns:
+            df[k]["agegroup"] = "all"
+        if "sex" not in df[k].columns:
+            df[k]["sex"] = "all"        
+        if "type" not in df[k].columns:
+            df[k]["type"] = "all"        
         # keep only cases (no precomputed summaries)
         df[k] = df[k][df[k]["valueCategory"] == "cases"]
         # keep only relevant variables 
@@ -111,14 +114,8 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
+@st.cache_data
 def make_lineplot_by_age_and_sex(x, tit):
-    if "agegroup" not in x.columns:
-            x["agegroup"] = "not_defined"
-    if "sex" not in x.columns:
-            x["sex"] = "not_defined"        
-    if "type" not in x.columns:
-            x["type"] = "not_defined"        
-
     fig = px.line(
         data_frame = x,
         x = "date",
@@ -135,9 +132,86 @@ def make_lineplot_by_age_and_sex(x, tit):
     return fig
 
 
+@st.cache_data
+def make_lineplot_all_by_disease(x, height, outcome):
+    fig = px.line(
+        data_frame = x,
+        x = "date",
+        y = outcome,
+        facet_row= "disease",
+        facet_row_spacing = 0.01,
+        markers=True,
+        height = height
+        )
+
+    fig.update_traces(marker=dict(size=5))   
+    fig.update_layout(
+        showlegend=True,
+        margin=dict(l=50, r=190, t=50, b=40),
+        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
+        )
+    fig.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", showgrid=True, gridcolor="#535053"
+        )   
+    fig.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+    fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 0
+
+    return fig
+
+    
+@st.cache_data
+def stack_dict_of_dfs(di):
+    return pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
+
+
+
+   
 
 
 
 
+
+
+#   fig = px.line(
+#         df,
+#         x = "ISO_WEEKSTARTDATE",
+#         y = outcome,
+#         color = "ORIGIN_SOURCE",
+#         facet_row = "COUNTRY",
+#         facet_row_spacing = facet_row_spacing,
+#         height= height_b,
+#         markers=True,
+#         color_discrete_sequence=[cc["sources"]["nonsen"], cc["sources"]["notdef"], cc["sources"]["sentin"], cc["sources"]["sumall"]],
+#         labels={
+#             "ISO_WEEKSTARTDATE": "Date",
+#             outcome: y_label,
+
+
+
+
+
+
+
+
+
+
+
+@st.cache_data
+def data_select_only_all_groups(df):
+    for k in df.keys():
+        df[k] = df[k][df[k]["sex"] == "all"] 
+        df[k] = df[k][df[k]["agegroup"] == "all"] 
+        df[k] = df[k][df[k]["type"] == "all"]   
+    return df
 
 

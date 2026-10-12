@@ -7,12 +7,18 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
-from utils import make_lineplot_by_age_and_sex
+from utils import make_lineplot_all_by_disease
+
+with st.sidebar:
+    outcome_options = ["value", "incValue",  "pop"]
+    selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key="k_p10_01")
+
+fig = make_lineplot_all_by_disease(x = ss.df_months_concat, height = 5000, outcome = selected_outcome)
+
+with st.container(border=True):
+    st.plotly_chart(fig, use_container_width=True, key = "k_fig_monthly")
 
 
-for k in ss.df_months.keys():
-    df = ss.df_months[k] 
-    fig = make_lineplot_by_age_and_sex(df, k)
-    st.plotly_chart(fig, use_container_width=True, key = k)
-   
+
+
 
