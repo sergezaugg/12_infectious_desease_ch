@@ -51,7 +51,7 @@ def convert_iso_date_to_datetime(s):
     else:
         return pd.NaT
 
-@st.cache_data
+@st.cache_data(show_spinner="Pre-processing data...")
 def data_pre_select(df):
     for k in df.keys():
         if "agegroup" not in df[k].columns:
@@ -132,8 +132,9 @@ def make_lineplot_by_age_and_sex(x, tit):
     return fig
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Rendering plot ...")
 def make_lineplot_all_by_disease(x, height, outcome):
+
     fig = px.line(
         data_frame = x,
         x = "date",
@@ -141,7 +142,8 @@ def make_lineplot_all_by_disease(x, height, outcome):
         facet_row= "disease",
         facet_row_spacing = 0.01,
         markers=True,
-        height = height
+        height = height,
+        # render_mode="webgl",
         )
 
     fig.update_traces(marker=dict(size=5))   
@@ -172,38 +174,6 @@ def make_lineplot_all_by_disease(x, height, outcome):
 @st.cache_data
 def stack_dict_of_dfs(di):
     return pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
-
-
-
-   
-
-
-
-
-
-
-#   fig = px.line(
-#         df,
-#         x = "ISO_WEEKSTARTDATE",
-#         y = outcome,
-#         color = "ORIGIN_SOURCE",
-#         facet_row = "COUNTRY",
-#         facet_row_spacing = facet_row_spacing,
-#         height= height_b,
-#         markers=True,
-#         color_discrete_sequence=[cc["sources"]["nonsen"], cc["sources"]["notdef"], cc["sources"]["sentin"], cc["sources"]["sumall"]],
-#         labels={
-#             "ISO_WEEKSTARTDATE": "Date",
-#             outcome: y_label,
-
-
-
-
-
-
-
-
-
 
 
 @st.cache_data
