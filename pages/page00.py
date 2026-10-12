@@ -26,8 +26,14 @@ c = c.drop(columns=[0], errors="ignore")
 d = a.merge(b, 'outer', on = "disease").merge(c, 'outer', on = "disease")
 
 d = d[["disease", "yearly", "monthly", "weekly", ]]
-d = d.fillna("No")
-# st.dataframe(d, hide_index=True, width = "content", height=1500)
+df_overview = d.fillna("No")
+
+# merge-in metadata 
+df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
+df_overview = df_overview.merge(df_descript, 'outer', on = "disease")
+
+#----------------------------
+# display 
 
 def highlight_yes(v):
     if isinstance(v, str):
@@ -39,13 +45,15 @@ def highlight_yes(v):
     return ""
 
 st.dataframe(
-    d.style.map(highlight_yes),
+    df_overview.style.map(highlight_yes),
     hide_index=True,
     width="content",
-    height=1500
+    height=1500,
+    column_config={
+        "disease": st.column_config.Column(width=200),
+        "description": st.column_config.Column(width=700)
+    }
 )
 
-df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
 
-st.dataframe(df_descript)
 

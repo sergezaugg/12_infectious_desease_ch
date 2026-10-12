@@ -75,6 +75,9 @@ def data_pre_select(df):
             df[k]["temporal"] = df[k]["temporal"].str[:4]
         # convert nasty csv-style-strings to date    
         df[k]['date'] = df[k]["temporal"].apply(convert_iso_date_to_datetime)
+        st.text(df[k].head())
+
+        # disease
 
     return df    
 
@@ -174,7 +177,9 @@ def make_lineplot_all_by_disease(x, height, outcome):
     
 @st.cache_data
 def stack_dict_of_dfs(di):
-    return pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
+    df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
+    df["disease"] = df["disease"].str.removesuffix("_oblig")
+    return df 
 
 
 @st.cache_data
