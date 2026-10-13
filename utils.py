@@ -10,9 +10,10 @@ import streamlit as st
 from streamlit import session_state as ss
 import requests
 import io
+from datetime import datetime
 
 
-@st.cache_data(ttl=60*60*12, show_spinner="Downloading BAG data...")
+@st.cache_data(ttl=60*60*12, show_spinner="Downloading data")
 def download_all_data(a = 1):
     full_query_string = 'https://api.idd.bag.admin.ch/api/v1/data/version'
     r = requests.get(full_query_string, allow_redirects=True)
@@ -35,9 +36,12 @@ def download_all_data(a = 1):
         r = requests.get(full_query_string, allow_redirects=True)
         raw_text = r.text
         df = pd.read_csv(io.StringIO(raw_text, newline='\n')  , sep=",")
+        print(df.shape)
         data_di[data_set_name] = df
-          
-    return data_di , data_version, n_files
+
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    return data_di, data_version, n_files, ts
 
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """
@@ -51,7 +55,7 @@ def convert_iso_date_to_datetime(s):
     else:
         return pd.NaT
 
-@st.cache_data(show_spinner="Pre-processing data...")
+@st.cache_data(show_spinner="Pre-processing data")
 def data_pre_select(df):
     for k in df.keys():
         if "agegroup" not in df[k].columns:
@@ -64,7 +68,7 @@ def data_pre_select(df):
         df[k] = df[k][df[k]["valueCategory"] == "cases"]
         # keep only relevant variables 
         cols_to_drop = ['georegion_type', 'agegroup_type', 'valueYearCumSum', 'valueMean3y', 'trend', 'prct', 
-            'inc14d', 'incValueMean3m',
+            'inc14d', 'incValueMean3m', 'testResult', 'testResult_type',
             'deltaValue', 'deltaIncValue', 'incValuePrctChange', 'valueMean5y', 'dataComplete']
         df[k] = df[k].drop(columns=cols_to_drop, errors="ignore")
         # drop rows if outcom is NA
@@ -75,13 +79,14 @@ def data_pre_select(df):
             df[k]["temporal"] = df[k]["temporal"].str[:4]
         # convert nasty csv-style-strings to date    
         df[k]['date'] = df[k]["temporal"].apply(convert_iso_date_to_datetime)
-
     return df    
 
 @st.cache_data
 def data_select_chfl(df):
     for k in df.keys():
         df[k] = df[k][df[k]["georegion"] == "CHFL"] 
+        if(len(df[k])==0):
+            df[k] = df[k][df[k]["georegion"] == "CH"] # # because of YELLOWFEVER_oblig
     return df
 
 @st.cache_data
@@ -132,30 +137,38 @@ def make_lineplot_by_age_and_sex(x, tit):
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plot ...")
-def make_lineplot_all_by_disease(x, height, outcome):
+@st.cache_data(show_spinner="Rendering plots")
+def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 150
+    spacing_px = 60
+    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
 
     fig = px.line(
         data_frame = x,
-        x = "date",
+        x = xvar,
         y = outcome,
+        color = col_var,
         facet_row= "disease",
-        facet_row_spacing = 0.01,
+        facet_row_spacing = facet_row_spacing,
         markers=True,
-        height = height,
-        # render_mode="webgl",
+        height = height_b,
+        labels=labels,
         )
 
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
-        showlegend=True,
-        margin=dict(l=50, r=190, t=50, b=40),
+        showlegend=False,
+        margin=dict(l=50, r=50, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", showgrid=True, gridcolor="#535053"
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=show_x_grid, 
         )   
     fig.update_yaxes(
         matches=None,
@@ -163,17 +176,36 @@ def make_lineplot_all_by_disease(x, height, outcome):
         title_font=dict(size=16),
         range=[0.0, None]
         ) 
+
     fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 0
+        annotation.textangle = 90
+    if facet_labels == False:
+        fig.for_each_annotation(lambda a: a.update(text=""))    
 
     return fig
 
     
 @st.cache_data
 def stack_dict_of_dfs(di):
-    return pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
+    df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
+    df["disease"] = df["disease"].str.removesuffix("_oblig")
+    # merge-in desease short names 
+    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
+    df = df.merge(df_dis_abbr, 'left', on = "disease")
+    # add iso-week, month and year indicator
+    df["year"]  = df['date'].dt.year
+    df["month"] = df['date'].dt.month
+    df["week"]  = df['date'].dt.isocalendar().week
+
+    # enforce sorting 
+    df = df.sort_values(['disease', 'temporal_type', 
+                         'georegion', 'agegroup', 'sex', 
+                         'date', 'year', 'week'
+                         ])
+
+    return df 
 
 
 @st.cache_data
@@ -183,5 +215,42 @@ def data_select_only_all_groups(df):
         df[k] = df[k][df[k]["agegroup"] == "all"] 
         df[k] = df[k][df[k]["type"] == "all"]   
     return df
+
+
+
+
+def get_overview_df():
+    a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+    b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+    c = ss.df_years_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+
+    a['temporal_type'] = "Yes"
+    b['temporal_type'] = "Yes"
+    c['temporal_type'] = "Yes"
+
+    a.rename(columns={"temporal_type": "weekly"}, inplace=True)
+    b.rename(columns={"temporal_type": "monthly"}, inplace=True)
+    c.rename(columns={"temporal_type": "yearly"}, inplace=True)
+
+    a = a.drop(columns=[0], errors="ignore")
+    b = b.drop(columns=[0], errors="ignore")
+    c = c.drop(columns=[0], errors="ignore")
+
+    d = a.merge(b, 'outer', on = "disease").merge(c, 'outer', on = "disease")
+
+    d = d[["disease", "yearly", "monthly", "weekly", ]]
+    df_overview = d.fillna("No")
+
+    # merge-in metadata 
+    df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
+    df_overview = df_overview.merge(df_descript, 'outer', on = "disease")
+
+    df_dis_cate = pd.read_csv("resources/disease_category.txt", sep=",")
+    df_overview = df_overview.merge(df_dis_cate, 'outer', on = "disease")
+
+    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
+    df_overview = df_overview.merge(df_dis_abbr, 'outer', on = "disease")
+    
+    return(df_overview)
 
 

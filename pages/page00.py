@@ -6,38 +6,32 @@
 import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
-
-# df_temp = ss.di_years.copy()
-
-# for k in df_temp.keys():
-    
-#     df = df_temp[k]
-#     st.text(k)
-#     st.text(df.shape)
-
-#     a,b,c,d,e,f = st.columns(6)
-#     with a:
-#         if "valueCategory" in df.columns:
-#             st.dataframe(df["valueCategory"].value_counts())
-#     with b:
-#         if "temporal_type" in df.columns:
-#             st.dataframe(df['temporal_type'].value_counts()) 
-#     with c:
-#         if "georegion" in df.columns:
-#             st.dataframe(df['georegion'].value_counts()) 
-#     with d:
-#         if "agegroup" in df.columns:
-#             st.dataframe(df['agegroup'].value_counts()) 
-#     with e:
-#         if "sex" in df.columns:
-#             st.dataframe(df['sex'].value_counts()) 
-#     with f:
-#         if "type" in df.columns:
-#             st.dataframe(df['type'].value_counts()) 
-    
-#     # st.dataframe(df.head()) # , width = "content")
+from utils import get_overview_df
 
 
-    
+n_dis = ss.df_overview.shape[0]
+
+st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
+
+def highlight_yes(v):
+    if isinstance(v, str):
+        v = v.strip().lower()
+        if v == "yes":
+            return "background-color: darkgreen"
+        if v == "no":
+            return "background-color: darkred"
+    return ""
+
+st.dataframe(
+    ss.df_overview.style.map(highlight_yes),
+    hide_index=True,
+    width="content",
+    height=1500,
+    column_config={
+        "disease": st.column_config.Column(width=200),
+        "description": st.column_config.Column(width=700)
+    }
+)
+
 
 
