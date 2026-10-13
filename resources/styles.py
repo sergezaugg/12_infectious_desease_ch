@@ -13,14 +13,9 @@ def apply_global_styles():
         <style>
             div[data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] hr) {
                 margin-top: -1.5rem !important;
-                margin-bottom: -0.8rem !important;}
-        </style>
-        """, unsafe_allow_html=True)
-
-    # reduce vertical space between navig and items(content
-    st.markdown("""
-        <style> 
-            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.8rem;} 
+                margin-bottom: -1.8rem !important;}
+            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.5rem;} 
+            [data-testid="stMainBlockContainer"] > div:first-child {margin-top: -0.0rem !important;}    
         </style>
         """, unsafe_allow_html=True)
 

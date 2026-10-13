@@ -46,7 +46,8 @@ if "di_prep" not in ss:
 # build sidebar
 with st.sidebar:
     st.markdown(f"""### :primary[**Swiss Infectious Disease Explorer**]""")
-    st.text("V-" + ss.data_version['name'] + " • D-" + ss.ts_downl + " • N-" + str(ss.n_files))
+    st.text("V-" + ss.data_version['name'] + " • D-" + ss.ts_downl)
+    st.divider()
    
 # (3) main navigation
 p01 = st.Page("pages/page00.py",  title="Overview")
