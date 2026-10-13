@@ -198,13 +198,10 @@ def stack_dict_of_dfs(di):
     df["year"]  = df['date'].dt.year
     df["month"] = df['date'].dt.month
     df["week"]  = df['date'].dt.isocalendar().week
-
+    # add days elapsed sice today (ref date)
+    df["days_elapsed"] = (ss.ref_date - df["date"]).dt.days
     # enforce sorting 
-    df = df.sort_values(['disease', 'temporal_type', 
-                         'georegion', 'agegroup', 'sex', 
-                         'date', 'year', 'week'
-                         ])
-
+    df = df.sort_values(['disease', 'temporal_type', 'georegion', 'agegroup', 'sex', 'date', 'year', 'week'])
     return df 
 
 

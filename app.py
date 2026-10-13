@@ -26,6 +26,9 @@ pd.set_option('display.max_rows', 500)
 # run the data prep pipe only and exactly once on session startup - cago en la puuuuuuta :-)
 # many caches function will consume resources and time even on cache hit!
 if "di_prep" not in ss:
+
+    ss.ref_date = pd.Timestamp.today().normalize()
+
     # download and perp once
     ss.di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
     ss.di_prep = data_pre_select(ss.di_data)
@@ -43,6 +46,17 @@ if "di_prep" not in ss:
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df()
 
+
+
+# filter pas year relativ to today 
+ss.df_filtered_1y = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= 365]
+# get data age of each disease
+ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
+
+
+
+
+
 # build sidebar
 with st.sidebar:
     st.markdown(f"""### :primary[**Swiss Infectious Disease Explorer**]""")
@@ -50,6 +64,9 @@ with st.sidebar:
     st.divider()
    
 # (3) main navigation
+
+
+p00 = st.Page("pages/page_data_age.py",  title="Date age")
 p01 = st.Page("pages/page00.py",  title="Overview")
 p02 = st.Page("pages/page01_weeks.py",  title="Weekly")
 p03 = st.Page("pages/page02_months.py",  title="Monthly")
@@ -58,7 +75,7 @@ p05 = st.Page("pages/page02.py",  title="Info")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
-pg = st.navigation([p01, p02, p03, p04, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p01, p02, p03, p04, p05, p20, p21], position = "top")
 pg.run()
 
 
