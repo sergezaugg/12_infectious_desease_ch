@@ -17,6 +17,7 @@ labels = {
     "date"  :  "Date",
     "week"  :  "Week",
     "month" :  "Month",
+    "value_ma_12m" : "value_ma_12m",
 }
 
 
@@ -28,7 +29,7 @@ def ui_render_factplot_page(data, key, seasonality):
     opt_types = df_options['type'].unique()
 
     with st.sidebar:
-        outcome_options = ["value", "incValue"] # ,  "pop"]
+        outcome_options = ["value", "incValue", "value_ma_12m"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
                                     horizontal=True, format_func=lambda x: labels[x],)
         sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", persist_state = "session", key = key+"_02")
@@ -47,6 +48,7 @@ def ui_render_factplot_page(data, key, seasonality):
         fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
                                             labels = labels, show_x_grid = True,
                                             facet_labels = True)
+     
         if seasonality == "month":
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
                                             labels = labels, show_x_grid = False,

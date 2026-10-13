@@ -48,11 +48,10 @@ if "di_prep" not in ss:
 
 
 
-# filter pas year relativ to today 
+# filter past year relative to today 
 ss.df_filtered_1y = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= 365]
 # get data age of each disease
 ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
-
 
 
 
@@ -71,11 +70,12 @@ p01 = st.Page("pages/page00.py",  title="Overview")
 p02 = st.Page("pages/page01_weeks.py",  title="Weekly")
 p03 = st.Page("pages/page02_months.py",  title="Monthly")
 p04 = st.Page("pages/page02_years.py",  title="Yearly")
+p06 = st.Page("pages/page_trend.py",  title="Trend")
 p05 = st.Page("pages/page02.py",  title="Info")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
-pg = st.navigation([p00, p01, p02, p03, p04, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p01, p02, p03, p04, p06, p05, p20, p21], position = "top")
 pg.run()
 
 
