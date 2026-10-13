@@ -138,7 +138,7 @@ def make_lineplot_by_age_and_sex(x, tit):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_all_by_disease(x, n_facets, outcome, labels):
+def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
@@ -148,8 +148,9 @@ def make_lineplot_all_by_disease(x, n_facets, outcome, labels):
 
     fig = px.line(
         data_frame = x,
-        x = "date",
+        x = xvar,
         y = outcome,
+        color = col_var,
         facet_row= "disease",
         facet_row_spacing = facet_row_spacing,
         markers=True,
@@ -159,14 +160,15 @@ def make_lineplot_all_by_disease(x, n_facets, outcome, labels):
 
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
-        showlegend=True,
-        margin=dict(l=50, r=190, t=50, b=40),
+        showlegend=False,
+        margin=dict(l=50, r=50, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", showgrid=True, gridcolor="#535053"
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=show_x_grid, 
         )   
     fig.update_yaxes(
         matches=None,
@@ -178,7 +180,9 @@ def make_lineplot_all_by_disease(x, n_facets, outcome, labels):
     fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 0
+        annotation.textangle = 90
+    if facet_labels == False:
+        fig.for_each_annotation(lambda a: a.update(text=""))    
 
     return fig
 
@@ -190,8 +194,17 @@ def stack_dict_of_dfs(di):
     # merge-in desease short names 
     df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
     df = df.merge(df_dis_abbr, 'left', on = "disease")
-    # sort 
-    df = df.sort_values(['disease', 'temporal_type', 'date'])
+    # add iso-week, month and year indicator
+    df["year"]  = df['date'].dt.year
+    df["month"] = df['date'].dt.month
+    df["week"]  = df['date'].dt.isocalendar().week
+
+    # enforce sorting 
+    df = df.sort_values(['disease', 'temporal_type', 
+                         'georegion', 'agegroup', 'sex', 
+                         'date', 'year', 'week'
+                         ])
+
     return df 
 
 

@@ -9,6 +9,11 @@ col_aa, col_bb, = st.columns([0.50, 0.05])
 with col_aa: 
     with st.container(border=True, ):
         st.markdown('''
+        ### INFO
+        This app is to get a quick and descriptive overview of latest available data on 42 infectious disease in Switzerland.
+        Only cases reported here.
+        ''')
+        st.markdown('''
         ### CREDITS
         Data kindly provided weekly on this [API](https://www.idd.bag.admin.ch/portal-data) by the Swiss Federal Office of Public Health ([FOPH](https://www.bag.admin.ch/)).
         ''')
