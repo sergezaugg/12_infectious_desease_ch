@@ -27,8 +27,8 @@ pd.set_option('display.max_rows', 500)
 # many caches function will consume resources and time even on cache hit!
 if "di_prep" not in ss:
     # download and perp once
-    di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
-    ss.di_prep = data_pre_select(di_data)
+    ss.di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
+    ss.di_prep = data_pre_select(ss.di_data.copy())
     # extract pre-digested dfs 
     ss.di_prep_chfl = data_select_chfl(ss.di_prep)
     # objects for the pages 
@@ -42,6 +42,17 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df()
+
+# YELLOWFEVER_oblig
+# [(st.text(a) , st.text(ss.di_prep_chfl[a]["temporal_type"].unique().tolist()) )for a in ss.di_prep_chfl]
+# [(st.text(a) , st.dataframe(ss.di_data[a]) )for a in ss.di_data]
+st.dataframe(ss.di_data['YELLOWFEVER_oblig'])
+
+# st.dataframe(ss.df_years_all_concat)
+st.text(len(ss.df_weeks_all_concat['disease'].unique()))
+st.text(len(ss.df_months_all_concat['disease'].unique()))
+st.text(len(ss.df_years_all_concat['disease'].unique()))
+
 
 # build sidebar
 with st.sidebar:

@@ -40,3 +40,4 @@ TULAREMIA, Zoonotic
 TYPHOIDPARATYPHOIDFEVER, Food/water
 WESTNILEFEVER, Vector-borne
 ZIKA, Vector-borne
+YELLOWFEVER, tbd

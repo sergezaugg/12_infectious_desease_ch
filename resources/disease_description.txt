@@ -40,3 +40,4 @@ TULAREMIA,"Zoonotic bacterial infection acquired through ticks, animals, materia
 TYPHOIDPARATYPHOIDFEVER,"Bacterial infections caused by Salmonella Typhi or S. Paratyphi, transmitted through food/water."
 WESTNILEFEVER,"Mosquito-borne viral infection that can occasionally cause severe neurological disease."
 ZIKA,"Mosquito-borne viral disease that can cause mild illness but may cause congenital abnormalities during pregnancy."
+YELLOWFEVER,"TBD"

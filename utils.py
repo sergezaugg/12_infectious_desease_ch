@@ -85,6 +85,8 @@ def data_pre_select(df):
 def data_select_chfl(df):
     for k in df.keys():
         df[k] = df[k][df[k]["georegion"] == "CHFL"] 
+        if(len(df[k])==0):
+            df[k] = df[k][df[k]["georegion"] == "CH"] # # because of YELLOWFEVER_oblig
     return df
 
 @st.cache_data
@@ -188,6 +190,8 @@ def stack_dict_of_dfs(di):
     # merge-in desease short names 
     df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
     df = df.merge(df_dis_abbr, 'left', on = "disease")
+    # sort 
+    df = df.sort_values(['disease', 'temporal_type', 'date'])
     return df 
 
 
