@@ -12,7 +12,7 @@ import requests
 import io
 
 
-@st.cache_data(ttl=60*60*12, show_spinner="Downloading BAG data...")
+@st.cache_data(ttl=60*60*12, show_spinner="Downloading data")
 def download_all_data(a = 1):
     full_query_string = 'https://api.idd.bag.admin.ch/api/v1/data/version'
     r = requests.get(full_query_string, allow_redirects=True)
@@ -51,7 +51,7 @@ def convert_iso_date_to_datetime(s):
     else:
         return pd.NaT
 
-@st.cache_data(show_spinner="Pre-processing data...")
+@st.cache_data(show_spinner="Pre-processing data")
 def data_pre_select(df):
     for k in df.keys():
         if "agegroup" not in df[k].columns:
@@ -75,10 +75,6 @@ def data_pre_select(df):
             df[k]["temporal"] = df[k]["temporal"].str[:4]
         # convert nasty csv-style-strings to date    
         df[k]['date'] = df[k]["temporal"].apply(convert_iso_date_to_datetime)
-        st.text(df[k].head())
-
-        # disease
-
     return df    
 
 @st.cache_data
@@ -135,7 +131,7 @@ def make_lineplot_by_age_and_sex(x, tit):
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plot ...")
+@st.cache_data(show_spinner="Rendering plots")
 def make_lineplot_all_by_disease(x, height, outcome):
 
     fig = px.line(

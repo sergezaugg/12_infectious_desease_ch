@@ -32,8 +32,13 @@ df_overview = d.fillna("No")
 df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
 df_overview = df_overview.merge(df_descript, 'outer', on = "disease")
 
+n_dis = df_overview.shape[0]
+
+
 #----------------------------
 # display 
+
+st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
 
 def highlight_yes(v):
     if isinstance(v, str):
