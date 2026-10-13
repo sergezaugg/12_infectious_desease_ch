@@ -10,6 +10,7 @@ import streamlit as st
 from streamlit import session_state as ss
 import requests
 import io
+from datetime import datetime
 
 
 @st.cache_data(ttl=60*60*12, show_spinner="Downloading data")
@@ -35,9 +36,12 @@ def download_all_data(a = 1):
         r = requests.get(full_query_string, allow_redirects=True)
         raw_text = r.text
         df = pd.read_csv(io.StringIO(raw_text, newline='\n')  , sep=",")
+        print(df.shape)
         data_di[data_set_name] = df
-          
-    return data_di , data_version, n_files
+
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    return data_di, data_version, n_files, ts
 
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """
@@ -132,7 +136,7 @@ def make_lineplot_by_age_and_sex(x, tit):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_all_by_disease(x, n_facets, outcome):
+def make_lineplot_all_by_disease(x, n_facets, outcome, labels):
 
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
@@ -148,7 +152,7 @@ def make_lineplot_all_by_disease(x, n_facets, outcome):
         facet_row_spacing = facet_row_spacing,
         markers=True,
         height = height_b,
-        # render_mode="webgl",
+        labels=labels,
         )
 
     fig.update_traces(marker=dict(size=5))   

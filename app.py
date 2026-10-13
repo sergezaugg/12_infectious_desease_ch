@@ -13,10 +13,12 @@ from utils import download_all_data, data_pre_select, data_select_chfl
 from utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 import gc
 from utils import get_overview_df
+from resources.styles import apply_global_styles
 
 #------------------------------
 # prepare app 
 st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_icon='pics/z_logo_blue.png')
+apply_global_styles() # apply custom CSS styles 
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
 
@@ -25,7 +27,7 @@ pd.set_option('display.max_rows', 500)
 # many caches function will consume resources and time even on cache hit!
 if "di_prep" not in ss:
     # download and perp once
-    di_data, data_version, n_files = download_all_data(22)
+    di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
     ss.di_prep = data_pre_select(di_data)
     # extract pre-digested dfs 
     ss.di_prep_chfl = data_select_chfl(ss.di_prep)
@@ -43,8 +45,10 @@ if "di_prep" not in ss:
 
 # build sidebar
 with st.sidebar:
-    st.markdown(f"""# :primary[**Swiss Infectious Disease Explorer**]""")
-
+    st.markdown(f"""### :primary[**Swiss Infectious Disease Explorer**]""")
+    st.text("V-" + ss.data_version['name'] + " • D-" + ss.ts_downl + " • N-" + str(ss.n_files))
+   
+    
 # (3) main navigation
 p01 = st.Page("pages/page00.py",  title="Overview")
 p02 = st.Page("pages/page01_weeks.py",  title="Weekly")
