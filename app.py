@@ -55,7 +55,7 @@ p03 = st.Page("pages/page02_months.py",  title="Monthly")
 p04 = st.Page("pages/page02_years.py",  title="Yearly")
 p05 = st.Page("pages/page02.py",  title="Info")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
-p21 = st.Page("pages/page_refresh.py",  title="Refresh")
+p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
 pg = st.navigation([p01, p02, p03, p04, p05, p20, p21], position = "top")
 pg.run()
