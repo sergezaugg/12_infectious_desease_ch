@@ -12,6 +12,7 @@ import pandas as pd
 from utils import download_all_data, data_pre_select, data_select_chfl
 from utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 import gc
+from utils import get_overview_df
 
 #------------------------------
 # prepare app 
@@ -38,7 +39,7 @@ if "di_prep" not in ss:
     ss.di_years  = data_select_years(ss.di_prep_chfl)
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
-
+    ss.df_overview = get_overview_df()
 
 # build sidebar
 with st.sidebar:

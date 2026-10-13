@@ -132,16 +132,22 @@ def make_lineplot_by_age_and_sex(x, tit):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_all_by_disease(x, height, outcome):
+def make_lineplot_all_by_disease(x, n_facets, outcome):
+
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 150
+    spacing_px = 60
+    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
 
     fig = px.line(
         data_frame = x,
         x = "date",
         y = outcome,
         facet_row= "disease",
-        facet_row_spacing = 0.01,
+        facet_row_spacing = facet_row_spacing,
         markers=True,
-        height = height,
+        height = height_b,
         # render_mode="webgl",
         )
 
@@ -175,6 +181,9 @@ def make_lineplot_all_by_disease(x, height, outcome):
 def stack_dict_of_dfs(di):
     df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
     df["disease"] = df["disease"].str.removesuffix("_oblig")
+    # merge-in desease short names 
+    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
+    df = df.merge(df_dis_abbr, 'left', on = "disease")
     return df 
 
 
@@ -185,5 +194,42 @@ def data_select_only_all_groups(df):
         df[k] = df[k][df[k]["agegroup"] == "all"] 
         df[k] = df[k][df[k]["type"] == "all"]   
     return df
+
+
+
+
+def get_overview_df():
+    a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+    b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+    c = ss.df_years_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
+
+    a['temporal_type'] = "Yes"
+    b['temporal_type'] = "Yes"
+    c['temporal_type'] = "Yes"
+
+    a.rename(columns={"temporal_type": "weekly"}, inplace=True)
+    b.rename(columns={"temporal_type": "monthly"}, inplace=True)
+    c.rename(columns={"temporal_type": "yearly"}, inplace=True)
+
+    a = a.drop(columns=[0], errors="ignore")
+    b = b.drop(columns=[0], errors="ignore")
+    c = c.drop(columns=[0], errors="ignore")
+
+    d = a.merge(b, 'outer', on = "disease").merge(c, 'outer', on = "disease")
+
+    d = d[["disease", "yearly", "monthly", "weekly", ]]
+    df_overview = d.fillna("No")
+
+    # merge-in metadata 
+    df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
+    df_overview = df_overview.merge(df_descript, 'outer', on = "disease")
+
+    df_dis_cate = pd.read_csv("resources/disease_category.txt", sep=",")
+    df_overview = df_overview.merge(df_dis_cate, 'outer', on = "disease")
+
+    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
+    df_overview = df_overview.merge(df_dis_abbr, 'outer', on = "disease")
+    
+    return(df_overview)
 
 

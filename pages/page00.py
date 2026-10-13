@@ -6,37 +6,10 @@
 import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
-
-a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
-b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
-c = ss.df_years_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
-
-a['temporal_type'] = "Yes"
-b['temporal_type'] = "Yes"
-c['temporal_type'] = "Yes"
-
-a.rename(columns={"temporal_type": "weekly"}, inplace=True)
-b.rename(columns={"temporal_type": "monthly"}, inplace=True)
-c.rename(columns={"temporal_type": "yearly"}, inplace=True)
-
-a = a.drop(columns=[0], errors="ignore")
-b = b.drop(columns=[0], errors="ignore")
-c = c.drop(columns=[0], errors="ignore")
-
-d = a.merge(b, 'outer', on = "disease").merge(c, 'outer', on = "disease")
-
-d = d[["disease", "yearly", "monthly", "weekly", ]]
-df_overview = d.fillna("No")
-
-# merge-in metadata 
-df_descript = pd.read_csv("resources/disease_description.txt", sep=",")
-df_overview = df_overview.merge(df_descript, 'outer', on = "disease")
-
-n_dis = df_overview.shape[0]
+from utils import get_overview_df
 
 
-#----------------------------
-# display 
+n_dis = ss.df_overview.shape[0]
 
 st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
 
@@ -50,7 +23,7 @@ def highlight_yes(v):
     return ""
 
 st.dataframe(
-    df_overview.style.map(highlight_yes),
+    ss.df_overview.style.map(highlight_yes),
     hide_index=True,
     width="content",
     height=1500,
