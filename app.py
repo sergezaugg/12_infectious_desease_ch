@@ -28,7 +28,7 @@ pd.set_option('display.max_rows', 500)
 if "di_prep" not in ss:
     # download and perp once
     ss.di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
-    ss.di_prep = data_pre_select(ss.di_data.copy())
+    ss.di_prep = data_pre_select(ss.di_data)
     # extract pre-digested dfs 
     ss.di_prep_chfl = data_select_chfl(ss.di_prep)
     # objects for the pages 
@@ -43,23 +43,6 @@ if "di_prep" not in ss:
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df()
 
-# st.text(ss.df_years_all_concat['week'].dtype)
-# # add month and year vars 
-# s = ss.df_months_all_concat['date']
-# ss.df_months_all_concat["year"] = s.dt.year
-# ss.df_months_all_concat["month"] = s.dt.month
-# # st.text(ss.df_months_all_concat.shape)
-
-# YELLOWFEVER_oblig
-# [(st.text(a) , st.text(ss.di_prep_chfl[a]["temporal_type"].unique().tolist()) )for a in ss.di_prep_chfl]
-# [(st.text(a) , st.dataframe(ss.di_data[a]) )for a in ss.di_data]
-# st.dataframe(ss.di_data['YELLOWFEVER_oblig'])
-
-# st.dataframe(ss.df_years_all_concat)
-# st.text(len(ss.df_weeks_all_concat['disease'].unique()))
-# st.dataframe((ss.df_months_all_concat))
-# st.text(len(ss.df_years_all_concat['disease'].unique()))
-
 # build sidebar
 with st.sidebar:
     st.markdown(f"""### :primary[**Swiss Infectious Disease Explorer**]""")
@@ -72,8 +55,9 @@ p03 = st.Page("pages/page02_months.py",  title="Monthly")
 p04 = st.Page("pages/page02_years.py",  title="Yearly")
 p05 = st.Page("pages/page02.py",  title="Info")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
+p21 = st.Page("pages/page_refresh.py",  title="Refresh")
 
-pg = st.navigation([p01, p02, p03, p04, p05, p20], position = "top")
+pg = st.navigation([p01, p02, p03, p04, p05, p20, p21], position = "top")
 pg.run()
 
 

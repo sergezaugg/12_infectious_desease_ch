@@ -1,12 +1,12 @@
 # Swiss Infectious Disease Explorer
 
-A simple interactive app for visualizing Swiss mandatory surveillance data, using data provided weekly by the Swiss Federal Office of Public Health (FOPH).
+A simple app for visualizing Swiss mandatory surveillance data, using data provided weekly by the Swiss Federal Office of Public Health (FOPH).
 
 ## Features
 
-- Visualizes weekly and monthly incidence rates of XXX diseases in Switzerland.
-- Interactive plots by age, sex, region, and type.
-- Data is fetched live from the official FOPH API.
+- Visualizes weekly, monthly, and yearly incidence of 42 infectious diseases in Switzerland.
+- Interactive and zoomable plots 
+- Data is fetched quasi-daily from the official FOPH API.
 
 ## Installation
 
@@ -28,10 +28,6 @@ streamlit run stmain.py
 ```
 
 The app will automatically download the latest data from the FOPH API and display interactive plots.
-
-## Project Structure
-
-TBD
 
 ## Data Source
 
