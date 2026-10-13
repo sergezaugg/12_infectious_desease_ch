@@ -11,10 +11,12 @@ from utils import make_lineplot_all_by_disease
 
 
 labels = {
-    "value": "Cases count",
+    "value" :  "Cases count",
     "incValue": "Cases per 10⁵ hab",  
-    "pop": "Total population",
-    "date" : "Date",
+    "pop"   :  "Total population",
+    "date"  :  "Date",
+    "week"  :  "Week",
+    "month" :  "Month",
 }
 
 

@@ -31,7 +31,7 @@ def apply_global_styles():
         .stAppHeader {background-color: #0E1117;}
 
         /* Default tab background */
-        .stAppHeader a {background-color: #2f2f2f !important;}
+        .stAppHeader a {background-color: #2f2f3f !important;}
 
         /* Hover state */
         .stAppHeader a:hover {background-color: #3b4d63 !important;}
@@ -75,7 +75,7 @@ def apply_global_styles():
             pointer-events: none;
         }
     </style>
-    <div class="app-label">SID-Explorer v0.0.0-α</div>
+    <div class="app-label">SID-Explorer v0.5.0-α</div>
     """, unsafe_allow_html=True)
 
 
