@@ -65,7 +65,6 @@ ss.labels = {
 }
 
 
-
 # build sidebar
 with st.sidebar:
     st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
@@ -73,7 +72,7 @@ with st.sidebar:
    
 # (3) main navigation
 p00 = st.Page("pages/page_landing.py",  title="M-Radar", default=True)
-p01 = st.Page("pages/page00.py",  title="Epi-Info")
+p01 = st.Page("pages/page_info.py",  title="Epi-Info")
 p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
 p03 = st.Page("pages/page02_months.py",  title="M-plots")
 p04 = st.Page("pages/page02_years.py",  title="Y-plots")
@@ -83,6 +82,7 @@ p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
 pg = st.navigation([p00, p06, p03, p02, p04, p01, p05, p20, p21], position = "top")
+
 pg.run()
 
 

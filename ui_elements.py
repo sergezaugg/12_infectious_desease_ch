@@ -30,7 +30,7 @@ def ui_sel_country_in_two_steps(data, key):
     return sel_dis
 
 
-def ui_render_factplot_page(data, key, seasonality):
+def ui_render_basic_facet_plot_page(data, key, seasonality):
    
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
@@ -69,17 +69,19 @@ def ui_render_factplot_page(data, key, seasonality):
         with st.container(border=True):
             c1,c2 = st.columns([4,2])
             with c1:
+                st.text("Reported Cases History")
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
             with c2:
+                st.text("Reported Cases By Month")
                 st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key):
 
     with st.sidebar:
-            outcome_options = ["incValue", "value"] # ,  "pop"]
-            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                        horizontal=True, format_func=lambda x: ss.labels[x],)
+            # outcome_options = ["incValue", "value"] # ,  "pop"]
+            # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
+            #                             horizontal=True, format_func=lambda x: ss.labels[x],)
 
             sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "omcjfhfgsudd")
 
@@ -93,12 +95,14 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
         df_wide = df_plot_wide, 
         xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
 
-
-    c0, c1 = st.columns(2)
-    with c0:
-        st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
-    with c1:    
-        st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
+    with st.container(border=True):
+        c0, c1 = st.columns(2)
+        with c0:
+            st.text("Long-Term Trend From Monthly Data")
+            st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
+        with c1:   
+            st.text("Residuals From Trend") 
+            st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
 
 
 

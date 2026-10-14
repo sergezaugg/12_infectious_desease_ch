@@ -12,12 +12,26 @@ def apply_global_styles():
     st.markdown("""
         <style>
             div[data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] hr) {
-                margin-top: -1.5rem !important;
-                margin-bottom: -1.8rem !important;}
-            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.5rem;} 
-            [data-testid="stMainBlockContainer"] > div:first-child {margin-top: -0.0rem !important;}    
+                margin-top: -1.9rem !important;
+                margin-bottom: -1.0rem !important;}
         </style>
         """, unsafe_allow_html=True)
+
+    # space between main region and nav bar
+    st.markdown("""
+        <style>
+            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.5rem;} /* here 
+        </style>
+        """, unsafe_allow_html=True)
+
+    # reduce height of nav bar 
+    st.markdown("""
+    <style>
+        [data-testid="stHeader"] {
+            height: 4rem; 
+            min-height: 4rem}
+    </style>
+    """, unsafe_allow_html=True)
 
     # change color of navigation bar background and tabs          
     st.markdown("""
@@ -55,8 +69,6 @@ def apply_global_styles():
     </style>
     """, unsafe_allow_html=True)
 
-
-
     # text right to logo 
     st.markdown("""
     <style>
@@ -74,15 +86,7 @@ def apply_global_styles():
     """, unsafe_allow_html=True)
 
 
-    # reduce height of nav bar 
-    st.markdown("""
-    <style>
-        [data-testid="stHeader"] {
-            height: 4rem;
-            min-height: 4rem;
-            }
-    </style>
-    """, unsafe_allow_html=True)
+
 
 
     
