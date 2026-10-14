@@ -119,74 +119,24 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
-@st.cache_data
-def make_lineplot_by_age_and_sex(x, tit):
-    fig = px.line(
-        data_frame = x,
-        x = "date",
-        y = "value",
-        color = "agegroup",
-        facet_row= "sex",
-        facet_col= "type",
-        title = tit,
-        height = 500
+# @st.cache_data
+# def make_lineplot_by_age_and_sex(x, tit):
+#     fig = px.line(
+#         data_frame = x,
+#         x = "date",
+#         y = "value",
+#         color = "agegroup",
+#         facet_row= "sex",
+#         facet_col= "type",
+#         title = tit,
+#         height = 500
 
-        )
-    fig.update_xaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
-    fig.update_yaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
-    return fig
+#         )
+#     fig.update_xaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+#     fig.update_yaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
+#     return fig
 
-
-@st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
-
-    # pre-compute vertical spacings dependent on n_facets
-    facet_height = 150
-    spacing_px = 60
-    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
-    facet_row_spacing = spacing_px / height_b
-
-    fig = px.line(
-        data_frame = x,
-        x = xvar,
-        y = outcome,
-        color = col_var,
-        facet_row= "disease",
-        facet_row_spacing = facet_row_spacing,
-        markers=True,
-        height = height_b,
-        labels=labels,
-        )
-
-    fig.update_traces(marker=dict(size=5))   
-    fig.update_layout(
-        showlegend=False,
-        margin=dict(l=50, r=50, t=50, b=40),
-        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
-        )
-    fig.update_xaxes(
-        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
-        title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
-        showgrid=show_x_grid, 
-        )   
-    fig.update_yaxes(
-        matches=None,
-        showline = True, linewidth=1.8, mirror=True,
-        title_font=dict(size=16),
-        range=[0.0, None]
-        ) 
-
-    fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
-    for annotation in fig.layout.annotations:
-        annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 90
-    if facet_labels == False:
-        fig.for_each_annotation(lambda a: a.update(text=""))    
-
-    return fig
-
-    
+ 
 @st.cache_data
 def stack_dict_of_dfs(di):
     df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
@@ -249,5 +199,28 @@ def get_overview_df():
     df_overview = df_overview.merge(df_dis_abbr, 'outer', on = "disease")
     
     return(df_overview)
+
+
+@st.cache_data(show_spinner="Computing MA-based trend")
+def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea):
+    """ moving-average/median-based estimation of mid-term trend """
+    df = df.sort_values(["disease", "date"])
+    var_name_ma = outcome + "_ma"
+    # two-step moving trend 
+    df[var_name_ma] = (df.groupby("disease")[outcome]
+        .transform(lambda s: s.rolling(wsiz_med, center=True, min_periods= int(wsiz_med/2)).median()))
+    df[var_name_ma] = (df.groupby("disease")[var_name_ma]
+        .transform(lambda s: s.rolling(wsiz_mea, center=True, min_periods= int(wsiz_mea/2)).mean()))
+    # get residuals 
+    df['residuals'] = df[outcome] - df[var_name_ma]
+    # reshape for easy plotting
+    df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
+        value_vars=[outcome, var_name_ma],
+        var_name="measure",
+        value_name= "resp_var")
+    return df, df_long
+
+
+
 
 

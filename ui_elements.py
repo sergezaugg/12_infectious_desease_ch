@@ -7,18 +7,66 @@ import pandas as pd
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
-from utils import make_lineplot_all_by_disease
-
 
 labels = {
     "value" :  "Cases count",
     "incValue": "Cases per 10⁵ hab",  
+    "resp_var": "Cases per 10⁵ hab",  
     "pop"   :  "Total population",
     "date"  :  "Date",
     "week"  :  "Week",
     "month" :  "Month",
-    "value_ma_12m" : "value_ma_12m",
 }
+
+
+@st.cache_data(show_spinner="Rendering plots")
+def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 150
+    spacing_px = 60
+    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
+
+    fig = px.line(
+        data_frame = x,
+        x = xvar,
+        y = outcome,
+        color = col_var,
+        facet_row= "disease",
+        facet_row_spacing = facet_row_spacing,
+        markers=True,
+        height = height_b,
+        labels=labels,
+        )
+
+    fig.update_traces(marker=dict(size=5))   
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(l=50, r=50, t=50, b=40),
+        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
+        )
+    fig.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=show_x_grid, 
+        )   
+    fig.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+
+    fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 90
+    if facet_labels == False:
+        fig.for_each_annotation(lambda a: a.update(text=""))    
+
+    return fig
 
 
 def ui_render_factplot_page(data, key, seasonality):
@@ -29,7 +77,7 @@ def ui_render_factplot_page(data, key, seasonality):
     opt_types = df_options['type'].unique()
 
     with st.sidebar:
-        outcome_options = ["value", "incValue", "value_ma_12m"] # ,  "pop"]
+        outcome_options = ["value", "incValue"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
                                     horizontal=True, format_func=lambda x: labels[x],)
         sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", persist_state = "session", key = key+"_02")
@@ -73,3 +121,112 @@ def ui_render_factplot_page(data, key, seasonality):
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
             with c2:
                 st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
+
+
+@st.cache_data(show_spinner="Rendering plots")
+def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels):
+    """  """
+
+    colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+
+    fig_smo = px.line(
+        data_frame = df_long,
+        x = xvar,
+        y = outcome,
+        color = "measure",
+        facet_row= "disease",
+        facet_row_spacing = 0.01,
+        height = 6500,
+        color_discrete_map={
+            "incValue":    colrs[1],
+            "incValue_ma": colrs[2],
+        },
+        labels=labels,
+        )
+
+    fig_smo.update_layout(
+        showlegend=False,
+        margin=dict(l=50, r=150, t=50, b=40),
+        )
+    fig_smo.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=False, 
+        )   
+    fig_smo.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+    fig_smo.for_each_annotation(lambda a: a.update(text=""))    
+
+
+
+
+    # ------------------
+
+    fig_res = px.line(
+        data_frame = df_wide,
+        x = xvar,
+        y = "residuals",
+        facet_row= "disease",
+        facet_row_spacing = 0.01,
+        height = 6500,
+        labels=labels,
+        color_discrete_sequence=[colrs[0]],
+        )
+    fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
+    fig_res.update_layout(
+        showlegend=False,
+        margin=dict(l=50, r=150, t=50, b=40),
+        )
+    fig_res.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=False, 
+        )   
+    fig_res.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+    fig_res.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig_res.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 90
+
+    return fig_smo, fig_res    
+
+
+def ui_render_ma_resid_page(dat_long, dat_wide, key):
+
+    
+    fig_smo, fig_res  = make_plots_smo_resid(
+        df_long = ss.df_m_ma_long, 
+        df_wide = ss.df_m_ma_wide, 
+        xvar = "date", outcome = "resp_var", labels = labels)
+
+
+    c0, c1 = st.columns(2)
+    with c0:
+        st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
+    with c1:    
+        st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
+
+
+
+
+
+
+
+
+
+
+
+
+
+

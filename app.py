@@ -9,7 +9,7 @@ from streamlit import session_state as ss
 import numpy as np
 import plotly.express as px
 import pandas as pd
-from utils import download_all_data, data_pre_select, data_select_chfl
+from utils import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
 from utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 import gc
 from utils import get_overview_df
@@ -48,8 +48,16 @@ if "di_prep" not in ss:
 
 
 
+ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =3)
+
+# st.text(ss.df_months_all_concat.shape)
+# st.text(ss.df_m_ma_wide.shape)
+# st.text(ss.df_m_ma_long.shape)
+
+
 # filter past year relative to today 
 ss.df_filtered_1y = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= 365]
+
 # get data age of each disease
 ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
 
@@ -65,13 +73,13 @@ with st.sidebar:
 # (3) main navigation
 
 
-p00 = st.Page("pages/page_data_age.py",  title="Date age")
-p01 = st.Page("pages/page00.py",  title="Overview")
+p00 = st.Page("pages/page_data_age.py",  title="Epi-Radar")
+p01 = st.Page("pages/page00.py",  title="Epi-Info")
 p02 = st.Page("pages/page01_weeks.py",  title="Weekly")
 p03 = st.Page("pages/page02_months.py",  title="Monthly")
 p04 = st.Page("pages/page02_years.py",  title="Yearly")
 p06 = st.Page("pages/page_trend.py",  title="Trend")
-p05 = st.Page("pages/page02.py",  title="Info")
+p05 = st.Page("pages/page02.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
