@@ -60,6 +60,7 @@ if "di_prep" not in ss:
 
 # build sidebar
 with st.sidebar:
+    st.error("Code & Methods in dev")
     st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
     st.divider()
    
