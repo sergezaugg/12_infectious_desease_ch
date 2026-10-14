@@ -54,6 +54,17 @@ if "di_prep" not in ss:
 
 
 
+ss.labels = {
+    "value" :  "Cases count",
+    "incValue": "Cases per 10⁵ hab",  
+    "resp_var": "Cases per 10⁵ hab",  
+    "pop"   :  "Total population",
+    "date"  :  "Date",
+    "week"  :  "Week",
+    "month" :  "Month",
+}
+
+
 
 # build sidebar
 with st.sidebar:

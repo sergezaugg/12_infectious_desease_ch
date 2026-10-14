@@ -8,15 +8,15 @@ import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
 
-labels = {
-    "value" :  "Cases count",
-    "incValue": "Cases per 10⁵ hab",  
-    "resp_var": "Cases per 10⁵ hab",  
-    "pop"   :  "Total population",
-    "date"  :  "Date",
-    "week"  :  "Week",
-    "month" :  "Month",
-}
+# labels = {
+#     "value" :  "Cases count",
+#     "incValue": "Cases per 10⁵ hab",  
+#     "resp_var": "Cases per 10⁵ hab",  
+#     "pop"   :  "Total population",
+#     "date"  :  "Date",
+#     "week"  :  "Week",
+#     "month" :  "Month",
+# }
 
 
 @st.cache_data(show_spinner="Rendering plots")
@@ -79,38 +79,33 @@ def ui_render_factplot_page(data, key, seasonality):
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                    horizontal=True, format_func=lambda x: labels[x],)
+                                    horizontal=True, format_func=lambda x: ss.labels[x],)
         sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
-                            # persist_state = "session", 
                             default =opt_types, 
                             key = key+"_02")
         opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
 
-        # with st.form("disease_selection", border=False):
         sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, 
-                                #  selection_mode="multi", 
-                                 default = opt_disea_subset, 
-                        # persist_state = "session", 
+                        default = opt_disea_subset[0:3], 
                         key = key+"_03", format_func=lambda x: x[:9],)
-            # submitted = st.form_submit_button("Apply")
 
     # apply user selection upon user's confirmation
     if True:
         n_dis = len(sel_dis)
         df_plot = data[data['dis_abbrev'].isin(sel_dis)]
         fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = labels, show_x_grid = True,
+                                            labels = ss.labels, show_x_grid = True,
                                             facet_labels = True)
      
         if seasonality == "month":
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = labels, show_x_grid = False,
+                                            labels = ss.labels, show_x_grid = False,
                                              facet_labels = False)
         elif seasonality == "week":            
             # enforce sorting 
             df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = labels, show_x_grid = False,
+                                            labels = ss.labels, show_x_grid = False,
                                             facet_labels = False)
         elif seasonality == "year": 
             fig_b = px.line()
@@ -129,8 +124,14 @@ def ui_render_factplot_page(data, key, seasonality):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels):
+def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
+
     """  """
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 150
+    spacing_px = 60
+    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
 
     colrs = ["#eeeeee", "#13bee0", "#f5630f"]
 
@@ -140,8 +141,8 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels):
         y = outcome,
         color = "measure",
         facet_row= "disease",
-        facet_row_spacing = 0.01,
-        height = 6500,
+        facet_row_spacing = facet_row_spacing, # 0.01,
+        height = height_b, # 6500,
         color_discrete_map={
             "incValue":    colrs[1],
             "incValue_ma": colrs[2],
@@ -177,8 +178,8 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels):
         x = xvar,
         y = "residuals",
         facet_row= "disease",
-        facet_row_spacing = 0.01,
-        height = 6500,
+        facet_row_spacing = facet_row_spacing,
+        height = height_b,
         labels=labels,
         color_discrete_sequence=[colrs[0]],
         )
@@ -209,11 +210,35 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels):
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key):
 
-    
+    df_options = ss.df_overview[['dis_abbrev', 'type']]
+    # reduce options to diseases that exist in this time resolution
+    dis_levels_exist =dat_long['dis_abbrev'].unique()
+    df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
+    opt_types = df_options['type'].unique()
+
+    with st.sidebar:
+            outcome_options = ["incValue", "value"] # ,  "pop"]
+            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
+                                        horizontal=True, format_func=lambda x: ss.labels[x],)
+            sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
+                                default =opt_types, 
+                                key = key+"_02")
+            opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
+
+            sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, 
+                            default = opt_disea_subset[0:3], 
+                            key = key+"_03", format_func=lambda x: x[:9],)
+
+
+
+    n_dis = len(sel_dis)
+    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
+    df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
+
     fig_smo, fig_res  = make_plots_smo_resid(
-        df_long = ss.df_m_ma_long, 
-        df_wide = ss.df_m_ma_wide, 
-        xvar = "date", outcome = "resp_var", labels = labels)
+        df_long = df_plot_long, 
+        df_wide = df_plot_wide, 
+        xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
 
 
     c0, c1 = st.columns(2)
