@@ -12,17 +12,26 @@ def apply_global_styles():
     st.markdown("""
         <style>
             div[data-testid="stElementContainer"]:has([data-testid="stMarkdownContainer"] hr) {
-                margin-top: -1.5rem !important;
-                margin-bottom: -0.8rem !important;}
+                margin-top: -1.9rem !important;
+                margin-bottom: -1.0rem !important;}
         </style>
         """, unsafe_allow_html=True)
 
-    # reduce vertical space between navig and items(content
+    # space between main region and nav bar
     st.markdown("""
-        <style> 
-            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.8rem;} 
+        <style>
+            [data-testid="stMainBlockContainer"] {padding-top: 0rem; padding-left: 1.5rem;} /* here 
         </style>
         """, unsafe_allow_html=True)
+
+    # reduce height of nav bar 
+    st.markdown("""
+    <style>
+        [data-testid="stHeader"] {
+            height: 4rem; 
+            min-height: 4rem}
+    </style>
+    """, unsafe_allow_html=True)
 
     # change color of navigation bar background and tabs          
     st.markdown("""
@@ -60,8 +69,6 @@ def apply_global_styles():
     </style>
     """, unsafe_allow_html=True)
 
-
-
     # text right to logo 
     st.markdown("""
     <style>
@@ -75,19 +82,11 @@ def apply_global_styles():
             pointer-events: none;
         }
     </style>
-    <div class="app-label">SID-Explorer v0.5.0-α</div>
+    <div class="app-label">SID-Explorer v0.9.0-β</div>
     """, unsafe_allow_html=True)
 
 
-    # reduce height of nav bar 
-    st.markdown("""
-    <style>
-        [data-testid="stHeader"] {
-            height: 4rem;
-            min-height: 4rem;
-            }
-    </style>
-    """, unsafe_allow_html=True)
+
 
 
     

@@ -6,4 +6,4 @@ secondaryBackgroundColor="#0E1117"
 textColor="#ffffff"
 font="sans serif"
 linkColor='#0055cc'
-
+baseRadius = "large"

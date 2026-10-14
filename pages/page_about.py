@@ -10,8 +10,11 @@ with col_aa:
     with st.container(border=True, ):
         st.markdown('''
         ### INFO
-        This app is to get a quick and descriptive overview of latest available data on 42 infectious disease in Switzerland.
-        Only cases reported here.
+        The Swiss Infectious Disease Explorer is an app to get a quick and descriptive overview of latest available data on 42 infectious disease in Switzerland.  
+        Only cases reported here.  
+        High quality Surveillance data is hard to gather and compile and the data therefore typically has a latency of a few weeks.  
+        Simple and general analysis methods are used intentionally and the focus is on transparent and informative visualization.  
+
         ''')
         st.markdown('''
         ### CREDITS
