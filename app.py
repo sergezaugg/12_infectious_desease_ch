@@ -45,21 +45,12 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df()
+    ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =3)
 
-
-
-ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =3)
-
-# st.text(ss.df_months_all_concat.shape)
-# st.text(ss.df_m_ma_wide.shape)
-# st.text(ss.df_m_ma_long.shape)
-
-
-# filter past year relative to today 
-ss.df_filtered_1y = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= 365]
-
-# get data age of each disease
-ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
+    # filter past few years relative to today 
+    ss.df_filtered_1y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 800]
+    # get data age of each disease
+    ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
 
 
 
@@ -71,19 +62,17 @@ with st.sidebar:
     st.divider()
    
 # (3) main navigation
-
-
-p00 = st.Page("pages/page_data_age.py",  title="Epi-Radar")
+p00 = st.Page("pages/page_data_age.py",  title="M-Radar")
 p01 = st.Page("pages/page00.py",  title="Epi-Info")
-p02 = st.Page("pages/page01_weeks.py",  title="Weekly")
-p03 = st.Page("pages/page02_months.py",  title="Monthly")
-p04 = st.Page("pages/page02_years.py",  title="Yearly")
-p06 = st.Page("pages/page_trend.py",  title="Trend")
+p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
+p03 = st.Page("pages/page02_months.py",  title="M-plots")
+p04 = st.Page("pages/page02_years.py",  title="Y-plots")
+p06 = st.Page("pages/page_trend.py",  title="M-Trends")
 p05 = st.Page("pages/page02.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
-pg = st.navigation([p00, p01, p02, p03, p04, p06, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p02, p03, p04, p06, p05, p01, p20, p21], position = "top")
 pg.run()
 
 
