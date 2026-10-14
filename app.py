@@ -42,7 +42,8 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
-    ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =3)
+    # get trend via Robust median–mean smoother
+    ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =7, n_extrap = 5)
     # filter past few years relative to today 
     ss.df_filtered_1y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 800]
     # get data age of each disease
@@ -76,7 +77,7 @@ p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 p22 = st.Page("pages/page_methods.py",  title="Methods")
 
-pg = st.navigation([p00, p06, p03, p02, p04, p01, p05, p22, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p03, p02, p04, p01, p22, p05, p20, p21], position = "top")
 
 pg.run()
 

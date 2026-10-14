@@ -183,16 +183,40 @@ def get_overview_df():
     return(df_overview)
 
 
+
+
+def extrapolate_trend_edges(s, n_edge=6):
+    """Replace trend edges using linear extrapolation."""
+    s = s.copy()
+    y = s.to_numpy(dtype=float).copy()
+    n = len(y)
+    k = min(n_edge, n // 2)
+    if k < 2:
+        return s
+    x = np.arange(n)
+    # Fit lines to the interior, excluding edge regions
+    slope_left, intercept_left = np.polyfit(x[k:2*k], y[k:2*k], 1)
+    slope_right, intercept_right = np.polyfit(x[n-2*k:n-k], y[n-2*k:n-k], 1)
+    # Extrapolate into the edge regions
+    y[:k] = slope_left * x[:k] + intercept_left
+    y[-k:] = slope_right * x[-k:] + intercept_right
+    return pd.Series(y, index=s.index, name=s.name)
+
+
+
 @st.cache_data(show_spinner="Computing MA-based trend")
-def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea):
+def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
     """ moving-average/median-based estimation of mid-term trend """
     df = df.sort_values(["disease", "date"])
     var_name_ma = outcome + "_ma"
-    # two-step moving trend 
+    # two-step moving trend (Robust median–mean smoother)
     df[var_name_ma] = (df.groupby("disease")[outcome]
         .transform(lambda s: s.rolling(wsiz_med, center=True, min_periods= int(wsiz_med/2)).median()))
     df[var_name_ma] = (df.groupby("disease")[var_name_ma]
         .transform(lambda s: s.rolling(wsiz_mea, center=True, min_periods= int(wsiz_mea/2)).mean()))
+    # NEW - extrapolate edges 
+    if n_extrap > 1:
+        df[var_name_ma] = df.groupby("disease")[var_name_ma].transform(lambda s: extrapolate_trend_edges(s, n_edge=n_extrap)) 
     # get residuals 
     df['residuals'] = df[outcome] - df[var_name_ma]
     # reshape for easy plotting
@@ -201,6 +225,46 @@ def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea):
         var_name="measure",
         value_name= "resp_var")
     return df, df_long
+
+
+
+
+    
+
+
+    
+
+
+
+# from statsmodels.tsa.seasonal import STL
+
+# @st.cache_data(show_spinner="Computing MA-based trend")
+# def get_stl_based_trend(df, outcome):
+
+#     var_name_ma = outcome + "_ma"
+
+#     resp = df[outcome]
+
+#     result = STL(
+#         endog = resp,
+#         period=12,       # monthly data, annual seasonality
+#         seasonal=19,     # smoother evolving seasonal pattern; odd
+#         trend=37,        # smoother nonlinear trend; odd
+#         low_pass=13,     # odd, greater than period
+#         robust=True,
+#     ).fit()
+
+#     df[var_name_ma] = result.trend
+#     df['residuals'] = result.seasonal + result.resid
+
+#     # reshape for easy plotting
+#     df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
+#         value_vars=[outcome, var_name_ma],
+#         var_name="measure",
+#         value_name= "resp_var")
+#     return df, df_long
+
+
 
 
 
