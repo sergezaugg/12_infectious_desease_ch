@@ -8,15 +8,102 @@ import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
 
-# labels = {
-#     "value" :  "Cases count",
-#     "incValue": "Cases per 10⁵ hab",  
-#     "resp_var": "Cases per 10⁵ hab",  
-#     "pop"   :  "Total population",
-#     "date"  :  "Date",
-#     "week"  :  "Week",
-#     "month" :  "Month",
-# }
+# ---------------------------
+# ui elements  
+
+def ui_sel_country_in_two_steps(data, key):
+    """ Re-usable st element to select countries in two steps"""
+    # get full list of coutries 
+    df_options = ss.df_overview[['dis_abbrev', 'type']]
+    # reduce options to diseases that exist in current data
+    dis_levels_exist =data['dis_abbrev'].unique()
+    df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
+    # get full list of disease types 
+    opt_types = df_options['type'].unique()
+    # step 1 : select a subset of disease types 
+    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", default =opt_types, key = key+"_02")
+    # step 2 : select diseases within selected subset of disease types 
+    opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
+    sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, key = key+"_03", format_func=lambda x: x[:9],
+        default = opt_disea_subset[0:3], # temp reduce initial subset 
+        )
+    return sel_dis
+
+
+def ui_render_factplot_page(data, key, seasonality):
+   
+    with st.sidebar:
+        outcome_options = ["incValue", "value"] # ,  "pop"]
+        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
+                                    horizontal=True, format_func=lambda x: ss.labels[x],)
+
+        sel_dis = ui_sel_country_in_two_steps(data = data, key = "adfbadfb")
+
+
+    # apply user selection upon user's confirmation
+    if True:
+        n_dis = len(sel_dis)
+        df_plot = data[data['dis_abbrev'].isin(sel_dis)]
+        fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
+                                            labels = ss.labels, show_x_grid = True,
+                                            facet_labels = True)
+     
+        if seasonality == "month":
+            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
+                                            labels = ss.labels, show_x_grid = False,
+                                             facet_labels = False)
+        elif seasonality == "week":            
+            # enforce sorting 
+            df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
+            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
+                                            labels = ss.labels, show_x_grid = False,
+                                            facet_labels = False)
+        elif seasonality == "year": 
+            fig_b = px.line()
+        else:
+            print("shit")
+
+        ss[key] = [fig_a, fig_b]
+
+    if key in ss:
+        with st.container(border=True):
+            c1,c2 = st.columns([4,2])
+            with c1:
+                st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
+            with c2:
+                st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
+
+
+def ui_render_ma_resid_page(dat_long, dat_wide, key):
+
+    with st.sidebar:
+            outcome_options = ["incValue", "value"] # ,  "pop"]
+            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
+                                        horizontal=True, format_func=lambda x: ss.labels[x],)
+
+            sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "omcjfhfgsudd")
+
+
+    n_dis = len(sel_dis)
+    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
+    df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
+
+    fig_smo, fig_res  = make_plots_smo_resid(
+        df_long = df_plot_long, 
+        df_wide = df_plot_wide, 
+        xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
+
+
+    c0, c1 = st.columns(2)
+    with c0:
+        st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
+    with c1:    
+        st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
+
+
+
+# ---------------------------
+# plots 
 
 
 @st.cache_data(show_spinner="Rendering plots")
@@ -67,60 +154,6 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
         fig.for_each_annotation(lambda a: a.update(text=""))    
 
     return fig
-
-
-def ui_render_factplot_page(data, key, seasonality):
-    df_options = ss.df_overview[['dis_abbrev', 'type']]
-    # reduce options to diseases that exist in this time resolution
-    dis_levels_exist =data['dis_abbrev'].unique()
-    df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
-    opt_types = df_options['type'].unique()
-
-    with st.sidebar:
-        outcome_options = ["incValue", "value"] # ,  "pop"]
-        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                    horizontal=True, format_func=lambda x: ss.labels[x],)
-        sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
-                            default =opt_types, 
-                            key = key+"_02")
-        opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
-
-        sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, 
-                        default = opt_disea_subset[0:3], 
-                        key = key+"_03", format_func=lambda x: x[:9],)
-
-    # apply user selection upon user's confirmation
-    if True:
-        n_dis = len(sel_dis)
-        df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-        fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = True,
-                                            facet_labels = True)
-     
-        if seasonality == "month":
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                             facet_labels = False)
-        elif seasonality == "week":            
-            # enforce sorting 
-            df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                            facet_labels = False)
-        elif seasonality == "year": 
-            fig_b = px.line()
-        else:
-            print("shit")
-
-        ss[key] = [fig_a, fig_b]
-
-    if key in ss:
-        with st.container(border=True):
-            c1,c2 = st.columns([4,2])
-            with c1:
-                st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
-            with c2:
-                st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
 @st.cache_data(show_spinner="Rendering plots")
@@ -206,53 +239,6 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
         annotation.textangle = 90
 
     return fig_smo, fig_res    
-
-
-def ui_render_ma_resid_page(dat_long, dat_wide, key):
-
-    df_options = ss.df_overview[['dis_abbrev', 'type']]
-    # reduce options to diseases that exist in this time resolution
-    dis_levels_exist =dat_long['dis_abbrev'].unique()
-    df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
-    opt_types = df_options['type'].unique()
-
-    with st.sidebar:
-            outcome_options = ["incValue", "value"] # ,  "pop"]
-            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                        horizontal=True, format_func=lambda x: ss.labels[x],)
-            sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
-                                default =opt_types, 
-                                key = key+"_02")
-            opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
-
-            sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, 
-                            default = opt_disea_subset[0:3], 
-                            key = key+"_03", format_func=lambda x: x[:9],)
-
-
-
-    n_dis = len(sel_dis)
-    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
-    df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
-
-    fig_smo, fig_res  = make_plots_smo_resid(
-        df_long = df_plot_long, 
-        df_wide = df_plot_wide, 
-        xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
-
-
-    c0, c1 = st.columns(2)
-    with c0:
-        st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
-    with c1:    
-        st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
-
-
-
-
-
-
-
 
 
 

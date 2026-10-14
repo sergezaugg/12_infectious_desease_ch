@@ -44,7 +44,7 @@ if "di_prep" not in ss:
     ss.di_years  = data_select_years(ss.di_prep_chfl)
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
-    ss.df_overview = get_overview_df()
+    ss.df_overview = get_overview_df() # important lookup  table used many places
     ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =3)
 
     # filter past few years relative to today 
