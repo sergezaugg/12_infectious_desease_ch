@@ -46,18 +46,18 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
         df_plot = data[data['dis_abbrev'].isin(sel_dis)]
         fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = True,
-                                            facet_labels = True)
+                                            facet_labels = False)
      
         if seasonality == "month":
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = False,
-                                             facet_labels = False)
+                                             facet_labels = True)
         elif seasonality == "week":            
             # enforce sorting 
             df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = False,
-                                            facet_labels = False)
+                                            facet_labels = True)
         elif seasonality == "year": 
             fig_b = px.line()
         else:
@@ -96,7 +96,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
         xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
 
     with st.container(border=True):
-        c0, c1 = st.columns(2)
+        c0, c1 = st.columns([7,8])
         with c0:
             st.text("Long-Term Trend From Monthly Data")
             st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
@@ -134,7 +134,7 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
-        margin=dict(l=50, r=50, t=50, b=40),
+        margin=dict(l=30, r=30, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(
@@ -189,7 +189,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
     fig_smo.update_layout(
         showlegend=False,
-        margin=dict(l=50, r=150, t=50, b=40),
+        margin=dict(l=30, r=30, t=50, b=40),
         )
     fig_smo.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",

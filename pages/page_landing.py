@@ -19,7 +19,7 @@ with st.sidebar:
 # st.dataframe(ss.df_filtered_1y)
 # st.text(ss.ref_date)
 
-colrs = ["#eeeeee", "#4a4d4d", "#f5630f"]
+colrs = ["#eeeeee", "#717171", "#ff521e"]
 
 
 fig = px.line(
@@ -38,11 +38,20 @@ fig = px.line(
         "incValue":    colrs[1],
         "incValue_ma": colrs[2],
         },
+  
     )
+
+# label the values in legend 
+for trace in fig.data:
+    trace.name = {"incValue": "Monthly data", "incValue_ma": "Estimated Long-Term Trend"}.get(trace.name, trace.name)
+
+fig.update_traces(line=dict(width=3.0))
+
 fig.update_layout(
-    showlegend=False,
+    showlegend=True,
     margin=dict(l=50, r=50, t=10, b=40),
-    legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
+    legend_font_size=14.4,
+    legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x= -0.008, xanchor="left", y=1.04, yanchor="bottom",),
     )
 fig.update_xaxes(
     showline = True, linewidth=1.8, mirror=True, 
@@ -84,7 +93,6 @@ fig.add_vline(x=ss.ref_date,line_color="green",line_width=2,line_dash="dot",)
 
 df_bar_plot = ss.df_filt_max_date.sort_values('dis_abbrev', ascending=False)
 
-
 labels = {
     "days_elapsed" :  "Data age [days]",
 }
@@ -109,7 +117,7 @@ fig_bar.update_layout(
 
 c0, c1 = st.columns([2,9], border =True)
 with c0:
-    st.text("Monthly Data update status")
+    st.text("Update status of monthly data")
     st.plotly_chart(fig_bar , use_container_width=False, key = "aaaaaa")
 with c1:
     st.text("Monthly All-Diseases-Radar")
