@@ -7,6 +7,13 @@ import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
 
+with st.sidebar:
+    st.markdown("""
+    :primary[Summary:] Review update status of all monthly data and see trends of the past two years. 
+    """)
+    st.divider()
+
+
 # ss.df_filtered 
 # ss.df_filt_max_date 
 # st.dataframe(ss.df_filtered_1y)
@@ -102,7 +109,7 @@ fig_bar.update_layout(
 
 c0, c1 = st.columns([2,9], border =True)
 with c0:
-    st.text("Monthly Data Age")
+    st.text("Monthly Data update status")
     st.plotly_chart(fig_bar , use_container_width=False, key = "aaaaaa")
 with c1:
     st.text("Monthly All-Diseases-Radar")

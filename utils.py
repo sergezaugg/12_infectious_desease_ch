@@ -12,14 +12,15 @@ import requests
 import io
 from datetime import datetime
 
+API_BASE_URL = "https://api.idd.bag.admin.ch/api/v1"
 
-@st.cache_data(ttl=60*60*12, show_spinner="Downloading data")
+@st.cache_data(ttl=60*60*12, show_spinner="Downloading data from " + "`" + API_BASE_URL + "`")
 def download_all_data(a = 1):
-    full_query_string = 'https://api.idd.bag.admin.ch/api/v1/data/version'
+    full_query_string = f"{API_BASE_URL}/data/version"
     r = requests.get(full_query_string, allow_redirects=True)
     data_version = r.json()
 
-    full_query_string = 'https://api.idd.bag.admin.ch/api/v1/export/latest/files'
+    full_query_string = f"{API_BASE_URL}/export/latest/files"
     r = requests.get(full_query_string, allow_redirects=True)
     data_file_list = r.json()
 
@@ -32,7 +33,7 @@ def download_all_data(a = 1):
         print(li_index)
         data_set_name = data_file_list[li_index]
         print(data_set_name)
-        full_query_string = 'https://api.idd.bag.admin.ch/api/v1/export/latest/' + data_set_name + '/csv'
+        full_query_string = f"{API_BASE_URL}/export/latest/" + data_set_name + '/csv'
         r = requests.get(full_query_string, allow_redirects=True)
         raw_text = r.text
         df = pd.read_csv(io.StringIO(raw_text, newline='\n')  , sep=",")
@@ -119,24 +120,7 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
-# @st.cache_data
-# def make_lineplot_by_age_and_sex(x, tit):
-#     fig = px.line(
-#         data_frame = x,
-#         x = "date",
-#         y = "value",
-#         color = "agegroup",
-#         facet_row= "sex",
-#         facet_col= "type",
-#         title = tit,
-#         height = 500
 
-#         )
-#     fig.update_xaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
-#     fig.update_yaxes(showline=True, linewidth=1, linecolor="gray", mirror=True)
-#     return fig
-
- 
 @st.cache_data
 def stack_dict_of_dfs(di):
     df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
@@ -162,8 +146,6 @@ def data_select_only_all_groups(df):
         df[k] = df[k][df[k]["agegroup"] == "all"] 
         df[k] = df[k][df[k]["type"] == "all"]   
     return df
-
-
 
 
 def get_overview_df():
