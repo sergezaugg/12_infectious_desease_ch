@@ -57,12 +57,11 @@ if "di_prep" not in ss:
 
 # build sidebar
 with st.sidebar:
-    st.markdown(f"""### :primary[**Swiss Infectious Disease Explorer**]""")
-    st.text("V-" + ss.data_version['name'] + " • D-" + ss.ts_downl)
+    st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
     st.divider()
    
 # (3) main navigation
-p00 = st.Page("pages/page_data_age.py",  title="M-Radar")
+p00 = st.Page("pages/page_landing.py",  title="M-Radar", default=True)
 p01 = st.Page("pages/page00.py",  title="Epi-Info")
 p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
 p03 = st.Page("pages/page02_months.py",  title="M-plots")
@@ -72,7 +71,7 @@ p05 = st.Page("pages/page02.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Settings")
 
-pg = st.navigation([p00, p02, p03, p04, p06, p05, p01, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p03, p02, p04, p01, p05, p20, p21], position = "top")
 pg.run()
 
 

@@ -77,7 +77,7 @@ def ui_render_factplot_page(data, key, seasonality):
     opt_types = df_options['type'].unique()
 
     with st.sidebar:
-        outcome_options = ["value", "incValue"] # ,  "pop"]
+        outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
                                     horizontal=True, format_func=lambda x: labels[x],)
         sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", persist_state = "session", key = key+"_02")

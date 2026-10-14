@@ -21,7 +21,7 @@ fig = px.line(
     y = "resp_var",
     color = "measure",
     facet_col= "disease",
-    facet_col_wrap=7,
+    facet_col_wrap=6,
     facet_row_spacing = 0.05,
     facet_col_spacing = 0.04,
     # markers=True,
@@ -34,7 +34,7 @@ fig = px.line(
     )
 fig.update_layout(
     showlegend=False,
-    margin=dict(l=50, r=50, t=50, b=40),
+    margin=dict(l=50, r=50, t=10, b=40),
     legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
     )
 fig.update_xaxes(
@@ -73,28 +73,39 @@ fig.add_vline(x=ss.ref_date,line_color="green",line_width=2,line_dash="dot",)
 
 #---------------------------------------
 # data age 
+# st.dataframe(ss.df_filt_max_date)
+
+df_bar_plot = ss.df_filt_max_date.sort_values('dis_abbrev', ascending=False)
+
+
+labels = {
+    "days_elapsed" :  "Data age [days]",
+}
 
 fig_bar = px.bar(
-    data_frame=ss.df_filt_max_date ,
+    data_frame = df_bar_plot ,
     x = 'days_elapsed',
-    y = 'disease',
+    y = 'dis_abbrev',
     height = 800,
     orientation="h",
+    labels=labels,
     )
 fig_bar.update_xaxes(range=[30, None])
-fig_bar.update_yaxes(showline = True, linewidth=1.8, mirror=True, )
+fig_bar.update_yaxes(showline = True, linewidth=1.8, mirror=True,     title_text=None,)
 fig_bar.update_xaxes(showline = True, linewidth=1.8, mirror=True, )
 fig_bar.update_traces(width=0.5)
 
 fig_bar.update_layout(
-    margin=dict(l=50, r=10, t=50, b=40)
+    margin=dict(l=50, r=10, t=10, b=40)
 )
 
 
-c0, c1 = st.columns([2,8])
+c0, c1 = st.columns([2,9], border =True)
 with c0:
+    st.text("Monthly Data Age")
     st.plotly_chart(fig_bar , use_container_width=False, key = "aaaaaa")
 with c1:
+    st.text("Monthly All-Diseases-Radar")
     st.plotly_chart(fig,      use_container_width=True, key = "afbafbsefb")
 
 

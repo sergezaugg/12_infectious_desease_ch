@@ -13,6 +13,9 @@ n_dis = ss.df_overview.shape[0]
 
 st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
 
+st.text("FOPH Data Version:  " + ss.data_version['name'])
+st.text("Downloaded on:  "     + ss.ts_downl)
+
 def highlight_yes(v):
     if isinstance(v, str):
         v = v.strip().lower()
