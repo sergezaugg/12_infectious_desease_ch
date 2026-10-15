@@ -73,7 +73,7 @@ for key in list(st.session_state.keys()):
 
 # build sidebar
 with st.sidebar:
-    st.error("Code & Methods in dev")
+    # st.error("Code & Methods in dev")
     st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
     st.divider()
    
