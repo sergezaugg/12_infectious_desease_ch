@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : TBD
+# Description : Visualize monthly data 
 #--------------------
 
 from streamlit import session_state as ss

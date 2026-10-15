@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : TBD
+# Description : Visualize weekly data 
 #--------------------
 
 from streamlit import session_state as ss

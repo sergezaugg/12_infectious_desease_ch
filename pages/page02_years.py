@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : TBD
+# Description : Visualize yearly data 
 #--------------------
 
 from streamlit import session_state as ss
