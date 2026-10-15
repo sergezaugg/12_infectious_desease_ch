@@ -110,21 +110,21 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
             st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
 
 
-def ui_render_landing_page(df_trend, df_age, key):
+def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw ):
     """ 
     render the landing page 
     
     """
-    fig_bar  = make_data_age_barplot(df_age)
-    fig_grid = make_mini_trend_plot_grid(df_trend)
+    fig_bar  = make_data_age_barplot(df_age, height)
+    fig_grid = make_mini_trend_plot_grid(df_trend, height, width)
 
     c0, c1 = st.columns([2,9], border =True)
     with c0:
-        st.text("Update status of monthly data")
+        st.text(col_tit[0])
         st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key)
     with c1:
-        st.text("Monthly All-Diseases-Radar")
-        st.plotly_chart(fig_grid, use_container_width=True, key = "landing_gridplot_" + key)
+        st.text(col_tit[1])
+        st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key)
 
 
 
@@ -280,7 +280,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_mini_trend_plot_grid(df_plot):
+def make_mini_trend_plot_grid(df_plot, height, width):
     """ 
     Make trend grid plots for the landing page. 
     df_plot : A data frame in long format, where 'measure' is a categorical indicator the type of trace (raw or smoothed)
@@ -297,7 +297,8 @@ def make_mini_trend_plot_grid(df_plot):
         facet_col_wrap=6,
         facet_row_spacing = 0.05,
         facet_col_spacing = 0.04,
-        height = 700,
+        height = height,
+        width = width,
         color_discrete_map={
             "incValue":    colrs[1],
             "incValue_ma": colrs[2],
@@ -305,13 +306,13 @@ def make_mini_trend_plot_grid(df_plot):
         )
     # label the values in legend 
     for trace in fig.data:
-        trace.name = {"incValue": "Monthly data", "incValue_ma": "Estimated Long-Term Trend"}.get(trace.name, trace.name)
+        trace.name = {"incValue": "Data", "incValue_ma": "Trend"}.get(trace.name, trace.name)
     fig.update_traces(line=dict(width=3.0))
     fig.update_layout(
         showlegend=True,
         margin=dict(l=50, r=50, t=10, b=40),
         legend_font_size=14.4,
-        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x= -0.008, xanchor="left", y=1.04, yanchor="bottom",),
+        # legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x= -0.008, xanchor="left", y=1.1, yanchor="top",),
         )
     fig.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, 
@@ -343,7 +344,7 @@ def make_mini_trend_plot_grid(df_plot):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_data_age_barplot(df_plot):
+def make_data_age_barplot(df_plot, height):
     """
     df_plot : A data frame that has exactly one row per disease
     and at least the columns 'dis_abbrev' and 'days_elapsed'
@@ -355,12 +356,13 @@ def make_data_age_barplot(df_plot):
         x='days_elapsed',
         y='dis_abbrev',
         color='days_elapsed',
-        height=800,
+        height=height,
         orientation="h",
         labels=labels,
         color_continuous_scale='bluered',
+        range_color=[0, 150],  # fixed mapping: 0–365 days
         )   
-    fig_bar.update_xaxes(range=[30, None])
+    fig_bar.update_xaxes(range=[0, 200])
     fig_bar.update_yaxes(showline = True, linewidth=1.8, mirror=True,     title_text=None,)
     fig_bar.update_xaxes(showline = True, linewidth=1.8, mirror=True, )
     fig_bar.update_traces(width=0.5)

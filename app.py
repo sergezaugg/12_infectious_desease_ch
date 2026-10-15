@@ -84,7 +84,7 @@ with st.sidebar:
     st.divider()
    
 # (3) main navigation
-p00 = st.Page("pages/page_landing.py",  title="M-Radar", default=True)
+p00 = st.Page("pages/page_landing.py",  title="Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
 p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
 p03 = st.Page("pages/page02_months.py",  title="M-plots")
