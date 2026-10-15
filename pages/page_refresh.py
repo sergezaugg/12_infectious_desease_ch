@@ -18,9 +18,9 @@ with c1:
                 download_all_data.clear()
                 st.rerun()
 
-
 # st.write(dict(st.session_state))
 # st.write({k: v for k, v in st.session_state.items() if k.startswith("fig")})
 # st.write({k for k, v in st.session_state.items() if k.startswith("two_steps")})
 # st.write({k for k, v in st.session_state.items() })
-st.write([k for k in st.session_state ])
+# st.write([k for k in st.session_state ])
+st.write(sorted(st.session_state.keys()))

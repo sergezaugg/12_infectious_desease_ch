@@ -14,6 +14,6 @@ with st.sidebar:
     st.divider()
 
 
-ui_render_basic_facet_plot_page(data = ss.df_weeks_all_concat, key = "fig_w", seasonality = "week")
+ui_render_basic_facet_plot_page(data = ss.df_weeks_all_concat, key = "ui_trace_w_", seasonality = "week")
 
 

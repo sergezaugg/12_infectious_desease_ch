@@ -13,6 +13,6 @@ with st.sidebar:
     """)
     st.divider()
 
-ui_render_basic_facet_plot_page(data = ss.df_months_all_concat, key = "fig_m", seasonality = "month")
+ui_render_basic_facet_plot_page(data = ss.df_months_all_concat, key = "ui_trace_m_", seasonality = "month")
 
 

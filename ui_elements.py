@@ -45,11 +45,9 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
    
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
-        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                    horizontal=True, format_func=lambda x: ss.labels[x],)
-
+        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+            persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
         sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
-
 
     # apply user selection upon user's confirmation
     if True:
@@ -90,12 +88,7 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
 def ui_render_ma_resid_page(dat_long, dat_wide, key):
 
     with st.sidebar:
-            # outcome_options = ["incValue", "value"] # ,  "pop"]
-            # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-            #                             horizontal=True, format_func=lambda x: ss.labels[x],)
-
-            sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "two_steps_ma" + key)
-
+        sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
 
     n_dis = len(sel_dis)
     df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
