@@ -59,6 +59,18 @@ if "di_prep" not in ss:
         "month" :  "Month",
     }
 
+    del st.session_state["di_weeks"]
+    del st.session_state["di_months"]
+    del st.session_state["di_years"]
+    del st.session_state["di_weeks_all"]
+    del st.session_state["di_months_all"]
+    del st.session_state["di_years_all"]
+
+
+# Protects every ss key from being deleted (for multi-page consistency across clicks)
+for key in list(st.session_state.keys()):
+    st.session_state[key] = st.session_state[key]
+
 # build sidebar
 with st.sidebar:
     st.error("Code & Methods in dev")

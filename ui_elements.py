@@ -24,19 +24,18 @@ def ui_sel_country_in_two_steps(data, key):
     # step 1 : select a subset of disease types 
     def caba_update_dis_options():
         ss[key+"_03"] = df_options.loc[df_options['type'].isin(st.session_state[key + "_02"]), 'dis_abbrev'].tolist()
-
     sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
-                        default = opt_types[0],
-                        on_change= caba_update_dis_options,
-                        key = key+"_02",)
+        default = opt_types[0],
+        on_change= caba_update_dis_options,
+        key = key+"_02", persist_state = "session")
 
     # step 2 : select diseases within selected subset of disease types 
     opt_disea_subset = df_options.loc[df_options['type'].isin(sel_type), 'dis_abbrev'].tolist()
-
     sel_dis = st.multiselect("Select diseases", 
         options = opt_disea_subset, 
         key = key+"_03", format_func=lambda x: x[:9],
-        default = opt_disea_subset, 
+        default = opt_disea_subset,  
+        # persist_state = "session"
         )
 
     return sel_dis
@@ -49,7 +48,7 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
                                     horizontal=True, format_func=lambda x: ss.labels[x],)
 
-        sel_dis = ui_sel_country_in_two_steps(data = data, key = "adfbadfb")
+        sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
 
 
     # apply user selection upon user's confirmation
@@ -95,7 +94,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
             # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
             #                             horizontal=True, format_func=lambda x: ss.labels[x],)
 
-            sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "omcjfhfgsudd")
+            sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "two_steps_ma" + key)
 
 
     n_dis = len(sel_dis)
@@ -111,10 +110,10 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
         c0, c1 = st.columns([7,8])
         with c0:
             st.text("Long-Term Trend From Monthly Data")
-            st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
+            st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
         with c1:   
             st.text("Residuals From Trend") 
-            st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
+            st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
 
 
 
