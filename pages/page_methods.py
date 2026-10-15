@@ -5,6 +5,10 @@ col_aa, col_bb, = st.columns([0.50, 0.50])
 with col_aa: 
         
     st.markdown('''
+
+about case reporting bias ()    ...
+
+
         Most of this app shows purely descriptive plots, so not much methods here, just this:
         Long-Term Trend is estimated from  monthly data.
         A median–mean smoother is used. This is a two-step operation passing the data first through a moving median stage (window size 12 months) 

@@ -58,9 +58,9 @@ def apply_global_styles():
     st.markdown("""
     <style>
         .stAppHeader a {
-            width: 90px !important;
-            min-width: 90px !important;
-            max-width: 90px !important;
+            width: 100px !important;
+            min-width: 100px !important;
+            max-width: 100px !important;
             box-sizing: border-box !important;
             justify-content: center !important;
             text-align: center !important;
@@ -84,7 +84,6 @@ def apply_global_styles():
     </style>
     <div class="app-label">SID-Explorer v0.9.1-β</div>
     """, unsafe_allow_html=True)
-
 
 
 
