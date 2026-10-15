@@ -78,11 +78,11 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
         with st.container(border=True):
             c1,c2 = st.columns([4,2])
             with c1:
-                st.text("Reported Cases History")
+                st.text("Cases History")
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
             with c2:
                 if seasonality != "year":
-                    st.text("Reported Cases By Month")
+                    st.text("Cases By Month")
                     st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
@@ -103,7 +103,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
     with st.container(border=True):
         c0, c1 = st.columns([7,8])
         with c0:
-            st.text("Long-Term Trend From Monthly Data")
+            st.text("Long-Term Trend")
             st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
         with c1:   
             st.text("Residuals From Trend") 
@@ -310,6 +310,7 @@ def make_mini_trend_plot_grid(df_plot, height, width):
     fig.update_traces(line=dict(width=3.0))
     fig.update_layout(
         showlegend=True,
+        legend_title_text=None,
         margin=dict(l=50, r=50, t=10, b=40),
         legend_font_size=14.4,
         # legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x= -0.008, xanchor="left", y=1.1, yanchor="top",),

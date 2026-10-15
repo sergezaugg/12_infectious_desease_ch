@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : All functions an UI elements used my the streamlit app
+# Description : Data-analytic Functions used my the streamlit app
 #--------------------
 
 import numpy as np
@@ -120,7 +120,6 @@ def data_select_weeks(x):
             df_iso_week[k] = df
     return df_iso_week
 
-
 @st.cache_data
 def stack_dict_of_dfs(di):
     df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
@@ -138,7 +137,6 @@ def stack_dict_of_dfs(di):
     df = df.sort_values(['disease', 'temporal_type', 'georegion', 'agegroup', 'sex', 'date', 'year', 'week'])
     return df 
 
-
 @st.cache_data
 def data_select_only_all_groups(df):
     for k in df.keys():
@@ -147,7 +145,7 @@ def data_select_only_all_groups(df):
         df[k] = df[k][df[k]["type"] == "all"]   
     return df
 
-
+@st.cache_data
 def get_overview_df():
     a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
     b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
@@ -182,9 +180,6 @@ def get_overview_df():
     
     return(df_overview)
 
-
-
-
 def extrapolate_trend_edges(s, n_edge=6):
     """Replace trend edges using linear extrapolation."""
     s = s.copy()
@@ -201,8 +196,6 @@ def extrapolate_trend_edges(s, n_edge=6):
     y[:k] = slope_left * x[:k] + intercept_left
     y[-k:] = slope_right * x[-k:] + intercept_right
     return pd.Series(y, index=s.index, name=s.name)
-
-
 
 @st.cache_data(show_spinner="Computing MA-based trend")
 def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
@@ -233,38 +226,6 @@ def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
 
 
     
-
-
-
-# from statsmodels.tsa.seasonal import STL
-
-# @st.cache_data(show_spinner="Computing MA-based trend")
-# def get_stl_based_trend(df, outcome):
-
-#     var_name_ma = outcome + "_ma"
-
-#     resp = df[outcome]
-
-#     result = STL(
-#         endog = resp,
-#         period=12,       # monthly data, annual seasonality
-#         seasonal=19,     # smoother evolving seasonal pattern; odd
-#         trend=37,        # smoother nonlinear trend; odd
-#         low_pass=13,     # odd, greater than period
-#         robust=True,
-#     ).fit()
-
-#     df[var_name_ma] = result.trend
-#     df['residuals'] = result.seasonal + result.resid
-
-#     # reshape for easy plotting
-#     df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
-#         value_vars=[outcome, var_name_ma],
-#         var_name="measure",
-#         value_name= "resp_var")
-#     return df, df_long
-
-
 
 
 
