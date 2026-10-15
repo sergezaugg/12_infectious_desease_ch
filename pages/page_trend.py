@@ -9,7 +9,7 @@ with st.sidebar:
     """)
     st.divider()
 
-ui_render_ma_resid_page(dat_long = ss.df_m_ma_long, dat_wide = ss.df_m_ma_wide, key = "enxfhsnbdfhrgtzu")
+ui_render_ma_resid_page(dat_long = ss.df_m_ma_long, dat_wide = ss.df_m_ma_wide, key = "ui_trend_m_")
 
 
 

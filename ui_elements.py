@@ -20,13 +20,24 @@ def ui_sel_country_in_two_steps(data, key):
     df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
     # get full list of disease types 
     opt_types = df_options['type'].unique()
+
     # step 1 : select a subset of disease types 
-    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", default =opt_types, key = key+"_02")
+    def caba_update_dis_options():
+        ss[key+"_03"] = df_options.loc[df_options['type'].isin(st.session_state[key + "_02"]), 'dis_abbrev'].tolist()
+    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
+        default = opt_types[0],
+        on_change= caba_update_dis_options,
+        key = key+"_02", persist_state = "session")
+
     # step 2 : select diseases within selected subset of disease types 
-    opt_disea_subset = df_options[df_options['type'].isin(sel_type)]
-    sel_dis = st.multiselect("Select diseases", options = opt_disea_subset, key = key+"_03", format_func=lambda x: x[:9],
-        default = opt_disea_subset[0:3], # temp reduce initial subset 
+    opt_disea_subset = df_options.loc[df_options['type'].isin(sel_type), 'dis_abbrev'].tolist()
+    sel_dis = st.multiselect("Select diseases", 
+        options = opt_disea_subset, 
+        key = key+"_03", format_func=lambda x: x[:9],
+        default = opt_disea_subset,  
+        # persist_state = "session"
         )
+
     return sel_dis
 
 
@@ -34,11 +45,9 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
    
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
-        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-                                    horizontal=True, format_func=lambda x: ss.labels[x],)
-
-        sel_dis = ui_sel_country_in_two_steps(data = data, key = "adfbadfb")
-
+        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+            persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
+        sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
 
     # apply user selection upon user's confirmation
     if True:
@@ -72,19 +81,15 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
                 st.text("Reported Cases History")
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
             with c2:
-                st.text("Reported Cases By Month")
-                st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
+                if seasonality != "year":
+                    st.text("Reported Cases By Month")
+                    st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key):
 
     with st.sidebar:
-            # outcome_options = ["incValue", "value"] # ,  "pop"]
-            # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key= key+"_01", persist_state = "session", 
-            #                             horizontal=True, format_func=lambda x: ss.labels[x],)
-
-            sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = "omcjfhfgsudd")
-
+        sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
 
     n_dis = len(sel_dis)
     df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
@@ -99,10 +104,10 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
         c0, c1 = st.columns([7,8])
         with c0:
             st.text("Long-Term Trend From Monthly Data")
-            st.plotly_chart(fig_smo, use_container_width=True, key = "aaaaaa")
+            st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
         with c1:   
             st.text("Residuals From Trend") 
-            st.plotly_chart(fig_res, use_container_width=True, key = "bbbbbb")
+            st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
 
 
 
@@ -187,6 +192,12 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
         labels=labels,
         )
 
+    # add margin left and right 
+    x_min = df_long["date"].min()
+    x_max = df_long["date"].max()
+    margin = (x_max - x_min) * 0.03
+    fig_smo.update_xaxes(range=[x_min - margin, x_max + margin])
+
     fig_smo.update_layout(
         showlegend=False,
         margin=dict(l=30, r=30, t=50, b=40),
@@ -220,6 +231,12 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
         labels=labels,
         color_discrete_sequence=[colrs[0]],
         )
+    # add margin left and right 
+    x_min = df_wide["date"].min()
+    x_max = df_wide["date"].max()
+    margin = (x_max - x_min) * 0.03
+    fig_res.update_xaxes(range=[x_min - margin, x_max + margin])
+    
     fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
     fig_res.update_layout(
         showlegend=False,

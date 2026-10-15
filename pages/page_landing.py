@@ -98,21 +98,21 @@ labels = {
 }
 
 fig_bar = px.bar(
-    data_frame = df_bar_plot ,
-    x = 'days_elapsed',
-    y = 'dis_abbrev',
-    height = 800,
+    data_frame=df_bar_plot,
+    x='days_elapsed',
+    y='dis_abbrev',
+    color='days_elapsed',
+    height=800,
     orientation="h",
     labels=labels,
-    )
+    color_continuous_scale='bluered',
+    )   
 fig_bar.update_xaxes(range=[30, None])
 fig_bar.update_yaxes(showline = True, linewidth=1.8, mirror=True,     title_text=None,)
 fig_bar.update_xaxes(showline = True, linewidth=1.8, mirror=True, )
 fig_bar.update_traces(width=0.5)
-
-fig_bar.update_layout(
-    margin=dict(l=50, r=10, t=10, b=40)
-)
+fig_bar.update_coloraxes(showscale=False)
+fig_bar.update_layout(margin=dict(l=50, r=10, t=10, b=40))
 
 
 c0, c1 = st.columns([2,9], border =True)
