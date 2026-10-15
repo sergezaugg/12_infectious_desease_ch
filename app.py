@@ -79,14 +79,14 @@ with st.sidebar:
    
 # (3) main navigation
 p00 = st.Page("pages/page_landing.py",  title="M-Radar", default=True)
-p01 = st.Page("pages/page_info.py",  title="Epi-Info")
+p01 = st.Page("pages/page_info.py",  title="Diseases")
 p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
 p03 = st.Page("pages/page02_months.py",  title="M-plots")
 p04 = st.Page("pages/page02_years.py",  title="Y-plots")
 p06 = st.Page("pages/page_trend.py",  title="M-Trends")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
-p21 = st.Page("pages/page_refresh.py",  title="Settings")
+p21 = st.Page("pages/page_refresh.py",  title="Dev")
 p22 = st.Page("pages/page_methods.py",  title="Methods")
 
 pg = st.navigation([p00, p06, p03, p02, p04, p01, p22, p05, p20, p21], position = "top")
