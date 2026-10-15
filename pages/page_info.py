@@ -16,9 +16,9 @@ df_display = df_display[cols]
 
 # st.text(ss.df_overview.columns)
 
-st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
-st.text("FOPH Data Version:  " + ss.data_version['name'])
-st.text("Downloaded on:  "     + ss.ts_downl)
+# st.text(f"Nb diseases from mandatory reporting system in this dataset N = {int(n_dis)}")
+# st.text("FOPH Data Version:  " + ss.data_version['name'])
+# st.text("Downloaded on:  "     + ss.ts_downl)
 
 def highlight_yes(v):
     if isinstance(v, str):

@@ -72,15 +72,17 @@ for key in list(st.session_state.keys()):
 # build sidebar
 with st.sidebar:
     st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
+    st.markdown("Data Version: " + "`" + ss.data_version['name'] + "`")
+    st.markdown("Downloaded: "     + "`" + ss.ts_downl + "`")
     st.divider()
    
-# (3) main navigation
+# main navigation
 p00 = st.Page("pages/page_landing.py",  title="Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
 p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
 p03 = st.Page("pages/page02_months.py",  title="M-plots")
 p04 = st.Page("pages/page02_years.py",  title="Y-plots")
-p06 = st.Page("pages/page_trend.py",  title="M-Trends")
+p06 = st.Page("pages/page_trend_monthly.py",  title="M-Trends")
 p07 = st.Page("pages/page_trend_weekly.py",  title="W-Trends")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
