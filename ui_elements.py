@@ -81,8 +81,9 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
                 st.text("Reported Cases History")
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
             with c2:
-                st.text("Reported Cases By Month")
-                st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
+                if seasonality != "year":
+                    st.text("Reported Cases By Month")
+                    st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key):
