@@ -110,6 +110,23 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
             st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
 
 
+def ui_render_landing_page(df_trend, df_age, key):
+    """ 
+    render the landing page 
+    
+    """
+    fig_bar  = make_data_age_barplot(df_age)
+    fig_grid = make_mini_trend_plot_grid(df_trend)
+
+    c0, c1 = st.columns([2,9], border =True)
+    with c0:
+        st.text("Update status of monthly data")
+        st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key)
+    with c1:
+        st.text("Monthly All-Diseases-Radar")
+        st.plotly_chart(fig_grid, use_container_width=True, key = "landing_gridplot_" + key)
+
+
 
 # ---------------------------
 # plots 
@@ -262,8 +279,91 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     return fig_smo, fig_res    
 
 
+@st.cache_data(show_spinner="Rendering plots")
+def make_mini_trend_plot_grid(df_plot):
+    """ 
+    Make trend grid plots for the landing page. 
+    df_plot : A data frame in long format, where 'measure' is a categorical indicator the type of trace (raw or smoothed)
+    and 'resp_var' the actual values (raw or smoothed).
+    The df must also contain "date" (pd.timestamp) for trace plots and "disease" to make facets.
+    """
+    colrs = ["#eeeeee", "#717171", "#ff521e"]
+    fig = px.line(
+        data_frame = df_plot,
+        x = "date",
+        y = "resp_var",
+        color = "measure",
+        facet_col= "disease",
+        facet_col_wrap=6,
+        facet_row_spacing = 0.05,
+        facet_col_spacing = 0.04,
+        height = 700,
+        color_discrete_map={
+            "incValue":    colrs[1],
+            "incValue_ma": colrs[2],
+            },
+        )
+    # label the values in legend 
+    for trace in fig.data:
+        trace.name = {"incValue": "Monthly data", "incValue_ma": "Estimated Long-Term Trend"}.get(trace.name, trace.name)
+    fig.update_traces(line=dict(width=3.0))
+    fig.update_layout(
+        showlegend=True,
+        margin=dict(l=50, r=50, t=10, b=40),
+        legend_font_size=14.4,
+        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x= -0.008, xanchor="left", y=1.04, yanchor="bottom",),
+        )
+    fig.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, 
+        title_font=dict(size=14),
+        dtick="M6",
+        gridcolor="#535053",
+        showgrid=True,
+        title_text=None,
+        # ticks="inside",
+        showticklabels=False, 
+        ticks=""
+        )   
+    fig.update_yaxes(
+        matches=None,
+        showticklabels=True,
+        ticks="inside",
+        showline=True,
+        linewidth=1.8,
+        mirror=True,
+        title_font=dict(size=16),
+        rangemode="tozero",
+        title_text=None
+    )
+    for ann in fig.layout.annotations:
+        ann.text = ann.text.replace("disease=", "")
+        ann.update(y = ann.y + 0.008, yanchor="top")
+    fig.add_vline(x=ss.ref_date,line_color="green",line_width=2,line_dash="dot",)
+    return(fig)
 
 
-
-
-
+@st.cache_data(show_spinner="Rendering plots")
+def make_data_age_barplot(df_plot):
+    """
+    df_plot : A data frame that has exactly one row per disease
+    and at least the columns 'dis_abbrev' and 'days_elapsed'
+    """
+    df_bar_plot = df_plot.sort_values('dis_abbrev', ascending=False)
+    labels = {"days_elapsed" :  "Data age [days]",}
+    fig_bar = px.bar(
+        data_frame=df_bar_plot,
+        x='days_elapsed',
+        y='dis_abbrev',
+        color='days_elapsed',
+        height=800,
+        orientation="h",
+        labels=labels,
+        color_continuous_scale='bluered',
+        )   
+    fig_bar.update_xaxes(range=[30, None])
+    fig_bar.update_yaxes(showline = True, linewidth=1.8, mirror=True,     title_text=None,)
+    fig_bar.update_xaxes(showline = True, linewidth=1.8, mirror=True, )
+    fig_bar.update_traces(width=0.5)
+    fig_bar.update_coloraxes(showscale=False)
+    fig_bar.update_layout(margin=dict(l=50, r=10, t=10, b=40))
+    return fig_bar

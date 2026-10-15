@@ -42,12 +42,17 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
+    
     # get trend via Robust median–mean smoother
     ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", wsiz_med = 12, wsiz_mea =7, n_extrap = 5)
+    ss.df_w_ma_wide, ss.df_w_ma_long = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", wsiz_med = 52, wsiz_mea =31, n_extrap = 5)
+
     # filter past few years relative to today 
-    ss.df_filtered_1y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 800]
+    ss.df_months_filtered_2y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 800]
+    ss.df_weeks_filtered_2y  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= 800]
     # get data age of each disease
-    ss.df_filt_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
+    ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
+    ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
 
     ss.labels = {
         "value" :  "Cases count",
@@ -65,6 +70,7 @@ if "di_prep" not in ss:
     del st.session_state["di_weeks_all"]
     del st.session_state["di_months_all"]
     del st.session_state["di_years_all"]
+
 
 
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
