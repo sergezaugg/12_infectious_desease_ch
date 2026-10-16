@@ -82,7 +82,7 @@ def apply_global_styles():
             pointer-events: none;
         }
     </style>
-    <div class="app-label">SID-Explorer v0.9.3-β</div>
+    <div class="app-label">SID-Explorer v0.9.4-β</div>
     """, unsafe_allow_html=True)
 
 
