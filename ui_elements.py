@@ -53,9 +53,9 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
     if True:
         n_dis = len(sel_dis)
         df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-        fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None,   n_facets = n_dis, outcome = selected_outcome, 
+        fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = True,
-                                            facet_labels = False)
+                                            facet_labels = True)
      
         if seasonality == "month":
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
@@ -156,7 +156,7 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
-        margin=dict(l=30, r=30, t=50, b=40),
+        margin=dict(l=30, r=35, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(

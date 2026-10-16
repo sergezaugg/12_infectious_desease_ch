@@ -54,20 +54,20 @@ def apply_global_styles():
         </style>
     """, unsafe_allow_html=True)
 
-    # All navigation tabs: same fixed width
-    st.markdown("""
-    <style>
-        .stAppHeader a {
-            width: 100px !important;
-            min-width: 100px !important;
-            max-width: 100px !important;
-            box-sizing: border-box !important;
-            justify-content: center !important;
-            text-align: center !important;
-            white-space: nowrap !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # # All navigation tabs: same fixed width
+    # st.markdown("""
+    # <style>
+    #     .stAppHeader a {
+    #         width: 100px !important;
+    #         min-width: 100px !important;
+    #         max-width: 100px !important;
+    #         box-sizing: border-box !important;
+    #         justify-content: center !important;
+    #         text-align: center !important;
+    #         white-space: nowrap !important;
+    #     }
+    # </style>
+    # """, unsafe_allow_html=True)
 
     # text right to logo 
     st.markdown("""
@@ -82,7 +82,7 @@ def apply_global_styles():
             pointer-events: none;
         }
     </style>
-    <div class="app-label">SID-Explorer v0.9.3-β</div>
+    <div class="app-label">SID-Explorer v0.9.4-β</div>
     """, unsafe_allow_html=True)
 
 

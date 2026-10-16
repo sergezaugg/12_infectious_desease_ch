@@ -71,19 +71,25 @@ for key in list(st.session_state.keys()):
 
 # build sidebar
 with st.sidebar:
-    st.markdown(f""":primary[**Swiss Infectious Disease Explorer**]""")
-    st.markdown("Data Version: " + "`" + ss.data_version['name'] + "`")
-    st.markdown("Downloaded: "     + "`" + ss.ts_downl + "`")
+    st.markdown(f"""## :primary[**Swiss Infectious Disease Explorer**]""")
+    st.markdown("""
+        <div style="line-height: 1.3; margin-bottom: 0.9em;;">
+            <div>Data Version: <code>{}</code></div>
+            <div>Downloaded: <code>{}</code></div>
+            <div>Ref date: <code>{}</code></div>
+        </div>
+    """.format(ss.data_version['name'], ss.ts_downl, ss.ref_date.date()),
+    unsafe_allow_html=True)
     st.divider()
    
 # main navigation
-p00 = st.Page("pages/page_landing.py",  title="Radar", default=True)
+p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
-p02 = st.Page("pages/page01_weeks.py",  title="W-plots")
-p03 = st.Page("pages/page02_months.py",  title="M-plots")
-p04 = st.Page("pages/page02_years.py",  title="Y-plots")
-p06 = st.Page("pages/page_trend_monthly.py",  title="M-Trends")
-p07 = st.Page("pages/page_trend_weekly.py",  title="W-Trends")
+p02 = st.Page("pages/page01_weeks.py",  title="Weekly-plot")
+p03 = st.Page("pages/page02_months.py",  title="Monthly-plot")
+p04 = st.Page("pages/page02_years.py",  title="Yearly-plot")
+p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly-Trend")
+p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")
