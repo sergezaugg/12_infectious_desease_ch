@@ -21,5 +21,12 @@ with col_aa:
         Data kindly provided weekly on this [API](https://www.idd.bag.admin.ch/portal-data) by the Swiss Federal Office of Public Health ([FOPH](https://www.bag.admin.ch/)).
         ''')
         st.markdown('''### LINKS ''')
-        st.page_link("https://www.idd.bag.admin.ch/dataexplorer", label="Official visual frontend of FOPH")
-        st.page_link("https://www.idd.bag.admin.ch/survey-systems/oblig", label="Mandatory reporting (oblig)")
+       
+        st.markdown(
+            '[Official visual frontend of FOPH](https://www.idd.bag.admin.ch/dataexplorer)',
+            unsafe_allow_html=False)
+
+        st.markdown(
+            '[Mandatory reporting (oblig)](https://www.idd.bag.admin.ch/survey-systems/oblig)',
+            unsafe_allow_html=False)
+
