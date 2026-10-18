@@ -41,7 +41,7 @@ def ui_sel_country_in_two_steps(data, key):
     return sel_dis
 
 
-def ui_render_basic_facet_plot_page(data, key, seasonality):
+def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
    
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
@@ -53,15 +53,17 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
     if True:
         n_dis = len(sel_dis)
         df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-        fig_a = make_lineplot_all_by_disease(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
+        fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = True,
                                             facet_labels = True)
-     
+        
         if seasonality == "month":
+            colw = [4,2]  
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
                                             labels = ss.labels, show_x_grid = False,
                                              facet_labels = True)
-        elif seasonality == "week":            
+        elif seasonality == "week": 
+            colw = [4,2]           
             # enforce sorting 
             df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
             fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
@@ -69,6 +71,7 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
                                             facet_labels = True)
         elif seasonality == "year": 
             fig_b = px.line()
+            colw = [4.0,0.2]
         else:
             print("shit")
 
@@ -76,7 +79,7 @@ def ui_render_basic_facet_plot_page(data, key, seasonality):
 
     if key in ss:
         with st.container(border=True):
-            c1,c2 = st.columns([4,2])
+            c1,c2 = st.columns(colw)
             with c1:
                 st.text("Cases History")
                 st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
@@ -131,7 +134,6 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
 # ---------------------------
 # plots 
 
-
 @st.cache_data(show_spinner="Rendering plots")
 def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
@@ -176,6 +178,60 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
         annotation.textangle = 90
+    if facet_labels == False:
+        fig.for_each_annotation(lambda a: a.update(text=""))    
+
+    return fig
+
+
+@st.cache_data(show_spinner="Rendering plots")
+def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 90
+    spacing_px = 70
+    height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
+
+    fig = px.line(
+        data_frame = x,
+        x = xvar,
+        y = outcome,
+        color = col_var,
+        facet_col= "disease",
+        facet_col_wrap=3,
+        facet_row_spacing = facet_row_spacing,
+        facet_col_spacing = 0.05,
+        markers=True,
+        height = height_b,
+        labels=labels,
+        )
+
+    fig.update_traces(marker=dict(size=5))   
+    fig.update_layout(
+        showlegend=False,
+        margin=dict(l=30, r=35, t=50, b=40),
+        legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
+        )
+    fig.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        showgrid=show_x_grid, 
+        )   
+    fig.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+
+    # fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+
+    for annotation in fig.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        # annotation.textangle = 90
+
     if facet_labels == False:
         fig.for_each_annotation(lambda a: a.update(text=""))    
 

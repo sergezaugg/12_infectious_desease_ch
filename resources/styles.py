@@ -74,7 +74,7 @@ def apply_global_styles():
     <style>
         .app-label {
             position: fixed;
-            top:  17px;
+            top:  12px;
             left: 60px;
             color: #9CA3AF;
             font-size: 15px;
@@ -82,7 +82,7 @@ def apply_global_styles():
             pointer-events: none;
         }
     </style>
-    <div class="app-label">SID-Explorer v0.9.4-β</div>
+    <div class="app-label">v0.9.6-β<br>© 2026 Serge Zaugg</div>
     """, unsafe_allow_html=True)
 
 

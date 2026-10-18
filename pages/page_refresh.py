@@ -5,7 +5,7 @@
 
 import streamlit as st
 from streamlit import session_state as ss
-from utils import download_all_data
+from src.utils import download_all_data
 
 c1, c2 = st.columns([15, 50])
 with c1:

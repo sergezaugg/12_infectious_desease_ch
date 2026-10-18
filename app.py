@@ -7,9 +7,9 @@
 import streamlit as st
 from streamlit import session_state as ss
 import pandas as pd
-from utils import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
-from utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
-from utils import get_overview_df
+from src.utils import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
+from src.utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
+from src.utils import get_overview_df
 from resources.styles import apply_global_styles
 
 #------------------------------
@@ -76,7 +76,7 @@ with st.sidebar:
         <div style="line-height: 1.3; margin-bottom: 0.9em;;">
             <div>Data Version: <code>{}</code></div>
             <div>Downloaded: <code>{}</code></div>
-            <div>Ref date: <code>{}</code></div>
+            <div>Reference date: <code>{}</code></div>
         </div>
     """.format(ss.data_version['name'], ss.ts_downl, ss.ref_date.date()),
     unsafe_allow_html=True)
@@ -93,9 +93,8 @@ p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")
-p22 = st.Page("pages/page_methods.py",  title="Methods")
 
-pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p22, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p20, p21], position = "top")
 
 pg.run()
 
