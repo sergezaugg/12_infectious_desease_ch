@@ -4,7 +4,7 @@
 #--------------------
 
 from streamlit import session_state as ss
-from src.ui_elements import ui_render_basic_facet_plot_page
+from src.ui_elements import ui_render_basic_facet_plot_page, make_lineplot_by_disease_dense_wrapped
 import streamlit as st
 
 with st.sidebar:
@@ -13,7 +13,12 @@ with st.sidebar:
     """)
     st.divider()
 
-ui_render_basic_facet_plot_page(data = ss.df_years_all_concat, key = "ui_trace_y_", seasonality = "year")
+ui_render_basic_facet_plot_page(
+    data = ss.df_years_all_concat, 
+    key = "ui_trace_y_", 
+    seasonality = "year",     
+    plotfun = make_lineplot_by_disease_dense_wrapped
+    )
 
 
 
