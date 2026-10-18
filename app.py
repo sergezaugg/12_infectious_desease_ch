@@ -76,7 +76,7 @@ with st.sidebar:
         <div style="line-height: 1.3; margin-bottom: 0.9em;;">
             <div>Data Version: <code>{}</code></div>
             <div>Downloaded: <code>{}</code></div>
-            <div>Ref date: <code>{}</code></div>
+            <div>Reference date: <code>{}</code></div>
         </div>
     """.format(ss.data_version['name'], ss.ts_downl, ss.ref_date.date()),
     unsafe_allow_html=True)
