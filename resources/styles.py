@@ -8,6 +8,21 @@ import streamlit as st
 def apply_global_styles():
     """Apply global CSS styles to the Streamlit app."""
 
+    # enforce  min and max accepted screen width via CSS
+    st.markdown("""
+        <style>
+            .block-container {
+                max-width: 1590px;
+                min-width: 1400px;
+                padding-left: 2rem;
+                padding-right: 2rem;
+                margin-left: auto;
+                margin-right: auto;
+                box-sizing: border-box;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
     # Reduce spacing around st.divider() 
     st.markdown("""
         <style>
