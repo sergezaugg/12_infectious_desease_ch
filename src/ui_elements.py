@@ -164,7 +164,9 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=show_x_grid, 
         )   
     fig.update_yaxes(
@@ -278,7 +280,9 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_smo.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=False, 
         )   
     fig_smo.update_yaxes(
@@ -318,7 +322,9 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_res.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=False, 
         )   
     fig_res.update_yaxes(
