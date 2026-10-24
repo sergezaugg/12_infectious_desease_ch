@@ -13,6 +13,9 @@ with st.sidebar:
     """)
     st.divider()
 
+
+# st.write(ss.df_weeks_all_concat)    
+
 ui_render_basic_facet_plot_page(
     data = ss.df_weeks_all_concat, 
     key = "ui_trace_w_", 

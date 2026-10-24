@@ -113,21 +113,33 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
             st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
 
 
-def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw ):
+def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing ):
     """ 
     render the landing page 
     
     """
     fig_bar  = make_data_age_barplot(df_age, height)
-    fig_grid = make_mini_trend_plot_grid(df_trend, height, width)
+    fig_grid = make_mini_trend_plot_grid(df_trend, height, width, facet_col_spacing)
 
     c0, c1 = st.columns([2,9], border =True)
     with c0:
         st.text(col_tit[0])
-        st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key)
+        st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key, 
+                        # config={"staticPlot": True}
+                        config={
+                            "displayModeBar": False,  # Hide toolbar
+                            "scrollZoom": False,      # Disable scroll zoom
+                        },
+                        )
     with c1:
         st.text(col_tit[1])
-        st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key)
+        st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key, 
+                        # config={"staticPlot": True}
+                        config={
+                            "displayModeBar": False,  # Hide toolbar
+                            "scrollZoom": False,      # Disable scroll zoom
+                        },
+                        )
 
 
 
@@ -164,7 +176,9 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=show_x_grid, 
         )   
     fig.update_yaxes(
@@ -278,7 +292,9 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_smo.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=False, 
         )   
     fig_smo.update_yaxes(
@@ -318,7 +334,9 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_res.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
         title_font=dict(size=14),
-        dtick="M12", tick0="2000-01-01", gridcolor="#535053",
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
         showgrid=False, 
         )   
     fig_res.update_yaxes(
@@ -336,14 +354,14 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_mini_trend_plot_grid(df_plot, height, width):
+def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
     """ 
     Make trend grid plots for the landing page. 
     df_plot : A data frame in long format, where 'measure' is a categorical indicator the type of trace (raw or smoothed)
     and 'resp_var' the actual values (raw or smoothed).
     The df must also contain "date" (pd.timestamp) for trace plots and "disease" to make facets.
     """
-    colrs = ["#eeeeee", "#717171", "#ff521e"]
+    colrs = ["#eeeeee", "#494848", "#ff521e"]
     fig = px.line(
         data_frame = df_plot,
         x = "date",
@@ -352,7 +370,7 @@ def make_mini_trend_plot_grid(df_plot, height, width):
         facet_col= "disease",
         facet_col_wrap=6,
         facet_row_spacing = 0.05,
-        facet_col_spacing = 0.04,
+        facet_col_spacing = facet_col_spacing, # 0.10, # 0.04,
         height = height,
         width = width,
         color_discrete_map={
@@ -376,7 +394,7 @@ def make_mini_trend_plot_grid(df_plot, height, width):
         title_font=dict(size=14),
         dtick="M6",
         gridcolor="#535053",
-        showgrid=True,
+        showgrid=False,
         title_text=None,
         # ticks="inside",
         showticklabels=False, 
@@ -387,6 +405,7 @@ def make_mini_trend_plot_grid(df_plot, height, width):
         showticklabels=True,
         ticks="inside",
         showline=True,
+        showgrid=False,
         linewidth=1.8,
         mirror=True,
         title_font=dict(size=16),
