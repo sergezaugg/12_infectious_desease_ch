@@ -124,10 +124,22 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
     c0, c1 = st.columns([2,9], border =True)
     with c0:
         st.text(col_tit[0])
-        st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key, config={"staticPlot": True})
+        st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key, 
+                        # config={"staticPlot": True}
+                        config={
+                            "displayModeBar": False,  # Hide toolbar
+                            "scrollZoom": False,      # Disable scroll zoom
+                        },
+                        )
     with c1:
         st.text(col_tit[1])
-        st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key, config={"staticPlot": True})
+        st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key, 
+                        # config={"staticPlot": True}
+                        config={
+                            "displayModeBar": False,  # Hide toolbar
+                            "scrollZoom": False,      # Disable scroll zoom
+                        },
+                        )
 
 
 
