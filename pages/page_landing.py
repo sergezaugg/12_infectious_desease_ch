@@ -15,7 +15,7 @@ with st.sidebar:
     st.divider()
 
 ui_render_landing_page(
-    df_trend = ss.df_weeks_filtered_2y, df_age = ss.df_weeks_max_date, height = 180 , width = 900, 
+    df_trend = ss.df_weeks_filtered_recent, df_age = ss.df_weeks_max_date, height = 180 , width = 900, 
     col_tit = ["Update status weekly data", "Weekly diseases-radar"], use_contw = True, key = "w_"
 )
 
