@@ -9,10 +9,11 @@ import streamlit as st
 
 with st.sidebar:
     st.markdown("""
-    :primary[Summary:] Explore long-term trend from weekly incidence (currently only 2 disease available).
+    :primary[Summary:] Explore short-term trend from weekly incidence (currently only 2 diseases available).
     """)
     st.divider()
 
-ui_render_ma_resid_page(dat_long = ss.df_w_ma_long, dat_wide = ss.df_w_ma_wide, key = "ui_trend_w_")
+ui_render_ma_resid_page(dat_long = ss.df_w_ma_long, dat_wide = ss.df_w_ma_wide, key = "ui_trend_w_", 
+                        left_title = "Short-term Trend from 10 weeks moving window")
 
 
