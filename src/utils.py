@@ -45,14 +45,14 @@ def download_all_data(a = 1):
             data_di[data_set_name] = df
 
         ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-        data_source = "Sucessfully downloaded"
+        data_source = "✅ Sucessfully downloaded"
 
     except:
         print("Warning: fall back to historical_data!")
         with open("historical_data/bag_data_20261025.pkl", "rb") as f:
             di_reloded = pickle.load(f)
         data_di, data_version, n_files, ts = di_reloded
-        data_source = "Historical data fallback"
+        data_source = "⚠️ Historical data fallback"
     
     return data_di, data_version, n_files, ts, data_source
 
