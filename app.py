@@ -104,8 +104,9 @@ p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")
+p22 = st.Page("pages/page_methods.py",  title="Methods")
 
-pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p22, p20, p21], position = "top")
 
 pg.run()
 
