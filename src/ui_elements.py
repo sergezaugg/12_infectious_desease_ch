@@ -207,7 +207,7 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
     height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
     facet_row_spacing = spacing_px / height_b
 
-    fig = px.line(
+    fig = px.bar(
         data_frame = x,
         x = xvar,
         y = outcome,
@@ -216,12 +216,12 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
         facet_col_wrap=3,
         facet_row_spacing = facet_row_spacing,
         facet_col_spacing = 0.05,
-        markers=True,
+        # markers=True,
         height = height_b,
         labels=labels,
         )
 
-    fig.update_traces(marker=dict(size=5))   
+    # fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
         margin=dict(l=30, r=35, t=50, b=40),
