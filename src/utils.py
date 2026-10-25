@@ -11,38 +11,51 @@ from streamlit import session_state as ss
 import requests
 import io
 from datetime import datetime
+import pickle
 
 API_BASE_URL = "https://api.idd.bag.admin.ch/api/v1"
+# API_BASE_URL = "https://cacapipibloublouasfvsfsfsdfsdfv" # temp
 
 @st.cache_data(ttl=60*60*12, show_spinner="Downloading data from " + "`" + API_BASE_URL + "`")
 def download_all_data(a = 1):
-    full_query_string = f"{API_BASE_URL}/data/version"
-    r = requests.get(full_query_string, allow_redirects=True)
-    data_version = r.json()
 
-    full_query_string = f"{API_BASE_URL}/export/latest/files"
-    r = requests.get(full_query_string, allow_redirects=True)
-    data_file_list = r.json()
-
-    data_file_list =[a for a in data_file_list if "oblig" in a]
-
-    n_files = len(data_file_list)
-
-    data_di = {}
-    for li_index in range(len(data_file_list)):
-        print(li_index)
-        data_set_name = data_file_list[li_index]
-        print(data_set_name)
-        full_query_string = f"{API_BASE_URL}/export/latest/" + data_set_name + '/csv'
+    try:
+        full_query_string = f"{API_BASE_URL}/data/version"
         r = requests.get(full_query_string, allow_redirects=True)
-        raw_text = r.text
-        df = pd.read_csv(io.StringIO(raw_text, newline='\n')  , sep=",")
-        print(df.shape)
-        data_di[data_set_name] = df
+        data_version = r.json()
 
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M")
+        full_query_string = f"{API_BASE_URL}/export/latest/files"
+        r = requests.get(full_query_string, allow_redirects=True)
+        data_file_list = r.json()
+
+        data_file_list =[a for a in data_file_list if "oblig" in a]
+
+        n_files = len(data_file_list)
+
+        data_di = {}
+        for li_index in range(len(data_file_list)):
+            print(li_index)
+            data_set_name = data_file_list[li_index]
+            print(data_set_name)
+            full_query_string = f"{API_BASE_URL}/export/latest/" + data_set_name + '/csv'
+            r = requests.get(full_query_string, allow_redirects=True)
+            raw_text = r.text
+            df = pd.read_csv(io.StringIO(raw_text, newline='\n')  , sep=",")
+            print(df.shape)
+            data_di[data_set_name] = df
+
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M")
+        data_source = "✅ Sucessfully downloaded"
+
+    except:
+        print("Warning: fall back to historical_data!")
+        with open("historical_data/bag_data_20261025.pkl", "rb") as f:
+            di_reloded = pickle.load(f)
+        data_di, data_version, n_files, ts = di_reloded
+        data_source = "⚠️ Historical data fallback"
     
-    return data_di, data_version, n_files, ts
+    return data_di, data_version, n_files, ts, data_source
+
 
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """

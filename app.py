@@ -26,7 +26,7 @@ pd.set_option('display.max_rows', 500)
 if "di_prep" not in ss:
     ss.ref_date = pd.Timestamp.today().normalize()
     # download and perp once
-    ss.di_data, ss.data_version, ss.n_files, ss.ts_downl = download_all_data(22)
+    ss.di_data, ss.data_version, ss.n_files, ss.ts_downl, ss.dl_status = download_all_data(22)
     ss.di_prep = data_pre_select(ss.di_data)
     # extract pre-digested dfs 
     ss.di_prep_chfl = data_select_chfl(ss.di_prep)
@@ -90,14 +90,15 @@ with st.sidebar:
         </div>
     """.format(ss.data_version['name'], ss.ts_downl, ss.ref_date.date()),
     unsafe_allow_html=True)
+    st.caption(ss.dl_status)
     st.divider()
    
 # main navigation
 p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
-p02 = st.Page("pages/page01_weeks.py",  title="Weekly-plot")
-p03 = st.Page("pages/page02_months.py",  title="Monthly-plot")
-p04 = st.Page("pages/page02_years.py",  title="Yearly-plot")
+p02 = st.Page("pages/page01_weeks.py",  title="Weekly-History")
+p03 = st.Page("pages/page02_months.py",  title="Monthly-History")
+p04 = st.Page("pages/page02_years.py",  title="Yearly-History")
 p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly-Trend")
 p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
 p05 = st.Page("pages/page_about.py",  title="About")

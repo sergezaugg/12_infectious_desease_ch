@@ -89,7 +89,7 @@ def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
                     st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
-def ui_render_ma_resid_page(dat_long, dat_wide, key):
+def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title):
 
     with st.sidebar:
         sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
@@ -106,7 +106,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key):
     with st.container(border=True):
         c0, c1 = st.columns([7,8])
         with c0:
-            st.text("Long-Term Trend")
+            st.text(left_title)
             st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
         with c1:   
             st.text("Residuals From Trend") 
@@ -207,7 +207,7 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
     height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
     facet_row_spacing = spacing_px / height_b
 
-    fig = px.line(
+    fig = px.bar(
         data_frame = x,
         x = xvar,
         y = outcome,
@@ -216,12 +216,12 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
         facet_col_wrap=3,
         facet_row_spacing = facet_row_spacing,
         facet_col_spacing = 0.05,
-        markers=True,
+        # markers=True,
         height = height_b,
         labels=labels,
         )
 
-    fig.update_traces(marker=dict(size=5))   
+    # fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
         margin=dict(l=30, r=35, t=50, b=40),
