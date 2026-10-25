@@ -14,7 +14,7 @@ from resources.styles import apply_global_styles
 
 #------------------------------
 # prepare app 
-st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_icon='pics/z_logo_blue.png')
+st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_title="SID-Explorer", page_icon='pics/z_logo_blue.png')
 apply_global_styles() # apply custom CSS styles 
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
