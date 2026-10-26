@@ -14,7 +14,7 @@ from resources.styles import apply_global_styles
 
 #------------------------------
 # prepare app 
-st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_icon='pics/z_logo_blue.png')
+st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_title="SID-Explorer", page_icon='pics/z_logo_blue.png')
 apply_global_styles() # apply custom CSS styles 
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
@@ -70,11 +70,6 @@ if "di_prep" not in ss:
         del st.session_state[key]
 
 
-
-
-
-
-
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
 for key in list(st.session_state.keys()):
     st.session_state[key] = st.session_state[key]
@@ -104,8 +99,9 @@ p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")
+p22 = st.Page("pages/page_methods.py",  title="Methods")
 
-pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p22, p20, p21], position = "top")
 
 pg.run()
 
