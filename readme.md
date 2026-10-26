@@ -12,7 +12,7 @@
 - Plotly 7.1.0
 
 ### Dependencies Data Source
-- [FOPH Infectious Disease Data API](https://api.idd.bag.admin.ch/api).
+- [FOPH Infectious Disease Data API](https://www.idd.bag.admin.ch/en/portal-data).
 
 ### Installation
 1. **Clone the repository**  
@@ -28,6 +28,23 @@ Start the dashboard locally with:
 streamlit run stmain.py
 ```
 ### Project Structure
+
+```text
+12_infectious_desease_ch/
+├── app.py               # Main app's entry point
+├── pages/               # Pages for frontend 
+├── src/                 # Data processing and reusable utilities
+├── .streamlit/          # Streamlit configuration and theme
+├── resources/           # CSS styles and static codebooks  
+├── historical_data/     # Historical 'fall-back' data files
+├── pics/                # Images and logos
+├── requirements.txt     # Python dependencies
+├── .gitignore           # Git ignore rules
+├── LICENSE              # MIT License
+└── README.md            # Project documentation
+```
+
+
 
 ### Credits
 - Data management and curation: [Swiss Federal Office of Public Health (FOPH)](https://www.bag.admin.ch/)
