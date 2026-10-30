@@ -41,7 +41,7 @@ def ui_sel_country_in_two_steps(data, key):
     return sel_dis
 
 
-def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
+def ui_render_basic_facet_plot_page(data, key, plotfun):
    
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
@@ -50,43 +50,26 @@ def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
         sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
 
     # apply user selection upon user's confirmation
-    if True:
-        n_dis = len(sel_dis)
-        df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-        fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = True,
-                                            facet_labels = True)
-        
-        if seasonality == "month":
-            colw = [4,2]  
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                             facet_labels = True)
-        elif seasonality == "week": 
-            colw = [4,2]           
-            # enforce sorting 
-            df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                            facet_labels = True)
-        elif seasonality == "year": 
-            fig_b = px.line()
-            colw = [4.0,0.2]
-        else:
-            print("shit")
+    n_dis = len(sel_dis)
+    df_plot = data[data['dis_abbrev'].isin(sel_dis)]
+    fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
+        labels = ss.labels, show_x_grid = True, facet_labels = True)
+    
+    with st.container(border=True):
+        st.text("Cases History")
+        st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
+          
 
-        ss[key] = [fig_a, fig_b]
 
-    if key in ss:
-        with st.container(border=True):
-            c1,c2 = st.columns(colw)
-            with c1:
-                st.text("Cases History")
-                st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
-            with c2:
-                if seasonality != "year":
-                    st.text("Cases By Month")
-                    st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
+
+
+
+
+
+
+
+
+
 
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
@@ -230,7 +213,7 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
 
 
 @st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 90
