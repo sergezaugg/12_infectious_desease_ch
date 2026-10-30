@@ -11,8 +11,10 @@ import plotly.express as px
 # ---------------------------
 # ui elements  
 
+
 def ui_sel_two_steps(data, key):
     """ Re-usable st element to select countries in two steps"""
+
     # get full list of coutries 
     df_options = ss.df_overview[['dis_abbrev', 'type']]
     # reduce options to diseases that exist in current data
@@ -21,26 +23,32 @@ def ui_sel_two_steps(data, key):
     # get full list of disease types 
     opt_types = df_options['type'].unique()
 
-    # step 1 : select a subset of disease types 
-    def caba_update_dis_options():
-        ss[key+"_03"] = df_options.loc[df_options['type'].eq(st.session_state[key + "_02"]),'dis_abbrev'].tolist()
+    # # step 1 : select a subset of disease types 
+    # def caba_update_dis_options():
+    #     ss[key+"_03"] = df_options.loc[df_options['type'].eq(st.session_state[key + "_02"]),'dis_abbrev'].tolist()
 
     sel_type = st.pills("Select disease type", options=opt_types, selection_mode="single", 
         default = opt_types[0],
-        on_change= caba_update_dis_options,
-        key = key+"_02", 
-        persist_state = "session")
+        # on_change= caba_update_dis_options,
+        # key = key+"_02", 
+        # persist_state = "session"
+        )
 
     # step 2 : select diseases within selected subset of disease types 
     opt_disea_subset = df_options.loc[df_options['type'].isin([sel_type]), 'dis_abbrev'].tolist()
     sel_dis = st.multiselect("Select diseases", 
         options = opt_disea_subset, 
-        key = key+"_03", format_func=lambda x: x[:9],
+        # key = key+"_03", 
+        format_func=lambda x: x[:9],
         default = opt_disea_subset,  
         # persist_state = "session"
         )
 
     return sel_dis
+
+
+
+#-------------------------------------------------
 
 
 def ui_render_basic_facet_plot_page(data, key, plotfun):
@@ -69,11 +77,23 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
                 persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
-        sel_dis = ui_sel_two_steps(data = dat_long, key = key + "two_steps")  
+        # select diseases 
+        # opt_disea = dat_long['dis_abbrev'].unique().tolist()
+        # sel_dis = st.multiselect("Select diseases", options = opt_disea, default = opt_disea[0])
 
-    n_dis = len(sel_dis)
-    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
-    df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
+        # block to select via form
+        df_plot_long = dat_long[dat_long['dis_abbrev'].isin(['CAMP'])]
+        df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(['CAMP'])]
+        n_dis = 1
+        with st.form(key="disease_form0"):
+            opt_disea = dat_long['dis_abbrev'].unique().tolist()
+            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0], key = "disease_form1")
+            submitted = st.form_submit_button("Apply filters", key = "disease_form2")
+        if submitted:
+            n_dis = len(sel_dis)
+            df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
+            df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
+
 
     fig_smo, fig_res  = make_plots_smo_resid(
         df_long = df_plot_long, 

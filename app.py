@@ -75,8 +75,19 @@ if "di_prep" not in ss:
 # st.write(ss.df_m_ma_wide.shape)
 
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
-for key in list(st.session_state.keys()):
+my_list = list(st.session_state.keys())
+
+# my_list = [x for x in my_list if x != "disease_form0"]
+# my_list = [x for x in my_list if x != "disease_form1"]
+# my_list = [x for x in my_list if x != "disease_form2"]
+
+my_list = [x for x in my_list if not x.startswith("disease_form")]
+
+for key in my_list:
     st.session_state[key] = st.session_state[key]
+
+# for key in list(st.session_state.keys()):
+#     st.session_state[key] = st.session_state[key]
 
 # build sidebar
 with st.sidebar:
