@@ -11,12 +11,12 @@ import plotly.express as px
 # ---------------------------
 # ui elements  
 
-def ui_sel_country_in_two_steps(data, key):
+def ui_sel_two_steps(data, key):
     """ Re-usable st element to select countries in two steps"""
     # get full list of coutries 
     df_options = ss.df_overview[['dis_abbrev', 'type']]
     # reduce options to diseases that exist in current data
-    dis_levels_exist =data['dis_abbrev'].unique()
+    dis_levels_exist = data['dis_abbrev'].unique()
     df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
     # get full list of disease types 
     opt_types = df_options['type'].unique()
@@ -49,7 +49,7 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
             persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
-        sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
+        sel_dis = ui_sel_two_steps(data = data, key = key + "two_steps")
 
     # apply user selection upon user's confirmation
     n_dis = len(sel_dis)
@@ -62,18 +62,6 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
         st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
           
 
-
-
-
-
-
-
-
-
-
-
-
-
 def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
     """
     """
@@ -81,7 +69,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
                 persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
-        sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
+        sel_dis = ui_sel_two_steps(data = dat_long, key = key + "two_steps")  
 
     n_dis = len(sel_dis)
     df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
@@ -117,16 +105,6 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
                 st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
             with tab3:
                 st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
-
-
-
-
-
-
-
-
-
-
 
 
 
