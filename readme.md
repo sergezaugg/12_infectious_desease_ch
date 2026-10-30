@@ -28,7 +28,6 @@ Start the dashboard locally with:
 streamlit run stmain.py
 ```
 ### Project Structure
-
 ```text
 12_infectious_desease_ch/
 ├── app.py               # Main app's entry point
