@@ -89,9 +89,12 @@ def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
                     st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
 
 
-def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title):
+def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
 
     with st.sidebar:
+        outcome_options = ["incValue", "value"] # ,  "pop"]
+        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+                persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
         sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
 
     n_dis = len(sel_dis)
@@ -103,14 +106,42 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title):
         df_wide = df_plot_wide, 
         xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
 
+    # seasonality plot 
+    fig_seas = make_lineplot_all_by_disease(x = df_plot_wide, xvar = seasonality, col_var = "year", 
+            n_facets = n_dis, outcome = selected_outcome, 
+            labels = ss.labels, show_x_grid = False,
+            facet_labels = True)
+
     with st.container(border=True):
+        st.text(left_title)
         c0, c1 = st.columns([7,8])
         with c0:
-            st.text(left_title)
-            st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
+            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
+            with tab1:
+                st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
+            with tab2:
+                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals")
+            with tab3:
+                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality")
         with c1:   
-            st.text("Residuals From Trend") 
-            st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
+            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Residuals")
+            with tab1:
+                st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo_2")
+            with tab2:
+                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
+            with tab3:
+                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
+
+
+
+
+
+
+
+
+
+
+
 
 
 def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing ):

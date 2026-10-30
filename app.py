@@ -70,6 +70,10 @@ if "di_prep" not in ss:
         del st.session_state[key]
 
 
+# st.write(ss.df_months_all_concat.shape)
+# st.write(ss.df_m_ma_long.shape)
+# st.write(ss.df_m_ma_wide.shape)
+
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
 for key in list(st.session_state.keys()):
     st.session_state[key] = st.session_state[key]
@@ -91,8 +95,6 @@ with st.sidebar:
 # main navigation
 p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
-p02 = st.Page("pages/page01_weeks.py",  title="Weekly-History")
-p03 = st.Page("pages/page02_months.py",  title="Monthly-History")
 p04 = st.Page("pages/page02_years.py",  title="Yearly-History")
 p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly-Trend")
 p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
@@ -101,7 +103,7 @@ p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")
 p22 = st.Page("pages/page_methods.py",  title="Methods")
 
-pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p22, p20, p21], position = "top")
+pg = st.navigation([p00, p06, p07, p04, p01, p05, p22, p20, p21], position = "top")
 
 pg.run()
 

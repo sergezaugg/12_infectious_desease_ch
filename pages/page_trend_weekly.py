@@ -14,6 +14,7 @@ with st.sidebar:
     st.divider()
 
 ui_render_ma_resid_page(dat_long = ss.df_w_ma_long, dat_wide = ss.df_w_ma_wide, key = "ui_trend_w_", 
-                        left_title = "Short-term Trend from 10 weeks moving window")
+                        left_title = "Short-term Trend from 10 weeks moving window",
+                        seasonality = "week")
 
 
