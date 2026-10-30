@@ -95,9 +95,9 @@ with st.sidebar:
 # main navigation
 p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
 p01 = st.Page("pages/page_info.py",  title="Diseases")
-p04 = st.Page("pages/page02_years.py",  title="Yearly-History")
-p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly-Trend")
-p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
+p04 = st.Page("pages/page02_years.py",  title="Yearly")
+p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly")
+p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly")
 p05 = st.Page("pages/page_about.py",  title="About")
 p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
 p21 = st.Page("pages/page_refresh.py",  title="Dev")

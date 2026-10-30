@@ -23,14 +23,16 @@ def ui_sel_country_in_two_steps(data, key):
 
     # step 1 : select a subset of disease types 
     def caba_update_dis_options():
-        ss[key+"_03"] = df_options.loc[df_options['type'].isin(st.session_state[key + "_02"]), 'dis_abbrev'].tolist()
-    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
+        ss[key+"_03"] = df_options.loc[df_options['type'].eq(st.session_state[key + "_02"]),'dis_abbrev'].tolist()
+
+    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="single", 
         default = opt_types[0],
         on_change= caba_update_dis_options,
-        key = key+"_02", persist_state = "session")
+        key = key+"_02", 
+        persist_state = "session")
 
     # step 2 : select diseases within selected subset of disease types 
-    opt_disea_subset = df_options.loc[df_options['type'].isin(sel_type), 'dis_abbrev'].tolist()
+    opt_disea_subset = df_options.loc[df_options['type'].isin([sel_type]), 'dis_abbrev'].tolist()
     sel_dis = st.multiselect("Select diseases", 
         options = opt_disea_subset, 
         key = key+"_03", format_func=lambda x: x[:9],
@@ -73,7 +75,8 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
 
 
 def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
-
+    """
+    """
     with st.sidebar:
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
