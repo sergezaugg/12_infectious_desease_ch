@@ -13,12 +13,21 @@ with st.sidebar:
     """)
     st.divider()
 
+# title at top 
+titl = """
+    <span>Short-term trend from 10 weeks moving window (</span>
+    <span style="color: #f5630f;">━━━━━━</span>
+    <span>) and monthly values (</span>
+    <span style="color: #13bee0;">━━━━━━</span>
+    <span>)</span>
+    """
+
 with st.spinner("Rendering plots"):
     ui_render_ma_resid_page(
         dat_long = ss.df_w_ma_long, 
         dat_wide = ss.df_w_ma_wide, 
         key = "ui_trend_w_", 
-        left_title = "Short-term Trend from 10 weeks moving window",
+        left_title = titl,
         seasonality = "week")
 
 
