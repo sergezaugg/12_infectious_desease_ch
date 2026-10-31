@@ -51,7 +51,8 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
         # select via form
         with st.form(key="disease_form0"):
             opt_disea = dat_long['dis_abbrev'].unique().tolist()
-            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], key = key + "disease_form1")
+            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], 
+                max_selections=10, key = key + "disease_form1")
             # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
             submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
