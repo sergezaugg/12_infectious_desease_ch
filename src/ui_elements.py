@@ -22,7 +22,7 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
             # select via form
             with st.form(key="disease_form0"):
                 opt_disea = data['dis_abbrev'].unique().tolist()
-                sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], key = key + "disease_form1")
+                sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:6], key = key + "disease_form1")
                 # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
                 submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
@@ -195,12 +195,9 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
         facet_col_wrap=3,
         facet_row_spacing = facet_row_spacing,
         facet_col_spacing = 0.05,
-        # markers=True,
         height = height_b,
         labels=labels,
         )
-
-    # fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
         margin=dict(l=30, r=35, t=50, b=40),
@@ -216,18 +213,17 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
         matches=None,
         showline = True, linewidth=1.8, mirror=True,
         title_font=dict(size=16),
-        range=[0.0, None]
+        range=[0.0, None],
+        showticklabels=True,
+        ticks="inside"
         ) 
-
+    # fig.for_each_yaxis(lambda ax: ax.update(title_text=outcome))
     # fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
-
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
         # annotation.textangle = 90
-
     if facet_labels == False:
         fig.for_each_annotation(lambda a: a.update(text=""))    
-
     return fig
 
 
