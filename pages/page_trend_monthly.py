@@ -13,8 +13,6 @@ with st.sidebar:
     """)
     st.divider()
 
-# st.write(ss.df_m_ma_long)
-
 ui_render_ma_resid_page(
     dat_long = ss.df_m_ma_long, 
     dat_wide = ss.df_m_ma_wide, 
