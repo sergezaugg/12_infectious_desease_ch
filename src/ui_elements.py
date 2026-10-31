@@ -35,8 +35,9 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     with st.container(border=True):
         st.text("Cases History")
         st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
-          
+    st.text("Tip: Select one or more diseases using the left sidebar.")  
 
+          
 def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
     """
     """
@@ -89,7 +90,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
                 st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
             with tab3:
                 st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
-
+    st.text("Tip: Select one or more diseases using the left sidebar.")
 
 
 def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing ):
@@ -119,7 +120,6 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
                             "scrollZoom": False,      # Disable scroll zoom
                         },
                         )
-
 
 
 # ---------------------------

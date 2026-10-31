@@ -81,7 +81,6 @@ my_list = list(st.session_state.keys())
 my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trace_y_disease_form2")]
-
 for key in my_list:
     st.session_state[key] = st.session_state[key]
 # OLD : protect all 
