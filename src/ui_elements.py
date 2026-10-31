@@ -82,7 +82,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
             with tab3:
                 st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality")
         with c1:   
-            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Residuals")
+            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Seasonality")
             with tab1:
                 st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo_2")
             with tab2:
