@@ -9,7 +9,7 @@ import streamlit as st
 
 with st.sidebar:
     st.markdown("""
-    :primary[Summary:] Explore short-term trend from weekly incidence (currently only 2 diseases available).
+    :primary[Summary:] Explore short-term trend from weekly incidence (only 2 diseases available).
     """)
     st.divider()
 

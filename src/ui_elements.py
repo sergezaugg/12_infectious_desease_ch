@@ -33,7 +33,6 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
         labels = ss.labels, show_x_grid = True, facet_labels = True)
     
     with st.container(border=True):
-        st.text("Cases History")
         st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
     st.text("Tip: Select one or more diseases using the left sidebar.")  
 
@@ -178,7 +177,7 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
