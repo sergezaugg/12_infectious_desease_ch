@@ -104,17 +104,17 @@ with st.sidebar:
     st.divider()
    
 # main navigation
-p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
-p01 = st.Page("pages/page_info.py",  title="Diseases")
-p04 = st.Page("pages/page02_years.py",  title="Yearly History")
-p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly History")
-p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly History")
-p05 = st.Page("pages/page_about.py",  title="About")
-p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
-p21 = st.Page("pages/page_refresh.py",  title="Dev")
-p22 = st.Page("pages/page_methods.py",  title="Methods")
+p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
+p02 = st.Page("pages/page_weekly.py", title="Weekly History")
+p03 = st.Page("pages/page_monthly.py", title="Monthly History")
+p04 = st.Page("pages/page_yearly.py", title="Yearly History")
+p05 = st.Page("pages/page_info.py", title="Diseases")
+p06 = st.Page("pages/page_about.py", title="About")
+p07 = st.Page("pages/page_methods.py", title="Methods")
+p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
+p09 = st.Page("pages/page_refresh.py", title="Maintenance")
 
-pg = st.navigation([p00, p06, p07, p04, p01, p05, p22, p20, p21], position = "top")
+pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
 
 pg.run()
 
