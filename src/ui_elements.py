@@ -73,7 +73,7 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
 
     with st.container(border=True):
         st.text(left_title)
-        c0, c1 = st.columns([7,8])
+        c0, c1 = st.columns([8,8])
         with c0:
             tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
             with tab1:
@@ -125,7 +125,7 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
 # ---------------------------
 # plots 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
@@ -149,7 +149,8 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
-        margin=dict(l=30, r=35, t=50, b=40),
+        # margin=dict(l=30, r=35, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(
@@ -227,7 +228,7 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
     """  """
@@ -262,7 +263,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
     fig_smo.update_layout(
         showlegend=False,
-        margin=dict(l=30, r=30, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         )
     fig_smo.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
@@ -278,7 +279,11 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
         title_font=dict(size=16),
         range=[0.0, None]
         ) 
-    fig_smo.for_each_annotation(lambda a: a.update(text=""))    
+    fig_smo.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig_smo.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 90
+    # fig_smo.for_each_annotation(lambda a: a.update(text=""))    
 
 
 
@@ -304,7 +309,8 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
     fig_res.update_layout(
         showlegend=False,
-        margin=dict(l=50, r=150, t=50, b=40),
+        # margin=dict(l=50, r=150, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         )
     fig_res.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
@@ -328,7 +334,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     return fig_smo, fig_res    
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
     """ 
     Make trend grid plots for the landing page. 
@@ -394,7 +400,7 @@ def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
     return(fig)
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_data_age_barplot(df_plot, height):
     """
     df_plot : A data frame that has exactly one row per disease

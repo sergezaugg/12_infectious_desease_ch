@@ -13,11 +13,12 @@ with st.sidebar:
     """)
     st.divider()
 
-ui_render_ma_resid_page(
-    dat_long = ss.df_m_ma_long, 
-    dat_wide = ss.df_m_ma_wide, 
-    key = "ui_trend_m_", 
-    left_title = "Long-term Trend from 1 year moving window",
-    seasonality = "month")
+with st.spinner("Rendering plots"):
+    ui_render_ma_resid_page(
+        dat_long = ss.df_m_ma_long, 
+        dat_wide = ss.df_m_ma_wide, 
+        key = "ui_trend_m_", 
+        left_title = "Long-term Trend from 1 year moving window",
+        seasonality = "month")
 
 

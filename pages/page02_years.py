@@ -13,11 +13,12 @@ with st.sidebar:
     """)
     st.divider()
 
-ui_render_basic_facet_plot_page(
-    data = ss.df_years_all_concat, 
-    key = "ui_trace_y_", 
-    plotfun = make_barplot_by_disease_dense_wrapped
-    )
+with st.spinner("Rendering plots"):
+    ui_render_basic_facet_plot_page(
+        data = ss.df_years_all_concat, 
+        key = "ui_trace_y_", 
+        plotfun = make_barplot_by_disease_dense_wrapped
+        )
 
 
 
