@@ -79,15 +79,18 @@ my_list = list(st.session_state.keys())
 
 # my_list = [x for x in my_list if x != "disease_form0"]
 # my_list = [x for x in my_list if x != "disease_form1"]
-# my_list = [x for x in my_list if x != "disease_form2"]
+# my_list = [x for x in my_list if x != "ui_trend_m_disease_form2"]
 
-my_list = [x for x in my_list if not x.startswith("disease_form")]
-
+my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
 for key in my_list:
     st.session_state[key] = st.session_state[key]
 
 # for key in list(st.session_state.keys()):
 #     st.session_state[key] = st.session_state[key]
+
+
+
+
 
 # build sidebar
 with st.sidebar:

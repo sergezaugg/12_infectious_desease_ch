@@ -77,22 +77,20 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
         outcome_options = ["incValue", "value"] # ,  "pop"]
         selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
                 persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
-        # select diseases 
-        # opt_disea = dat_long['dis_abbrev'].unique().tolist()
-        # sel_dis = st.multiselect("Select diseases", options = opt_disea, default = opt_disea[0])
-
-        # block to select via form
-        df_plot_long = dat_long[dat_long['dis_abbrev'].isin(['CAMP'])]
-        df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(['CAMP'])]
-        n_dis = 1
+       
+        # select via form
         with st.form(key="disease_form0"):
             opt_disea = dat_long['dis_abbrev'].unique().tolist()
-            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0], key = "disease_form1")
-            submitted = st.form_submit_button("Apply filters", key = "disease_form2")
-        if submitted:
-            n_dis = len(sel_dis)
-            df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
-            df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
+            # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:10], key = key + "disease_form1")
+            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
+            submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
+
+    # if not submitted: 
+    #     st.info("Please select a few diseases in the side-panel and press 'Render plots'")   
+    # if submitted:
+    n_dis = len(sel_dis)
+    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
+    df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
 
 
     fig_smo, fig_res  = make_plots_smo_resid(
