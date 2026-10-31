@@ -72,24 +72,22 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
             facet_labels = True)
 
     with st.container(border=True):
-        st.text(left_title)
+
+        st.markdown(left_title, unsafe_allow_html=True)
+        
         c0, c1 = st.columns([8,8])
         with c0:
-            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
+            # tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
+            tab1, tab2, tab3 = st.tabs(["Values", "", ""], width="stretch", default="Values")
             with tab1:
                 st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
-            with tab2:
-                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals")
-            with tab3:
-                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality")
         with c1:   
-            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Seasonality")
-            with tab1:
-                st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo_2")
+            tab1, tab2, tab3 = st.tabs(["", "Seasonality", "Residuals"], width="stretch", default="Seasonality")
             with tab2:
-                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
+                    st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
             with tab3:
-                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
+                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
+           
     st.text("Tip: Select one or more diseases using the left sidebar.")
 
 

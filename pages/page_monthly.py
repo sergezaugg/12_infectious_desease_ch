@@ -13,12 +13,21 @@ with st.sidebar:
     """)
     st.divider()
 
+# title at top 
+titl = """
+    <span>Long-term trend from 12 month moving window (</span>
+    <span style="color: #f5630f;">━━━━━━</span>
+    <span>) and monthly values (</span>
+    <span style="color: #13bee0;">━━━━━━</span>
+    <span>)</span>
+    """
+
 with st.spinner("Rendering plots"):
     ui_render_ma_resid_page(
         dat_long = ss.df_m_ma_long, 
         dat_wide = ss.df_m_ma_wide, 
         key = "ui_trend_m_", 
-        left_title = "Long-term Trend from 1 year moving window",
+        left_title = titl,
         seasonality = "month")
 
 
