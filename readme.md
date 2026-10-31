@@ -1,10 +1,13 @@
 # Swiss Infectious Disease Explorer
 
 ### Features
-- Visualizes weekly, monthly, and yearly incidence of 42 infectious diseases in Switzerland.
-- Interactive and zoomable plots
+- Visualizes weekly, monthly, and yearly incidence of 42 infectious diseases in Switzerland
+- Detailed summary of data freshness for each disease
+- Select custom disease subset to compare
 - simple moving-window-based estimation of trends 
-- Data is fetched from the official FOPH API.
+- Interactive and zoomable plotly plots
+- Data automatically downloaded via the official FOPH API
+- Protected maintenance page to manually re-download data via API
 
 ### Dependencies
 - Python 3.12 
@@ -15,18 +18,25 @@
 - [FOPH Infectious Disease Data API](https://www.idd.bag.admin.ch/en/portal-data).
 
 ### Installation
-1. **Clone the repository**  
-2. **Create and activate a virtual environment**  
-3. **Install dependencies**  
-```bash
-pip install -r requirements.txt
-```
+1. Clone the repository  
+2. Create and activate a Python venv
+3. Install dependencies with ```pip install -r requirements.txt```
 
-### Usage
-Start the dashboard locally with:
-```bash
-streamlit run stmain.py
-```
+### Set a maintenance code (facultative)
+1. Create a file ```.streamlit/secrets.toml``` with one key: ```maintenancecode```
+2. The value is a string with you code.
+3. This is needed to access the data refresh button in running app
+
+### Usage (Easy with VS Code)
+1. Open this repo with "Open Folder..."
+2. Activate virtual environment (CTRL-SHIFT-P, "Python Select Interpreter") 
+3. Open a terminal and type: ```streamlit run app.py```
+
+### Usage (With CMD terminal under windows)
+1. Open cmd and navigate to root dir of this repo
+3. Activate venv with ```[full-path-to-venv-dir]\Scripts\activate.bat```
+4. type: ```streamlit run app.py```
+
 ### Project Structure
 ```text
 12_infectious_desease_ch/
@@ -50,7 +60,7 @@ streamlit run stmain.py
 - Web-app concept, analytics and implementation by Serge Zaugg ([Pollito-ML](https://github.com/sergezaugg))
 
 ### License
-[MIT License](LICENSE)
+[MIT License - © 2026 Serge Zaugg](LICENSE)
 
 
 

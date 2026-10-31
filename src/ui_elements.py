@@ -184,7 +184,7 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
     facet_height = 90
     spacing_px = 70
     height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
-    facet_row_spacing = spacing_px / height_b
+    facet_row_spacing = 1.1*(spacing_px / height_b)
 
     fig = px.bar(
         data_frame = x,
@@ -217,13 +217,13 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
         showticklabels=True,
         ticks="inside"
         ) 
-    # fig.for_each_yaxis(lambda ax: ax.update(title_text=outcome))
-    # fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
         # annotation.textangle = 90
     if facet_labels == False:
-        fig.for_each_annotation(lambda a: a.update(text=""))    
+        fig.for_each_annotation(lambda a: a.update(text="")) 
+    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.04))   
+    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.03, yanchor="top")) 
     return fig
 
 
