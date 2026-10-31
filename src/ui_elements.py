@@ -11,88 +11,49 @@ import plotly.express as px
 # ---------------------------
 # ui elements  
 
-def ui_sel_country_in_two_steps(data, key):
-    """ Re-usable st element to select countries in two steps"""
-    # get full list of coutries 
-    df_options = ss.df_overview[['dis_abbrev', 'type']]
-    # reduce options to diseases that exist in current data
-    dis_levels_exist =data['dis_abbrev'].unique()
-    df_options = df_options[df_options['dis_abbrev'].isin(dis_levels_exist)]
-    # get full list of disease types 
-    opt_types = df_options['type'].unique()
-
-    # step 1 : select a subset of disease types 
-    def caba_update_dis_options():
-        ss[key+"_03"] = df_options.loc[df_options['type'].isin(st.session_state[key + "_02"]), 'dis_abbrev'].tolist()
-    sel_type = st.pills("Select disease type", options=opt_types, selection_mode="multi", 
-        default = opt_types[0],
-        on_change= caba_update_dis_options,
-        key = key+"_02", persist_state = "session")
-
-    # step 2 : select diseases within selected subset of disease types 
-    opt_disea_subset = df_options.loc[df_options['type'].isin(sel_type), 'dis_abbrev'].tolist()
-    sel_dis = st.multiselect("Select diseases", 
-        options = opt_disea_subset, 
-        key = key+"_03", format_func=lambda x: x[:9],
-        default = opt_disea_subset,  
-        # persist_state = "session"
-        )
-
-    return sel_dis
-
-
-def ui_render_basic_facet_plot_page(data, key, seasonality, plotfun):
-   
+def ui_render_basic_facet_plot_page(data, key, plotfun):
+    """
+    """
     with st.sidebar:
-        outcome_options = ["incValue", "value"] # ,  "pop"]
-        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
-            persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
-        sel_dis = ui_sel_country_in_two_steps(data = data, key = key + "two_steps")
+            outcome_options = ["incValue", "value"] # ,  "pop"]
+            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+                persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
+        
+            # select via form
+            with st.form(key="disease_form0"):
+                opt_disea = data['dis_abbrev'].unique().tolist()
+                sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:6], key = key + "disease_form1")
+                # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
+                submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
     # apply user selection upon user's confirmation
-    if True:
-        n_dis = len(sel_dis)
-        df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-        fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = True,
-                                            facet_labels = True)
-        
-        if seasonality == "month":
-            colw = [4,2]  
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "month", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                             facet_labels = True)
-        elif seasonality == "week": 
-            colw = [4,2]           
-            # enforce sorting 
-            df_plot =df_plot.sort_values(['disease', 'temporal_type', 'week', 'date', ])
-            fig_b = make_lineplot_all_by_disease(x = df_plot, xvar = "week", col_var = "year", n_facets = n_dis, outcome = selected_outcome, 
-                                            labels = ss.labels, show_x_grid = False,
-                                            facet_labels = True)
-        elif seasonality == "year": 
-            fig_b = px.line()
-            colw = [4.0,0.2]
-        else:
-            print("shit")
+    n_dis = len(sel_dis)
+    df_plot = data[data['dis_abbrev'].isin(sel_dis)]
+    fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
+        labels = ss.labels, show_x_grid = True, facet_labels = True)
+    
+    with st.container(border=True):
+        st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
+    st.text("Tip: Select one or more diseases using the left sidebar.")  
 
-        ss[key] = [fig_a, fig_b]
-
-    if key in ss:
-        with st.container(border=True):
-            c1,c2 = st.columns(colw)
-            with c1:
-                st.text("Cases History")
-                st.plotly_chart(ss[key][0], use_container_width=True, key = "k_fig_a")
-            with c2:
-                if seasonality != "year":
-                    st.text("Cases By Month")
-                    st.plotly_chart(ss[key][1], use_container_width=True, key = "k_fig_b")
-
-
-def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title):
-
+          
+def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
+    """
+    """
     with st.sidebar:
-        sel_dis = ui_sel_country_in_two_steps(data = dat_long, key = key + "two_steps")
+        # de-activated
+        # outcome_options = ["incValue", "value"] # ,  "pop"]
+        # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+        #     persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
+        # temp 
+        selected_outcome = "incValue"
+       
+        # select via form
+        with st.form(key="disease_form0"):
+            opt_disea = dat_long['dis_abbrev'].unique().tolist()
+            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], key = key + "disease_form1")
+            # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
+            submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
     n_dis = len(sel_dis)
     df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
@@ -103,14 +64,32 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title):
         df_wide = df_plot_wide, 
         xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
 
+    # seasonality plot 
+    fig_seas = make_lineplot_all_by_disease(x = df_plot_wide, xvar = seasonality, col_var = "year", 
+            n_facets = n_dis, outcome = selected_outcome, 
+            labels = ss.labels, show_x_grid = False,
+            facet_labels = True)
+
     with st.container(border=True):
-        c0, c1 = st.columns([7,8])
+        st.text(left_title)
+        c0, c1 = st.columns([8,8])
         with c0:
-            st.text(left_title)
-            st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
+            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
+            with tab1:
+                st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
+            with tab2:
+                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals")
+            with tab3:
+                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality")
         with c1:   
-            st.text("Residuals From Trend") 
-            st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_res")
+            tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Seasonality")
+            with tab1:
+                st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo_2")
+            with tab2:
+                st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
+            with tab3:
+                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
+    st.text("Tip: Select one or more diseases using the left sidebar.")
 
 
 def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing ):
@@ -142,11 +121,10 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
                         )
 
 
-
 # ---------------------------
 # plots 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
@@ -170,7 +148,8 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
-        margin=dict(l=30, r=35, t=50, b=40),
+        # margin=dict(l=30, r=35, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
     fig.update_xaxes(
@@ -198,14 +177,14 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plots")
-def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+@st.cache_data(show_spinner="Creating plots")
+def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
 
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 90
     spacing_px = 70
     height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
-    facet_row_spacing = spacing_px / height_b
+    facet_row_spacing = 1.1*(spacing_px / height_b)
 
     fig = px.bar(
         data_frame = x,
@@ -216,12 +195,9 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
         facet_col_wrap=3,
         facet_row_spacing = facet_row_spacing,
         facet_col_spacing = 0.05,
-        # markers=True,
         height = height_b,
         labels=labels,
         )
-
-    # fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
         margin=dict(l=30, r=35, t=50, b=40),
@@ -237,22 +213,21 @@ def make_lineplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, 
         matches=None,
         showline = True, linewidth=1.8, mirror=True,
         title_font=dict(size=16),
-        range=[0.0, None]
+        range=[0.0, None],
+        showticklabels=True,
+        ticks="inside"
         ) 
-
-    # fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
-
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
         # annotation.textangle = 90
-
     if facet_labels == False:
-        fig.for_each_annotation(lambda a: a.update(text=""))    
-
+        fig.for_each_annotation(lambda a: a.update(text="")) 
+    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.04))   
+    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.03, yanchor="top")) 
     return fig
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
     """  """
@@ -287,7 +262,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
     fig_smo.update_layout(
         showlegend=False,
-        margin=dict(l=30, r=30, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         )
     fig_smo.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
@@ -303,7 +278,11 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
         title_font=dict(size=16),
         range=[0.0, None]
         ) 
-    fig_smo.for_each_annotation(lambda a: a.update(text=""))    
+    fig_smo.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig_smo.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 90
+    # fig_smo.for_each_annotation(lambda a: a.update(text=""))    
 
 
 
@@ -329,7 +308,8 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
     fig_res.update_layout(
         showlegend=False,
-        margin=dict(l=50, r=150, t=50, b=40),
+        # margin=dict(l=50, r=150, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
         )
     fig_res.update_xaxes(
         showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
@@ -353,7 +333,7 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
     return fig_smo, fig_res    
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
     """ 
     Make trend grid plots for the landing page. 
@@ -419,7 +399,7 @@ def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
     return(fig)
 
 
-@st.cache_data(show_spinner="Rendering plots")
+@st.cache_data(show_spinner="Creating plots")
 def make_data_age_barplot(df_plot, height):
     """
     df_plot : A data frame that has exactly one row per disease

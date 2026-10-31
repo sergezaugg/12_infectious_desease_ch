@@ -20,9 +20,7 @@ st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/ser
 pd.set_option('display.max_rows', 500)
 
 #------------------------------
-# prepare data once (only run on startup and when dev triggers refresh)
-# run the data prep pipe only and exactly once on session startup MCELP
-# because many caches function will consume resources and time even on cache hit!
+# run the data prep once per session startup and if admin triggers refresh 
 if "di_prep" not in ss:
     ss.ref_date = pd.Timestamp.today().normalize()
     # download and perp once
@@ -41,20 +39,18 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
-
     # get trend via Robust median–mean smoother
     ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
         wsiz_med = 12, wsiz_mea =7, n_extrap = 5)
     ss.df_w_ma_wide, ss.df_w_ma_long = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
         wsiz_med = 10, wsiz_mea =5, n_extrap = 3)
-
     # filter past few years relative to today 
     ss.df_months_filtered_2y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 365*2]
     ss.df_weeks_filtered_recent  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= 30*6]
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
-
+    # define labels used in multiple pages 
     ss.labels = {
         "value" :  "Cases count",
         "incValue": "Cases per 10⁵ hab",  
@@ -65,15 +61,29 @@ if "di_prep" not in ss:
         "month" :  "Month",
     }
 
-    # lighten the ss 
+    # remove dev-only items from ss 
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
 
+# debug
+# st.write(ss.df_months_all_concat.shape)
+# st.write(ss.df_m_ma_long.shape)
+# st.write(ss.df_m_ma_wide.shape)
 
+#------------------------------
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
-for key in list(st.session_state.keys()):
+# exclude key of forms
+my_list = list(st.session_state.keys())
+my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
+my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
+my_list = [x for x in my_list if not x.startswith("ui_trace_y_disease_form2")]
+for key in my_list:
     st.session_state[key] = st.session_state[key]
+# OLD : protect all 
+# for key in list(st.session_state.keys()):
+#     st.session_state[key] = st.session_state[key]
 
+#------------------------------
 # build sidebar
 with st.sidebar:
     st.markdown(f"""## :primary[**Swiss Infectious Disease Explorer**]""")
@@ -89,23 +99,17 @@ with st.sidebar:
     st.divider()
    
 # main navigation
-p00 = st.Page("pages/page_landing.py",  title="Epi-Radar", default=True)
-p01 = st.Page("pages/page_info.py",  title="Diseases")
-p02 = st.Page("pages/page01_weeks.py",  title="Weekly-History")
-p03 = st.Page("pages/page02_months.py",  title="Monthly-History")
-p04 = st.Page("pages/page02_years.py",  title="Yearly-History")
-p06 = st.Page("pages/page_trend_monthly.py",  title="Monthly-Trend")
-p07 = st.Page("pages/page_trend_weekly.py",  title="Weekly-Trend")
-p05 = st.Page("pages/page_about.py",  title="About")
-p20 = st.Page("pages/page_disclaimer.py",  title="Disclaimer")
-p21 = st.Page("pages/page_refresh.py",  title="Dev")
-p22 = st.Page("pages/page_methods.py",  title="Methods")
+p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
+p02 = st.Page("pages/page_weekly.py", title="Weekly History")
+p03 = st.Page("pages/page_monthly.py", title="Monthly History")
+p04 = st.Page("pages/page_yearly.py", title="Yearly History")
+p05 = st.Page("pages/page_info.py", title="Diseases")
+p06 = st.Page("pages/page_about.py", title="About")
+p07 = st.Page("pages/page_methods.py", title="Methods")
+p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
+p09 = st.Page("pages/page_refresh.py", title="Maintenance")
 
-pg = st.navigation([p00, p06, p07, p03, p02, p04, p01, p05, p22, p20, p21], position = "top")
+pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
 
 pg.run()
-
-
-
-
 

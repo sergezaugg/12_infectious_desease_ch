@@ -12,7 +12,7 @@ def apply_global_styles():
     st.markdown("""
         <style>
             .block-container {
-                max-width: 1590px;
+                max-width: 1500px;
                 min-width: 1400px;
                 padding-left: 2rem;
                 padding-right: 2rem;
@@ -69,6 +69,21 @@ def apply_global_styles():
         </style>
     """, unsafe_allow_html=True)
 
+
+    # All navigation tabs: same fixed width
+    st.markdown("""
+    <style>
+        .stAppHeader a {
+            width: 120px !important;
+            min-width: 120px !important;
+            max-width: 120px !important;
+            box-sizing: border-box !important;
+            justify-content: center !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
    
     # copyright notice and version at bottom-left
     st.markdown("""
@@ -85,7 +100,7 @@ def apply_global_styles():
         }
     </style>
     <div class="app-label">
-        v0.9.8-β<br>© 2026 Serge Zaugg
+        v0.10.0-β<br>© 2026 Serge Zaugg
     </div>
     """, unsafe_allow_html=True)
     
