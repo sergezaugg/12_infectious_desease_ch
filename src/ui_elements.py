@@ -132,6 +132,10 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
     facet_row_spacing = spacing_px / height_b
 
+    # sort before plotting
+    x = x.sort_values(["disease", col_var, xvar])
+
+
     fig = px.line(
         data_frame = x,
         x = xvar,
