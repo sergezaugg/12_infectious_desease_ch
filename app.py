@@ -69,29 +69,27 @@ if "di_prep" not in ss:
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
 
-
+# debug
 # st.write(ss.df_months_all_concat.shape)
 # st.write(ss.df_m_ma_long.shape)
 # st.write(ss.df_m_ma_wide.shape)
 
+#------------------------------
 # Protects every ss key from being deleted (for multi-page consistency across clicks)
+# NEW : exclude those of forms
 my_list = list(st.session_state.keys())
-
-# my_list = [x for x in my_list if x != "disease_form0"]
-# my_list = [x for x in my_list if x != "disease_form1"]
-# my_list = [x for x in my_list if x != "ui_trend_m_disease_form2"]
-
 my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
+my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
+my_list = [x for x in my_list if not x.startswith("ui_trace_y_disease_form2")]
+
 for key in my_list:
     st.session_state[key] = st.session_state[key]
-
+# OLD : protect all 
 # for key in list(st.session_state.keys()):
 #     st.session_state[key] = st.session_state[key]
 
 
-
-
-
+#------------------------------
 # build sidebar
 with st.sidebar:
     st.markdown(f"""## :primary[**Swiss Infectious Disease Explorer**]""")
