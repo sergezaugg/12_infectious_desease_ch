@@ -24,7 +24,7 @@ titl = """
 
 with st.spinner("Rendering plots"):
     ui_render_ma_resid_page(
-        dat_long = ss.df_w_ma_long, 
+        # dat_long = ss.df_w_ma_long, 
         dat_wide = ss.df_w_ma_wide, 
         key = "ui_trend_w_", 
         left_title = titl,

@@ -68,23 +68,64 @@ if "di_prep" not in ss:
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
 
-    #------------------------------
-    # advanced data preparation
-    # get trend via Robust median–mean smoother
-    ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
-        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
-    ss.df_w_ma_wide, ss.df_w_ma_long = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
-        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
-    # filter past few years relative to today 
-    ss.df_months_recent = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= ss.recent_days_monthly]
-    ss.df_weeks_recent  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= ss.recent_days_weekly]
+
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
 
+
+    #------------------------------
+    # advanced data preparation
+
+    # get monthly trend via Robust median–mean smoother
+    dfa = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "value", 
+        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
+    dfb = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
+        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
+    # merge 
+    ss.df_m_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_months_all_concat = ss.df_months_all_concat.merge(ss.df_m_ma_wide, how = 'inner', on = ["disease", "date"])
+
+    # get weekly trend via Robust median–mean smoother
+    dfa = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "value", 
+        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
+    dfb = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
+        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
+    # merge 
+    ss.df_w_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_weeks_all_concat = ss.df_weeks_all_concat.merge(ss.df_w_ma_wide, how = 'inner', on = ["disease", "date"])
+    
+    # filter past few years relative to today 
+    ss.df_months_recent = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= ss.recent_days_monthly]
+    ss.df_weeks_recent  = ss.df_weeks_all_concat.loc [ ss.df_weeks_all_concat["days_elapsed"] <= ss.recent_days_weekly]
+
     # remove dev-only items from ss 
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
+
+# dev
+data_pre_select.clear()
+data_pre_select.clear()
+
+
+# st.write(ss.df_months_recent)
+
+# # dev .... reshape for easy plotting
+# df = ss.df_months_recent
+# outcome = "incValue"
+# var_name_ma = "incValue_ma"
+# df = df[["disease", "date", outcome, var_name_ma]]
+# df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
+#     value_vars=[outcome, var_name_ma],
+#     var_name="measure",
+#     value_name= "resp_var")
+# st.write(df_long)
+
+
+# st.write(ss.df_months_all_concat.shape)
+# st.write(ss.df_weeks_all_concat.shape)
+# st.write(ss.df_months_recent)
+# st.write(ss.df_weeks_recent)
 
 
 #------------------------------
@@ -117,9 +158,11 @@ with st.sidebar:
    
 # pages 
 p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
-p02 = st.Page("pages/page_weekly.py", title="Weekly History")
-p03 = st.Page("pages/page_monthly.py", title="Monthly History")
-p04 = st.Page("pages/page_yearly.py", title="Yearly History")
+
+# p02 = st.Page("pages/page_weekly.py", title="Weekly History")
+# p03 = st.Page("pages/page_monthly.py", title="Monthly History")
+
+# p04 = st.Page("pages/page_yearly.py", title="Yearly History")
 p05 = st.Page("pages/page_info.py", title="Diseases")
 p06 = st.Page("pages/page_about.py", title="About")
 p07 = st.Page("pages/page_methods.py", title="Methods")
@@ -127,7 +170,11 @@ p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
 p09 = st.Page("pages/page_refresh.py", title="Maintenance")
 
 # navigation
-pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
+pg = st.navigation([
+    p01, 
+    #                 # p02, p03, 
+    #                 p04, 
+                    p05, p06, p07, p08, p09], position = "top")
 
 # execute pages code 
 pg.run()

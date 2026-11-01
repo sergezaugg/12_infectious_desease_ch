@@ -37,7 +37,7 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     st.text("Tip: Select one or more diseases using the left sidebar.")  
 
           
-def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
+def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     """
     """
     with st.sidebar:
@@ -50,20 +50,23 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
        
         # select via form
         with st.form(key="disease_form0"):
-            opt_disea = dat_long['dis_abbrev'].unique().tolist()
+            opt_disea = dat_wide['dis_abbrev'].unique().tolist()
             sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], 
                 max_selections=10, key = key + "disease_form1")
             # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
             submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
     n_dis = len(sel_dis)
-    df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
+    # df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
     df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
 
-    fig_smo, fig_res  = make_plots_smo_resid(
-        df_long = df_plot_long, 
+    fig_res  = make_plots_smo_resid(
+        # df_long = df_plot_long, 
         df_wide = df_plot_wide, 
         xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
+
+    # temp 
+    fig_smo = fig_res
 
     # seasonality plot 
     fig_seas = make_lineplot_all_by_disease(x = df_plot_wide, xvar = seasonality, col_var = "year", 
@@ -91,13 +94,12 @@ def ui_render_ma_resid_page(dat_long, dat_wide, key, left_title, seasonality):
     st.text("Tip: Select one or more diseases using the left sidebar.")
 
 
-def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing ):
+def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing, y_var1, y_var2):
     """ 
     render the landing page 
-    
     """
     fig_bar  = make_data_age_barplot(df_age, height)
-    fig_grid = make_mini_trend_plot_grid(df_trend, height, width, facet_col_spacing)
+    fig_grid = make_mini_trend_plot_grid(df_trend, height, width, facet_col_spacing, y_var1, y_var2)
 
     c0, c1 = st.columns([2,9], border =True)
     with c0:
@@ -231,8 +233,74 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
 
 
 @st.cache_data(show_spinner="Creating plots")
-def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
+def make_plots_smo_resid(df_wide, xvar, outcome, labels, n_facets):
 
+    """  """
+    # pre-compute vertical spacings dependent on n_facets
+    facet_height = 150
+    spacing_px = 60
+    height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
+    facet_row_spacing = spacing_px / height_b
+
+    colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+
+    # ------------------
+
+    fig_res = px.line(
+        data_frame = df_wide,
+        x = xvar,
+        y = "residuals",
+        facet_row= "disease",
+        facet_row_spacing = facet_row_spacing,
+        height = height_b,
+        labels=labels,
+        color_discrete_sequence=[colrs[0]],
+        )
+    # add margin left and right 
+    x_min = df_wide["date"].min()
+    x_max = df_wide["date"].max()
+    margin = (x_max - x_min) * 0.03
+    fig_res.update_xaxes(range=[x_min - margin, x_max + margin])
+    
+    fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
+    fig_res.update_layout(
+        showlegend=False,
+        # margin=dict(l=50, r=150, t=50, b=40),
+        margin=dict(l=30, r=80, t=50, b=40),
+        )
+    fig_res.update_xaxes(
+        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
+        title_font=dict(size=14),
+        # dtick="M12", 
+        tick0="2000-01-01", 
+        gridcolor="#535053",
+        showgrid=False, 
+        )   
+    fig_res.update_yaxes(
+        matches=None,
+        showline = True, linewidth=1.8, mirror=True,
+        title_font=dict(size=16),
+        range=[0.0, None]
+        ) 
+    fig_res.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
+    for annotation in fig_res.layout.annotations:
+        annotation.text = annotation.text.replace("disease=", "")
+        annotation.textangle = 90
+
+    return fig_res    
+
+
+
+
+
+
+# ----------------------------------------
+# NEW - ffffffffffffffffff
+
+# include reshape here ...
+
+@st.cache_data(show_spinner="Creating plots")
+def make_plots_smo_resid_2(df_long, xvar, outcome, labels, n_facets):
     """  """
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
@@ -290,60 +358,41 @@ def make_plots_smo_resid(df_long, df_wide, xvar, outcome, labels, n_facets):
 
 
 
-    # ------------------
+  
+    return fig_smo    
 
-    fig_res = px.line(
-        data_frame = df_wide,
-        x = xvar,
-        y = "residuals",
-        facet_row= "disease",
-        facet_row_spacing = facet_row_spacing,
-        height = height_b,
-        labels=labels,
-        color_discrete_sequence=[colrs[0]],
-        )
-    # add margin left and right 
-    x_min = df_wide["date"].min()
-    x_max = df_wide["date"].max()
-    margin = (x_max - x_min) * 0.03
-    fig_res.update_xaxes(range=[x_min - margin, x_max + margin])
-    
-    fig_res.add_hline(y=0.0, line_color=colrs[2], line_width=2)
-    fig_res.update_layout(
-        showlegend=False,
-        # margin=dict(l=50, r=150, t=50, b=40),
-        margin=dict(l=30, r=80, t=50, b=40),
-        )
-    fig_res.update_xaxes(
-        showline = True, linewidth=1.8, mirror=True, showticklabels=True, ticks="inside",
-        title_font=dict(size=14),
-        # dtick="M12", 
-        tick0="2000-01-01", 
-        gridcolor="#535053",
-        showgrid=False, 
-        )   
-    fig_res.update_yaxes(
-        matches=None,
-        showline = True, linewidth=1.8, mirror=True,
-        title_font=dict(size=16),
-        range=[0.0, None]
-        ) 
-    fig_res.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
-    for annotation in fig_res.layout.annotations:
-        annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 90
 
-    return fig_smo, fig_res    
+
+
+
+
+
+
+
+
+
+
+
 
 
 @st.cache_data(show_spinner="Creating plots")
-def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
+def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing, y_var1, y_var2):
     """ 
     Make trend grid plots for the landing page. 
-    df_plot : A data frame in long format, where 'measure' is a categorical indicator the type of trace (raw or smoothed)
-    and 'resp_var' the actual values (raw or smoothed).
+    df_plot : A data frame in wide format
     The df must also contain "date" (pd.timestamp) for trace plots and "disease" to make facets.
     """
+
+    # keep only vars needed below
+    df_plot = df_plot[["disease", "date", y_var1, y_var2]]
+
+    # reshape for easy plotting with 'color' argument
+    df_plot = df_plot.melt(id_vars=[c for c in df_plot.columns if c not in [y_var1, y_var2]],
+        value_vars=[y_var1, y_var2],
+        var_name="measure",
+        value_name= "resp_var")
+
+
     colrs = ["#eeeeee", "#494848", "#ff521e"]
     fig = px.line(
         data_frame = df_plot,
@@ -357,13 +406,13 @@ def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing):
         height = height,
         width = width,
         color_discrete_map={
-            "incValue":    colrs[1],
-            "incValue_ma": colrs[2],
+            y_var1: colrs[1],
+            y_var2: colrs[2],
             },
         )
     # label the values in legend 
     for trace in fig.data:
-        trace.name = {"incValue": "Data", "incValue_ma": "Trend"}.get(trace.name, trace.name)
+        trace.name = {y_var1: "Data", y_var2: "Trend"}.get(trace.name, trace.name)
     fig.update_traces(line=dict(width=3.0))
     fig.update_layout(
         showlegend=True,
