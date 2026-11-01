@@ -9,7 +9,7 @@ import streamlit as st
 
 with st.sidebar:
     st.markdown("""
-    :primary[Summary:] Explore incidence history (reported cases) from yearly data for selectable subset of diseases.
+    :primary[Summary:] Explore incidence history from yearly data for multiple diseases.
     """)
     st.divider()
 

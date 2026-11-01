@@ -24,8 +24,7 @@ titl = """
 
 with st.spinner("Rendering plots"):
     ui_render_ma_resid_page(
-        dat_long = ss.df_w_ma_long, 
-        dat_wide = ss.df_w_ma_wide, 
+        dat_wide = ss.df_weeks_all_concat, 
         key = "ui_trend_w_", 
         left_title = titl,
         seasonality = "week")

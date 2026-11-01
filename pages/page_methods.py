@@ -24,6 +24,6 @@ with col_aa:
             Long-Term and short-term trends are estimated from monthly and weekly data.
             A median–mean smoother is used. This is a two-step operation passing the data first through a moving median stage (window size 12 months / 10 weeks) 
             for an outlier-robust estimation of trend.
-            The 12 months window also remove seasonality.
-            In second step the data is piped through a more localized moving mean stage to restore natural continuity.
+            The 12 months window also removes seasonality.
+            In second step the data processed with a more localized moving mean stage to restore natural continuity.
             ''')
