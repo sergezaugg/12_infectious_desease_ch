@@ -1,11 +1,11 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : refresh 
+# Description : Maintenance access to trigger re-download of data
 #--------------------
 
 import streamlit as st
 from streamlit import session_state as ss
-from src.utils import download_all_data
+from src.utils_dataprep import download_all_data
 
 c1, c2 = st.columns([15, 50])
 with c1:

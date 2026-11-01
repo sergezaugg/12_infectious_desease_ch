@@ -7,21 +7,49 @@
 import streamlit as st
 from streamlit import session_state as ss
 import pandas as pd
-from src.utils import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
-from src.utils import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
-from src.utils import get_overview_df
+from src.utils_dataprep import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
+from src.utils_dataprep import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
+from src.utils_dataprep import get_overview_df
 from resources.styles import apply_global_styles
 
 #------------------------------
-# prepare app 
+# (1) prepare app 
 st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_title="SID-Explorer", page_icon='pics/z_logo_blue.png')
 apply_global_styles() # apply custom CSS styles 
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
 
 #------------------------------
-# run the data prep once per session startup and if admin triggers refresh 
+# (2) run the data prep 
+# Do once per session and if admin triggers refresh 
 if "di_prep" not in ss:
+
+    #------------------------------
+    # initialize session state (constant values)
+    # how much days back to show on landing page
+    ss.recent_days_monthly = 365*2
+    ss.recent_days_weekly = 30*6
+    # params for trend computation monthly
+    ss.wsiz_med_m = 12
+    ss.wsiz_mea_m = 7
+    ss.n_extrap_m = 5
+    # params for trend computation weekly
+    ss.wsiz_med_w = 10
+    ss.wsiz_mea_w = 5
+    ss.n_extrap_w = 3
+    # define labels used in multiple pages 
+    ss.labels = {
+        "value" :  "Cases count",
+        "incValue": "Cases per 10⁵ hab",  
+        "resp_var": "Cases per 10⁵ hab",  
+        "pop"   :  "Total population",
+        "date"  :  "Date",
+        "week"  :  "Week",
+        "month" :  "Month",
+    }
+    
+    #------------------------------
+    # basic data preparation
     ss.ref_date = pd.Timestamp.today().normalize()
     # download and perp once
     ss.di_data, ss.data_version, ss.n_files, ss.ts_downl, ss.dl_status = download_all_data(22)
@@ -39,52 +67,41 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
+
+    #------------------------------
+    # advanced data preparation
     # get trend via Robust median–mean smoother
     ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
-        wsiz_med = 12, wsiz_mea =7, n_extrap = 5)
+        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
     ss.df_w_ma_wide, ss.df_w_ma_long = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
-        wsiz_med = 10, wsiz_mea =5, n_extrap = 3)
+        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
     # filter past few years relative to today 
-    ss.df_months_filtered_2y = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= 365*2]
-    ss.df_weeks_filtered_recent  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= 30*6]
+    ss.df_months_recent = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= ss.recent_days_monthly]
+    ss.df_weeks_recent  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= ss.recent_days_weekly]
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
-    # define labels used in multiple pages 
-    ss.labels = {
-        "value" :  "Cases count",
-        "incValue": "Cases per 10⁵ hab",  
-        "resp_var": "Cases per 10⁵ hab",  
-        "pop"   :  "Total population",
-        "date"  :  "Date",
-        "week"  :  "Week",
-        "month" :  "Month",
-    }
 
     # remove dev-only items from ss 
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
 
-# debug
-# st.write(ss.df_months_all_concat.shape)
-# st.write(ss.df_m_ma_long.shape)
-# st.write(ss.df_m_ma_wide.shape)
 
 #------------------------------
-# Protects every ss key from being deleted (for multi-page consistency across clicks)
-# exclude key of forms
+# (3) Protects ss keys from being deleted (for multi-page consistency across clicks)
+# exclude key of forms which have their own Widget state management
 my_list = list(st.session_state.keys())
 my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trace_y_disease_form2")]
 for key in my_list:
     st.session_state[key] = st.session_state[key]
-# OLD : protect all 
-# for key in list(st.session_state.keys()):
-#     st.session_state[key] = st.session_state[key]
+
 
 #------------------------------
-# build sidebar
+# (4) build frontend
+
+# sidebar
 with st.sidebar:
     st.markdown(f"""## :primary[**Swiss Infectious Disease Explorer**]""")
     st.markdown("""
@@ -98,7 +115,7 @@ with st.sidebar:
     st.caption(ss.dl_status)
     st.divider()
    
-# main navigation
+# pages 
 p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
 p02 = st.Page("pages/page_weekly.py", title="Weekly History")
 p03 = st.Page("pages/page_monthly.py", title="Monthly History")
@@ -109,7 +126,9 @@ p07 = st.Page("pages/page_methods.py", title="Methods")
 p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
 p09 = st.Page("pages/page_refresh.py", title="Maintenance")
 
+# navigation
 pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
 
+# execute pages code 
 pg.run()
 
