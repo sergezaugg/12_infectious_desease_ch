@@ -15,9 +15,11 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     """
     """
     with st.sidebar:
-            outcome_options = ["incValue", "value"] # ,  "pop"]
-            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
-                persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
+            radio_labels = {"incValue" : "Incidence", "value" : "Count", }
+            selected_outcome = st.radio("Select outcome", options = radio_labels.keys(), index=0, key = key + "sel_outcome_", 
+                persist_state = "session", horizontal=True, 
+                format_func=lambda x: radio_labels[x],
+                )
         
             # select via form
             with st.form(key="disease_form0"):
@@ -41,14 +43,19 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     """
     """
     with st.sidebar:
-        # de-activated
-        # outcome_options = ["incValue", "value"] # ,  "pop"]
-        # selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
-        #     persist_state = "session", horizontal=True, format_func=lambda x: ss.labels[x],)
+        # select outcome 
+        outcome_options = ["Incidence", "Count"] 
+        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+            persist_state = "session", horizontal=True, 
+            # format_func=lambda x: ss.labels[x],
+            )
         # temp 
-        selected_outcome = "incValue"
-       
-        # select via form
+        if selected_outcome == "Incidence": 
+            yvars = ["incValue", "incValue_ma", "incValue_residuals"]     
+        if selected_outcome == "Count":
+            yvars = ["value", "value_ma", "value_residuals"]
+
+        # select diseases via form
         with st.form(key="disease_form0"):
             opt_disea = dat_wide['dis_abbrev'].unique().tolist()
             sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], 
@@ -61,12 +68,12 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
 
     # make plot with trend and data  
-    fig_smo = make_plot_smo(df_plot = df_plot_wide, y_var1 = "incValue", y_var2 = "incValue_ma", labels = ss.labels, n_facets = n_dis)
+    fig_smo = make_plot_smo(df_plot = df_plot_wide, y_var1 = yvars[0], y_var2 = yvars[1], labels = ss.labels, n_facets = n_dis)
     # make plot with residuals
-    fig_res = make_plot_resid(df_wide = df_plot_wide, xvar = "date", outcome = "incValue_residuals", labels = ss.labels, n_facets = n_dis)
+    fig_res = make_plot_resid(df_wide = df_plot_wide, xvar = "date", outcome = yvars[2], labels = ss.labels, n_facets = n_dis)
     # seasonality plot 
     fig_seas = make_lineplot_all_by_disease(x = df_plot_wide, xvar = seasonality, col_var = "year", 
-        n_facets = n_dis, outcome = selected_outcome, 
+        n_facets = n_dis, outcome = yvars[0], 
         labels = ss.labels, show_x_grid = False,
         facet_labels = True)
 
@@ -76,24 +83,31 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
         
         c0, c1 = st.columns([8,8])
         with c0:
-            # tab1, tab2, tab3 = st.tabs(["Values", "Residuals", "Seasonality"], width="stretch", default="Values")
             tab1, tab2, tab3 = st.tabs(["Values", "", ""], width="stretch", default="Values")
             with tab1:
                 st.plotly_chart(fig_smo, use_container_width=True, key = "two_steps_smo")
         with c1:   
             tab1, tab2, tab3 = st.tabs(["", "Seasonality", "Residuals"], width="stretch", default="Seasonality")
             with tab2:
-                    st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
+                st.plotly_chart(fig_seas, use_container_width=True, key = "two_steps_seasonality_2")
             with tab3:
                 st.plotly_chart(fig_res, use_container_width=True, key = "two_steps_residuals_2")
            
     st.text("Tip: Select one or more diseases using the left sidebar.")
 
 
+
+
+
+
+
+
+
 def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing, y_var1, y_var2):
     """ 
     render the landing page 
     """
+
     fig_bar  = make_data_age_barplot(df_age, height)
     fig_grid = make_mini_trend_plot_grid(df_trend, height, width, facet_col_spacing, y_var1, y_var2)
 
@@ -285,15 +299,7 @@ def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
     return fig_res    
 
 
-
-
-
-
-# ----------------------------------------
-# NEW - ffffffffffffffffff
-
-# include reshape here ...
-
+# NEW 
 @st.cache_data(show_spinner="Creating plots")
 def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     """  
@@ -325,8 +331,8 @@ def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
         facet_row_spacing = facet_row_spacing, # 0.01,
         height = height_b, # 6500,
         color_discrete_map={
-            "incValue":    colrs[1],
-            "incValue_ma": colrs[2],
+            y_var1: colrs[1],
+            y_var2: colrs[2],
         },
         labels=labels,
         )

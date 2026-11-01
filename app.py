@@ -81,8 +81,8 @@ if "di_prep" not in ss:
     dfb = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
         wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
     # merge 
-    ss.df_m_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
-    ss.df_months_all_concat = ss.df_months_all_concat.merge(ss.df_m_ma_wide, how = 'inner', on = ["disease", "date"])
+    df_m_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_months_all_concat = ss.df_months_all_concat.merge(df_m_ma_wide, how = 'inner', on = ["disease", "date"])
 
     # get weekly trend via Robust median–mean smoother
     dfa = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "value", 
@@ -90,8 +90,8 @@ if "di_prep" not in ss:
     dfb = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
         wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
     # merge 
-    ss.df_w_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
-    ss.df_weeks_all_concat = ss.df_weeks_all_concat.merge(ss.df_w_ma_wide, how = 'inner', on = ["disease", "date"])
+    df_w_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_weeks_all_concat = ss.df_weeks_all_concat.merge(df_w_ma_wide, how = 'inner', on = ["disease", "date"])
     
     # filter past few years relative to today 
     ss.df_months_recent = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= ss.recent_days_monthly]
@@ -101,14 +101,10 @@ if "di_prep" not in ss:
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
 
+
 # dev
 # data_pre_select.clear()
-# data_pre_select.clear()
 # st.write(ss.df_months_all_concat)
-
-
-
-
 
 
 #------------------------------
