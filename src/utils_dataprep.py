@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : Data-analytic Functions used my the streamlit app
+# Description : Data-analytic Functions 
 #--------------------
 
 import numpy as np
