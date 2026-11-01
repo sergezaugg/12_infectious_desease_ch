@@ -15,11 +15,12 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     """
     """
     with st.sidebar:
-            radio_labels = {"incValue" : "Incidence", "value" : "Count", }
-            selected_outcome = st.radio("Select outcome", options = radio_labels.keys(), index=0, key = key + "sel_outcome_", 
-                persist_state = "session", horizontal=True, 
-                format_func=lambda x: radio_labels[x],
-                )
+            with st.container(border=True):
+                radio_labels = {"incValue" : "Incidence", "value" : "Count", }
+                selected_outcome = st.radio("Select outcome", options = radio_labels.keys(), index=0, key = key + "sel_outcome_", 
+                    persist_state = "session", horizontal=True, 
+                    format_func=lambda x: radio_labels[x],
+                    )
         
             # select via form
             with st.form(key="disease_form0"):
@@ -44,16 +45,17 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     """
     with st.sidebar:
         # select outcome 
-        outcome_options = ["Incidence", "Count"] 
-        selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
-            persist_state = "session", horizontal=True, 
-            # format_func=lambda x: ss.labels[x],
-            )
-        # temp 
-        if selected_outcome == "Incidence": 
-            yvars = ["incValue", "incValue_ma", "incValue_residuals"]     
-        if selected_outcome == "Count":
-            yvars = ["value", "value_ma", "value_residuals"]
+        with st.container(border=True):
+            outcome_options = ["Incidence", "Count"] 
+            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
+                persist_state = "session", horizontal=True, 
+                # format_func=lambda x: ss.labels[x],
+                )
+            # temp 
+            if selected_outcome == "Incidence": 
+                yvars = ["incValue", "incValue_ma", "incValue_residuals"]     
+            if selected_outcome == "Count":
+                yvars = ["value", "value_ma", "value_residuals"]
 
         # select diseases via form
         with st.form(key="disease_form0"):
@@ -305,14 +307,16 @@ def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     """  
     
     """
+    new_outcome_name = y_var1 + "_long"
+
     # keep only vars needed below
     df_plot = df_plot[["disease", "date", y_var1, y_var2]]
 
     # reshape for easy plotting with 'color' argument
     df_long = df_plot.melt(id_vars=[c for c in df_plot.columns if c not in [y_var1, y_var2]],
         value_vars=[y_var1, y_var2],
-        var_name="measure",
-        value_name= "resp_var")
+        var_name = "measure",
+        value_name = new_outcome_name)
 
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
@@ -325,7 +329,7 @@ def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     fig_smo = px.line(
         data_frame = df_long,
         x = "date",
-        y = "resp_var",
+        y = new_outcome_name,
         color = "measure",
         facet_row= "disease",
         facet_row_spacing = facet_row_spacing, # 0.01,

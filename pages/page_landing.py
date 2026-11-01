@@ -17,7 +17,8 @@ with st.sidebar:
     st.divider()
 
 with st.sidebar:
-    selected_outcome = st.radio("Select outcome", options = ["Incidence", "Count"], index=0, key = "xxdvfgghjkloiww4", horizontal=True)
+    with st.container(border=True):
+        selected_outcome = st.radio("Select outcome", options = ["Incidence", "Count"], index=0, key = "xxdvfgghjkloiww4", horizontal=True)
 
 if selected_outcome == "Incidence": 
     yvars = ["incValue", "incValue_ma"]     

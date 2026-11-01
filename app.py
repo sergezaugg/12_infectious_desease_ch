@@ -41,6 +41,8 @@ if "di_prep" not in ss:
     ss.labels = {
         "value" :  "Cases count",
         "incValue": "Cases per 10⁵ hab",  
+        "value_long" :  "Cases count",
+        "incValue_long": "Cases per 10⁵ hab",  
         "resp_var": "Cases per 10⁵ hab", 
         "incValue_residuals" : "Residuals", 
         "pop"   :  "Total population",

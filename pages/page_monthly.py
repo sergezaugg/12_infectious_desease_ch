@@ -9,7 +9,7 @@ import streamlit as st
 
 with st.sidebar:
     st.markdown("""
-    :primary[Summary:] Explore long-term trend from monthly incidence (reported cases) data for selectable subset of diseases.
+    :primary[Summary:] Explore long-term trend from monthly incidence data for multiple diseases.
     """)
     st.divider()
 
