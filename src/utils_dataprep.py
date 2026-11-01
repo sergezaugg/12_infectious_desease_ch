@@ -193,6 +193,12 @@ def get_overview_df():
     
     return(df_overview)
 
+
+
+
+
+
+
 def extrapolate_trend_edges(s, n_edge=6):
     """Replace trend edges using linear extrapolation."""
     s = s.copy()

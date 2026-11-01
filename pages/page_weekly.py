@@ -4,7 +4,7 @@
 #--------------------
 
 from streamlit import session_state as ss
-from src.ui_elements import ui_render_ma_resid_page
+from src.utils_ui import ui_render_ma_resid_page
 import streamlit as st
 
 with st.sidebar:

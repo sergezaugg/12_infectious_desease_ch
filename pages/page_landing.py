@@ -6,7 +6,7 @@
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
-from src.ui_elements import ui_render_landing_page
+from src.utils_ui import ui_render_landing_page
 
 with st.sidebar:
     st.markdown("""

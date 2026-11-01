@@ -4,7 +4,7 @@
 #--------------------
 
 from streamlit import session_state as ss
-from src.ui_elements import ui_render_basic_facet_plot_page, make_barplot_by_disease_dense_wrapped
+from src.utils_ui import ui_render_basic_facet_plot_page, make_barplot_by_disease_dense_wrapped
 import streamlit as st
 
 with st.sidebar:
