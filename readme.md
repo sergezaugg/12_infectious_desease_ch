@@ -40,20 +40,19 @@
 ### Project Structure
 ```text
 12_infectious_desease_ch/
-├── app.py               # Main app's entry point
-├── pages/               # Pages for frontend 
-├── src/                 # Data processing and reusable utilities
 ├── .streamlit/          # Streamlit configuration and theme
-├── resources/           # CSS styles and static codebooks  
 ├── historical_data/     # Historical 'fall-back' data files
+├── pages/               # Pages for frontend 
 ├── pics/                # Images and logos
-├── requirements.txt     # Python dependencies
+├── resources/           # CSS styles and static codebooks  
+├── src/                 # Data processing and reusable utilities
 ├── .gitignore           # Git ignore rules
+├── app.py               # Main app's entry point
+├── config.py            # Python config values needed by code
 ├── LICENSE              # MIT License
+├── requirements.txt     # Python dependencies
 └── README.md            # Project documentation
 ```
-
-
 
 ### Credits
 - Data management and curation: [Swiss Federal Office of Public Health (FOPH)](https://www.bag.admin.ch/)
