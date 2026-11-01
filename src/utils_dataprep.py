@@ -12,9 +12,7 @@ import requests
 import io
 from datetime import datetime
 import pickle
-
-API_BASE_URL = "https://api.idd.bag.admin.ch/api/v1"
-# API_BASE_URL = "https://cacapipibloublouasfvsfsfsdfsdfv" # temp
+from config import API_BASE_URL
 
 #------------------------------
 # basic data preparation
@@ -194,7 +192,6 @@ def get_overview_df():
     df_overview = df_overview.merge(df_dis_abbr, 'outer', on = "disease")
     
     return(df_overview)
-
 
 #------------------------------
 # advanced data preparation
