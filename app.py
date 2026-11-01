@@ -41,7 +41,10 @@ if "di_prep" not in ss:
     ss.labels = {
         "value" :  "Cases count",
         "incValue": "Cases per 10⁵ hab",  
-        "resp_var": "Cases per 10⁵ hab",  
+        "value_long" :  "Cases count",
+        "incValue_long": "Cases per 10⁵ hab",  
+        "resp_var": "Cases per 10⁵ hab", 
+        "incValue_residuals" : "Residuals", 
         "pop"   :  "Total population",
         "date"  :  "Date",
         "week"  :  "Week",
@@ -67,24 +70,43 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
-
-    #------------------------------
-    # advanced data preparation
-    # get trend via Robust median–mean smoother
-    ss.df_m_ma_wide, ss.df_m_ma_long = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
-        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
-    ss.df_w_ma_wide, ss.df_w_ma_long = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
-        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
-    # filter past few years relative to today 
-    ss.df_months_recent = ss.df_m_ma_long.loc[ss.df_m_ma_long["days_elapsed"] <= ss.recent_days_monthly]
-    ss.df_weeks_recent  = ss.df_w_ma_long.loc[ss.df_w_ma_long["days_elapsed"] <= ss.recent_days_weekly]
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
 
+    #------------------------------
+    # advanced data preparation
+
+    # get monthly trend via Robust median–mean smoother
+    dfa = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "value", 
+        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
+    dfb = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
+        wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
+    # merge 
+    df_m_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_months_all_concat = ss.df_months_all_concat.merge(df_m_ma_wide, how = 'inner', on = ["disease", "date"])
+
+    # get weekly trend via Robust median–mean smoother
+    dfa = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "value", 
+        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
+    dfb = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
+        wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
+    # merge 
+    df_w_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
+    ss.df_weeks_all_concat = ss.df_weeks_all_concat.merge(df_w_ma_wide, how = 'inner', on = ["disease", "date"])
+    
+    # filter past few years relative to today 
+    ss.df_months_recent = ss.df_months_all_concat.loc[ss.df_months_all_concat["days_elapsed"] <= ss.recent_days_monthly]
+    ss.df_weeks_recent  = ss.df_weeks_all_concat.loc [ ss.df_weeks_all_concat["days_elapsed"] <= ss.recent_days_weekly]
+
     # remove dev-only items from ss 
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
+
+
+# dev
+# data_pre_select.clear()
+# st.write(ss.df_months_all_concat)
 
 
 #------------------------------

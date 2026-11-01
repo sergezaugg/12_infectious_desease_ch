@@ -9,7 +9,7 @@ import streamlit as st
 
 with st.sidebar:
     st.markdown("""
-    :primary[Summary:] Explore long-term trend from monthly incidence (reported cases) data for selectable subset of diseases.
+    :primary[Summary:] Explore long-term trend from monthly incidence data for multiple diseases.
     """)
     st.divider()
 
@@ -24,8 +24,7 @@ titl = """
 
 with st.spinner("Rendering plots"):
     ui_render_ma_resid_page(
-        dat_long = ss.df_m_ma_long, 
-        dat_wide = ss.df_m_ma_wide, 
+        dat_wide = ss.df_months_all_concat, 
         key = "ui_trend_m_", 
         left_title = titl,
         seasonality = "month")

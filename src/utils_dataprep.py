@@ -215,8 +215,13 @@ def extrapolate_trend_edges(s, n_edge=6):
 @st.cache_data(show_spinner="Computing MA-based trend")
 def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
     """ moving-average/median-based estimation of mid-term trend """
+
+    # new df
+    df = df[["disease", "date", outcome]]
+
     df = df.sort_values(["disease", "date"])
-    var_name_ma = outcome + "_ma"
+    var_name_ma  = outcome + "_ma"
+    var_name_res = outcome + "_residuals"
     # two-step moving trend (Robust median–mean smoother)
     df[var_name_ma] = (df.groupby("disease")[outcome]
         .transform(lambda s: s.rolling(wsiz_med, center=True, min_periods= int(wsiz_med/2)).median()))
@@ -226,12 +231,9 @@ def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
     if n_extrap > 1:
         df[var_name_ma] = df.groupby("disease")[var_name_ma].transform(lambda s: extrapolate_trend_edges(s, n_edge=n_extrap)) 
     # get residuals 
-    df['residuals'] = df[outcome] - df[var_name_ma]
-    # reshape for easy plotting
-    df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
-        value_vars=[outcome, var_name_ma],
-        var_name="measure",
-        value_name= "resp_var")
-    return df, df_long
+    df[var_name_res] = df[outcome] - df[var_name_ma]
+    df = df.drop(columns=[outcome])
+  
+    return df
 
 
