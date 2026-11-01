@@ -16,6 +16,9 @@ import pickle
 API_BASE_URL = "https://api.idd.bag.admin.ch/api/v1"
 # API_BASE_URL = "https://cacapipibloublouasfvsfsfsdfsdfv" # temp
 
+#------------------------------
+# basic data preparation
+
 @st.cache_data(ttl=60*60*12, show_spinner="Downloading data from " + "`" + API_BASE_URL + "`")
 def download_all_data(a = 1):
 
@@ -55,7 +58,6 @@ def download_all_data(a = 1):
         data_source = "⚠️ Historical data fallback"
     
     return data_di, data_version, n_files, ts, data_source
-
 
 def convert_iso_date_to_datetime(s):
     """ helper used in data_pre_select """
@@ -194,10 +196,8 @@ def get_overview_df():
     return(df_overview)
 
 
-
-
-
-
+#------------------------------
+# advanced data preparation
 
 def extrapolate_trend_edges(s, n_edge=6):
     """Replace trend edges using linear extrapolation."""
@@ -237,16 +237,5 @@ def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
         var_name="measure",
         value_name= "resp_var")
     return df, df_long
-
-
-
-
-    
-
-
-    
-
-
-
 
 

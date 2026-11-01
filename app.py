@@ -49,7 +49,7 @@ if "di_prep" not in ss:
     }
     
     #------------------------------
-    # data preparation
+    # basic data preparation
     ss.ref_date = pd.Timestamp.today().normalize()
     # download and perp once
     ss.di_data, ss.data_version, ss.n_files, ss.ts_downl, ss.dl_status = download_all_data(22)
