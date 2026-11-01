@@ -45,6 +45,7 @@ if "di_prep" not in ss:
         "incValue_long": "Cases per 10⁵ hab",  
         "resp_var": "Cases per 10⁵ hab", 
         "incValue_residuals" : "Residuals", 
+        "value_residuals" : "Residuals", 
         "pop"   :  "Total population",
         "date"  :  "Date",
         "week"  :  "Week",
@@ -82,7 +83,7 @@ if "di_prep" not in ss:
         wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
     dfb = get_ma_based_trend(df = ss.df_months_all_concat, outcome = "incValue", 
         wsiz_med = ss.wsiz_med_m, wsiz_mea = ss.wsiz_mea_m, n_extrap = ss.n_extrap_m)
-    # merge 
+    # merge smoother values into main df
     df_m_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
     ss.df_months_all_concat = ss.df_months_all_concat.merge(df_m_ma_wide, how = 'inner', on = ["disease", "date"])
 
@@ -91,7 +92,7 @@ if "di_prep" not in ss:
         wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
     dfb = get_ma_based_trend(df = ss.df_weeks_all_concat, outcome = "incValue", 
         wsiz_med = ss.wsiz_med_w, wsiz_mea = ss.wsiz_mea_w, n_extrap = ss.n_extrap_w)
-    # merge 
+    # merge smoother values into main df
     df_w_ma_wide = dfa.merge(dfb, how = 'inner', on = ["disease", "date"])
     ss.df_weeks_all_concat = ss.df_weeks_all_concat.merge(df_w_ma_wide, how = 'inner', on = ["disease", "date"])
     

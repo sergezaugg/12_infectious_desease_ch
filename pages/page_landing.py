@@ -12,7 +12,7 @@ with st.sidebar:
     st.markdown("""
     :primary[Upper panel:] Review past 6 months of diseases with weekly data.  
 
-    :primary[Lower panel:] Review past 24 months (2 years) of diseases with monthly data.  
+    :primary[Lower panel:] Review past 2 years of diseases with monthly data.  
     """)
     st.divider()
 

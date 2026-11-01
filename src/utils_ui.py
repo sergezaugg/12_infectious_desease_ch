@@ -3,7 +3,7 @@
 # Description : define big UI elements plot rendering code here 
 #--------------------
 
-import pandas as pd 
+# import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
@@ -98,13 +98,6 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     st.text("Tip: Select one or more diseases using the left sidebar.")
 
 
-
-
-
-
-
-
-
 def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_contw, facet_col_spacing, y_var1, y_var2):
     """ 
     render the landing page 
@@ -164,7 +157,6 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.update_traces(marker=dict(size=5))   
     fig.update_layout(
         showlegend=False,
-        # margin=dict(l=30, r=35, t=50, b=40),
         margin=dict(l=30, r=80, t=50, b=40),
         legend=dict(title=None, bordercolor="white", borderwidth=1, orientation="h", x=0, xanchor="left", y=1.015, yanchor="top",),
         )
@@ -186,7 +178,7 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
     fig.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 90
+        annotation.textangle = -90
     if facet_labels == False:
         fig.for_each_annotation(lambda a: a.update(text=""))    
 
@@ -195,7 +187,8 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
 
 @st.cache_data(show_spinner="Creating plots")
 def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
-
+    """
+    """
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 90
     spacing_px = 70
@@ -235,18 +228,15 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
         ) 
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        # annotation.textangle = 90
     if facet_labels == False:
         fig.for_each_annotation(lambda a: a.update(text="")) 
-    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.04))   
-    # fig.for_each_annotation(lambda a: a.update(y=a.y + 0.03, yanchor="top")) 
     return fig
 
 
 @st.cache_data(show_spinner="Creating plots")
 def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
-
-    """  """
+    """  
+    """
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
     spacing_px = 60
@@ -254,8 +244,6 @@ def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
     facet_row_spacing = spacing_px / height_b
 
     colrs = ["#eeeeee", "#13bee0", "#f5630f"]
-
-    # ------------------
 
     fig_res = px.line(
         data_frame = df_wide,
@@ -296,16 +284,14 @@ def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
     fig_res.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig_res.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 90
+        annotation.textangle = -90
 
     return fig_res    
 
 
-# NEW 
 @st.cache_data(show_spinner="Creating plots")
 def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     """  
-    
     """
     new_outcome_name = y_var1 + "_long"
 
@@ -368,23 +354,9 @@ def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     fig_smo.for_each_annotation(lambda a: a.update(x=1.015,font=dict(size=16)))
     for annotation in fig_smo.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
-        annotation.textangle = 90
+        annotation.textangle = -90
     # fig_smo.for_each_annotation(lambda a: a.update(text=""))    
-
     return fig_smo    
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @st.cache_data(show_spinner="Creating plots")
@@ -489,3 +461,4 @@ def make_data_age_barplot(df_plot, height):
     fig_bar.update_coloraxes(showscale=False)
     fig_bar.update_layout(margin=dict(l=50, r=10, t=10, b=40))
     return fig_bar
+
