@@ -1,11 +1,10 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : Data-analytic Functions 
+# Description : Data-analytic Functions (no plots and streamlit here [xpt st.cache_data])
 #--------------------
 
 import numpy as np
 import pandas as pd 
-import plotly.express as px
 import streamlit as st
 from streamlit import session_state as ss
 import requests

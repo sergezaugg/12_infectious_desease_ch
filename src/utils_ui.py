@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : define big UI elements here 
+# Description : define big UI elements plot rendering code here 
 #--------------------
 
 import pandas as pd 

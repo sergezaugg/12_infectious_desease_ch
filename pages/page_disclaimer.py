@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : Page with concise background info and credits
+# Description : Page with disclaimer info 
 #--------------------
 
 import streamlit as st

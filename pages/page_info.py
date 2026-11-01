@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : TBD
+# Description : Page with disease info 
 #--------------------
 
 import pandas as pd 

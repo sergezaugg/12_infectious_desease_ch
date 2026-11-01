@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : refresh 
+# Description : Maintenance access to trigger re-download of data
 #--------------------
 
 import streamlit as st

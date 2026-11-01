@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : Visualize monthly data with trend
+# Description : Visualize weekly data with trend
 #--------------------
 
 from streamlit import session_state as ss

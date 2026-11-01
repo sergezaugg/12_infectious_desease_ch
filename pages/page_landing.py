@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : landing page
+# Description : landing page (radar)
 #--------------------
 
 import streamlit as st

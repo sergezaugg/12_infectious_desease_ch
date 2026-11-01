@@ -1,6 +1,7 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : overall page styles (affects all pages) 
+# Description : Define overall page styles via CSS (affects all pages) 
+# Comment : based on legacy-trick with st.markdown & unsafe_allow_html=True
 #--------------------
 
 import streamlit as st
