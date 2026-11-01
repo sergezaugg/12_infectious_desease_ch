@@ -60,19 +60,15 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     # df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
     df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
 
-    fig_res  = make_plots_smo_resid(
-        # df_long = df_plot_long, 
-        df_wide = df_plot_wide, 
-        xvar = "date", outcome = "resp_var", labels = ss.labels, n_facets = n_dis)
-
-    # temp 
-    fig_smo = fig_res
-
+    # make plot with trend and data  
+    fig_smo = make_plot_smo(df_plot = df_plot_wide, y_var1 = "incValue", y_var2 = "incValue_ma", labels = ss.labels, n_facets = n_dis)
+    # make plot with residuals
+    fig_res = make_plot_resid(df_wide = df_plot_wide, xvar = "date", outcome = "incValue_residuals", labels = ss.labels, n_facets = n_dis)
     # seasonality plot 
     fig_seas = make_lineplot_all_by_disease(x = df_plot_wide, xvar = seasonality, col_var = "year", 
-            n_facets = n_dis, outcome = selected_outcome, 
-            labels = ss.labels, show_x_grid = False,
-            facet_labels = True)
+        n_facets = n_dis, outcome = selected_outcome, 
+        labels = ss.labels, show_x_grid = False,
+        facet_labels = True)
 
     with st.container(border=True):
 
@@ -136,7 +132,6 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
 
     # sort before plotting
     x = x.sort_values(["disease", col_var, xvar])
-
 
     fig = px.line(
         data_frame = x,
@@ -233,7 +228,7 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
 
 
 @st.cache_data(show_spinner="Creating plots")
-def make_plots_smo_resid(df_wide, xvar, outcome, labels, n_facets):
+def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
 
     """  """
     # pre-compute vertical spacings dependent on n_facets
@@ -249,7 +244,7 @@ def make_plots_smo_resid(df_wide, xvar, outcome, labels, n_facets):
     fig_res = px.line(
         data_frame = df_wide,
         x = xvar,
-        y = "residuals",
+        y = outcome,
         facet_row= "disease",
         facet_row_spacing = facet_row_spacing,
         height = height_b,
@@ -300,8 +295,19 @@ def make_plots_smo_resid(df_wide, xvar, outcome, labels, n_facets):
 # include reshape here ...
 
 @st.cache_data(show_spinner="Creating plots")
-def make_plots_smo_resid_2(df_long, xvar, outcome, labels, n_facets):
-    """  """
+def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
+    """  
+    
+    """
+    # keep only vars needed below
+    df_plot = df_plot[["disease", "date", y_var1, y_var2]]
+
+    # reshape for easy plotting with 'color' argument
+    df_long = df_plot.melt(id_vars=[c for c in df_plot.columns if c not in [y_var1, y_var2]],
+        value_vars=[y_var1, y_var2],
+        var_name="measure",
+        value_name= "resp_var")
+
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 150
     spacing_px = 60
@@ -312,8 +318,8 @@ def make_plots_smo_resid_2(df_long, xvar, outcome, labels, n_facets):
 
     fig_smo = px.line(
         data_frame = df_long,
-        x = xvar,
-        y = outcome,
+        x = "date",
+        y = "resp_var",
         color = "measure",
         facet_row= "disease",
         facet_row_spacing = facet_row_spacing, # 0.01,
@@ -355,10 +361,6 @@ def make_plots_smo_resid_2(df_long, xvar, outcome, labels, n_facets):
         annotation.textangle = 90
     # fig_smo.for_each_annotation(lambda a: a.update(text=""))    
 
-
-
-
-  
     return fig_smo    
 
 

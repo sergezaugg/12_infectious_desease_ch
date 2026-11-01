@@ -41,7 +41,8 @@ if "di_prep" not in ss:
     ss.labels = {
         "value" :  "Cases count",
         "incValue": "Cases per 10⁵ hab",  
-        "resp_var": "Cases per 10⁵ hab",  
+        "resp_var": "Cases per 10⁵ hab", 
+        "incValue_residuals" : "Residuals", 
         "pop"   :  "Total population",
         "date"  :  "Date",
         "week"  :  "Week",
@@ -67,12 +68,9 @@ if "di_prep" not in ss:
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
     ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
     ss.df_overview = get_overview_df() # important lookup  table used many places
-
-
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
-
 
     #------------------------------
     # advanced data preparation
@@ -104,28 +102,13 @@ if "di_prep" not in ss:
         del st.session_state[key]
 
 # dev
-data_pre_select.clear()
-data_pre_select.clear()
+# data_pre_select.clear()
+# data_pre_select.clear()
+# st.write(ss.df_months_all_concat)
 
 
-# st.write(ss.df_months_recent)
-
-# # dev .... reshape for easy plotting
-# df = ss.df_months_recent
-# outcome = "incValue"
-# var_name_ma = "incValue_ma"
-# df = df[["disease", "date", outcome, var_name_ma]]
-# df_long = df.melt(id_vars=[c for c in df.columns if c not in [outcome, var_name_ma]],
-#     value_vars=[outcome, var_name_ma],
-#     var_name="measure",
-#     value_name= "resp_var")
-# st.write(df_long)
 
 
-# st.write(ss.df_months_all_concat.shape)
-# st.write(ss.df_weeks_all_concat.shape)
-# st.write(ss.df_months_recent)
-# st.write(ss.df_weeks_recent)
 
 
 #------------------------------
@@ -158,11 +141,9 @@ with st.sidebar:
    
 # pages 
 p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
-
-# p02 = st.Page("pages/page_weekly.py", title="Weekly History")
-# p03 = st.Page("pages/page_monthly.py", title="Monthly History")
-
-# p04 = st.Page("pages/page_yearly.py", title="Yearly History")
+p02 = st.Page("pages/page_weekly.py", title="Weekly History")
+p03 = st.Page("pages/page_monthly.py", title="Monthly History")
+p04 = st.Page("pages/page_yearly.py", title="Yearly History")
 p05 = st.Page("pages/page_info.py", title="Diseases")
 p06 = st.Page("pages/page_about.py", title="About")
 p07 = st.Page("pages/page_methods.py", title="Methods")
@@ -170,11 +151,7 @@ p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
 p09 = st.Page("pages/page_refresh.py", title="Maintenance")
 
 # navigation
-pg = st.navigation([
-    p01, 
-    #                 # p02, p03, 
-    #                 p04, 
-                    p05, p06, p07, p08, p09], position = "top")
+pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
 
 # execute pages code 
 pg.run()
