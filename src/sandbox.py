@@ -12,7 +12,7 @@ from src.utils_dataprep import download_all_data
 # import pickle
 
 # # download and perp once
-# di_downloded = download_all_data(22)
+# di_downloded = download_all_data()
 
 # # Save
 # with open("temp/bag_data.pkl", "wb") as f:
