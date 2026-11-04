@@ -275,9 +275,13 @@ def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
     var_name_res = outcome + "_residuals"
     # two-step moving trend (Robust median–mean smoother)
     df[var_name_ma] = (df.groupby("disease")[outcome]
-        .transform(lambda s: s.rolling(wsiz_med, center=True, min_periods= int(wsiz_med/2)).median()))
+        .transform(lambda s: s.rolling(wsiz_med, center=True, 
+                                       min_periods = int(wsiz_med/2)
+                                       ).median()))
     df[var_name_ma] = (df.groupby("disease")[var_name_ma]
-        .transform(lambda s: s.rolling(wsiz_mea, center=True, min_periods= int(wsiz_mea/2)).mean()))
+        .transform(lambda s: s.rolling(wsiz_mea, center=True, 
+                                       min_periods = int(wsiz_mea/2)
+                                       ).mean()))
     # NEW - extrapolate edges 
     if n_extrap > 1:
         df[var_name_ma] = df.groupby("disease")[var_name_ma].transform(lambda s: extrapolate_trend_edges(s, n_edge=n_extrap)) 

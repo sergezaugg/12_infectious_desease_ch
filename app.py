@@ -32,11 +32,11 @@ if "di_prep" not in ss:
     # params for trend computation monthly
     ss.wsiz_med_m = 12
     ss.wsiz_mea_m = 7
-    ss.n_extrap_m = 5
+    ss.n_extrap_m = 5 
     # params for trend computation weekly
-    ss.wsiz_med_w = 10
+    ss.wsiz_med_w = 7
     ss.wsiz_mea_w = 5
-    ss.n_extrap_w = 3
+    ss.n_extrap_w = 3 
     # define labels used in multiple pages 
     ss.labels = {
         "value" :  "Cases count",
@@ -114,6 +114,7 @@ if "di_prep" not in ss:
 
 # dev
 # data_pre_select.clear()
+# get_ma_based_trend.clear()
 # st.write(ss.df_months_all_concat)
 
 #------------------------------
