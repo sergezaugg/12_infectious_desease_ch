@@ -11,7 +11,7 @@ with st.sidebar:
     st.markdown("""
     :primary[Summary:] Explore incidence history from yearly data for multiple diseases.
     """)
-    st.divider()
+    # st.divider()
 
 with st.spinner("Rendering plots"):
     ui_render_basic_facet_plot_page(

@@ -32,11 +32,11 @@ if "di_prep" not in ss:
     # params for trend computation monthly
     ss.wsiz_med_m = 12
     ss.wsiz_mea_m = 7
-    ss.n_extrap_m = 5
+    ss.n_extrap_m = 5 
     # params for trend computation weekly
-    ss.wsiz_med_w = 10
+    ss.wsiz_med_w = 7
     ss.wsiz_mea_w = 5
-    ss.n_extrap_w = 3
+    ss.n_extrap_w = 3 
     # define labels used in multiple pages 
     ss.labels = {
         "value" :  "Cases count",
@@ -51,26 +51,34 @@ if "di_prep" not in ss:
         "week"  :  "Week",
         "month" :  "Month",
     }
+
+    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
     
     #------------------------------
     # basic data preparation
     ss.ref_date = pd.Timestamp.today().normalize()
     # download and perp once
-    ss.di_data, ss.data_version, ss.n_files, ss.ts_downl, ss.dl_status = download_all_data(22)
+    ss.di_data, ss.data_version, ss.n_files, ss.ts_downl, ss.dl_status = download_all_data()
     ss.di_prep = data_pre_select(ss.di_data)
     # extract pre-digested dfs 
     ss.di_prep_chfl = data_select_chfl(ss.di_prep)
+
     # objects for the pages 
     ss.di_weeks  = data_select_weeks(ss.di_prep_chfl)
     ss.di_weeks_all = data_select_only_all_groups(ss.di_weeks)
-    ss.df_weeks_all_concat = stack_dict_of_dfs(di = ss.di_weeks_all)
+    ss.df_weeks_all_concat = stack_dict_of_dfs(di = ss.di_weeks_all, ref_date = ss.ref_date, df_abbr = df_dis_abbr)
+
     ss.di_months = data_select_months(ss.di_prep_chfl)
     ss.di_months_all = data_select_only_all_groups(ss.di_months)
-    ss.df_months_all_concat = stack_dict_of_dfs(di = ss.di_months_all)
+    ss.df_months_all_concat = stack_dict_of_dfs(di = ss.di_months_all, ref_date = ss.ref_date, df_abbr = df_dis_abbr)
+
     ss.di_years  = data_select_years(ss.di_prep_chfl)
     ss.di_years_all = data_select_only_all_groups(ss.di_years)
-    ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all)
-    ss.df_overview = get_overview_df() # important lookup  table used many places
+    ss.df_years_all_concat = stack_dict_of_dfs(di = ss.di_years_all, ref_date = ss.ref_date, df_abbr = df_dis_abbr)
+    
+    # create important lookup  table used many places
+    ss.df_overview = get_overview_df() 
+    
     # get data age of each disease
     ss.df_months_max_date = ss.df_months_all_concat.loc[ss.df_months_all_concat.groupby("disease")["date"].idxmax()]
     ss.df_weeks_max_date  = ss.df_weeks_all_concat.loc[ss.df_weeks_all_concat.groupby("disease")["date"].idxmax()]
@@ -104,11 +112,10 @@ if "di_prep" not in ss:
     for key in ["di_weeks", "di_months", "di_years", "di_weeks_all", "di_months_all", "di_years_all"]:
         del st.session_state[key]
 
-
 # dev
 # data_pre_select.clear()
+# get_ma_based_trend.clear()
 # st.write(ss.df_months_all_concat)
-
 
 #------------------------------
 # (3) Protects ss keys from being deleted (for multi-page consistency across clicks)
@@ -119,7 +126,6 @@ my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trace_y_disease_form2")]
 for key in my_list:
     st.session_state[key] = st.session_state[key]
-
 
 #------------------------------
 # (4) build frontend

@@ -17,8 +17,17 @@ from config import API_BASE_URL
 # basic data preparation
 
 @st.cache_data(ttl=60*60*12, show_spinner="Downloading data from " + "`" + API_BASE_URL + "`")
-def download_all_data(a = 1):
-
+def download_all_data():
+    """ Download all mandatory reported (oblig) disease datasets from the BAG API.
+    If the download fails, falls back to a locally stored historical dataset.
+    Returns:
+        tuple: A tuple containing:
+            - data_di (dict): Dictionary of pandas DataFrames, keyed by dataset filename.
+            - data_version: API data version
+            - n_files (int): Number of datasets available
+            - ts (str): Download timestamp 
+            - data_source (str): whether API data or fallback data was used.
+    """
     try:
         full_query_string = f"{API_BASE_URL}/data/version"
         r = requests.get(full_query_string, allow_redirects=True)
@@ -70,6 +79,13 @@ def convert_iso_date_to_datetime(s):
 
 @st.cache_data(show_spinner="Pre-processing data")
 def data_pre_select(df):
+    """ Pre-process disease datasets by selecting and cleaning relevant data.
+    Subgroup information is removed here 
+    Args:
+        df (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns:
+        dict: Dictionary of pre-processed pandas DataFrames
+    """
     for k in df.keys():
         if "agegroup" not in df[k].columns:
             df[k]["agegroup"] = "all"
@@ -96,6 +112,10 @@ def data_pre_select(df):
 
 @st.cache_data
 def data_select_chfl(df):
+    """ Select data rows for Switzerland and Liechtenstein (CHFL).
+    Args: df (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns: dict: Dictionary of filtered pandas DataFrames 
+    """
     for k in df.keys():
         df[k] = df[k][df[k]["georegion"] == "CHFL"] 
         if(len(df[k])==0):
@@ -104,6 +124,10 @@ def data_select_chfl(df):
 
 @st.cache_data
 def data_select_years(x):
+    """ Select data rows with yearly data per-row.
+    Args: df (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns: dict: Dictionary of filtered pandas DataFrames 
+    """
     df_year = {}
     for k in x.keys():
         df = x[k]
@@ -114,6 +138,10 @@ def data_select_years(x):
 
 @st.cache_data
 def data_select_months(x):
+    """ Select data rows with monthly data per-row.
+    Args: df (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns: dict: Dictionary of filtered pandas DataFrames 
+    """
     df_month = {}
     for k in x.keys():
         df = x[k]
@@ -124,6 +152,10 @@ def data_select_months(x):
 
 @st.cache_data
 def data_select_weeks(x):
+    """ Select data rows with weekly data per-row.
+    Args: df (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns: dict: Dictionary of filtered pandas DataFrames 
+    """    
     df_iso_week = {}
     for k in x.keys():
         df = x[k]
@@ -133,32 +165,53 @@ def data_select_weeks(x):
     return df_iso_week
 
 @st.cache_data
-def stack_dict_of_dfs(di):
+def data_select_only_all_groups(x):
+    """
+    Keeps rows where sex, agegroup and type are "all".
+    Args: x (dict): Dictionary of pandas DataFrames, keyed by dataset name.
+    Returns: dict: Dictionary of filtered pandas DataFrames
+    """    
+    for k in x.keys():
+        x[k] = x[k][x[k]["sex"] == "all"] 
+        x[k] = x[k][x[k]["agegroup"] == "all"] 
+        x[k] = x[k][x[k]["type"] == "all"]   
+    return x
+
+@st.cache_data
+def stack_dict_of_dfs(di, ref_date, df_abbr):
+    """Stack disease datasets from a dict into a single DataFrame and add several derived variables.
+    Args: 
+        di (dict): Dictionary of pandas DataFrames, keyed by disease name.
+        ref_date (datetime): Reference date used to calculate elapsed days.
+        df_abbr (df): df with "disease" (disease names) and "dis_abbrev" (short disease names)
+    Returns:
+        pd.DataFrame: Combined DataFrame with additional columns:
+            - disease: Disease name derived from the dataset key.
+            - dis_abbrev: Short disease name from disease_abbrev.txt.
+            - year (int): Calendar year.
+            - month (int): Calendar month.
+            - week (int): ISO calendar week.
+            - days_elapsed (int): Days elapsed since the reference date.
+    """    
     df = pd.concat([d.assign(disease=k) for k, d in di.items()], ignore_index=True)
     df["disease"] = df["disease"].str.removesuffix("_oblig")
     # merge-in desease short names 
-    df_dis_abbr = pd.read_csv("resources/disease_abbrev.txt", sep=",")
-    df = df.merge(df_dis_abbr, 'left', on = "disease")
+    df = df.merge(df_abbr, 'left', on = "disease")
     # add iso-week, month and year indicator
     df["year"]  = df['date'].dt.year
     df["month"] = df['date'].dt.month
     df["week"]  = df['date'].dt.isocalendar().week
     # add days elapsed sice today (ref date)
-    df["days_elapsed"] = (ss.ref_date - df["date"]).dt.days
+    df["days_elapsed"] = (ref_date - df["date"]).dt.days
     # enforce sorting 
     df = df.sort_values(['disease', 'temporal_type', 'georegion', 'agegroup', 'sex', 'date', 'year', 'week'])
     return df 
 
 @st.cache_data
-def data_select_only_all_groups(df):
-    for k in df.keys():
-        df[k] = df[k][df[k]["sex"] == "all"] 
-        df[k] = df[k][df[k]["agegroup"] == "all"] 
-        df[k] = df[k][df[k]["type"] == "all"]   
-    return df
-
-@st.cache_data
 def get_overview_df():
+    """
+    wrapper fun that combines information form multiple sources to a single df 
+    """
     a = ss.df_weeks_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
     b = ss.df_months_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
     c = ss.df_years_all_concat.groupby(["temporal_type", "disease"]).size().reset_index()
@@ -196,7 +249,7 @@ def get_overview_df():
 # advanced data preparation
 
 def extrapolate_trend_edges(s, n_edge=6):
-    """Replace trend edges using linear extrapolation."""
+    """ Replace trend edges using linear extrapolation """
     s = s.copy()
     y = s.to_numpy(dtype=float).copy()
     n = len(y)
@@ -215,25 +268,26 @@ def extrapolate_trend_edges(s, n_edge=6):
 @st.cache_data(show_spinner="Computing MA-based trend")
 def get_ma_based_trend(df, outcome, wsiz_med, wsiz_mea, n_extrap):
     """ moving-average/median-based estimation of mid-term trend """
-
     # new df
     df = df[["disease", "date", outcome]]
-
     df = df.sort_values(["disease", "date"])
     var_name_ma  = outcome + "_ma"
     var_name_res = outcome + "_residuals"
     # two-step moving trend (Robust median–mean smoother)
     df[var_name_ma] = (df.groupby("disease")[outcome]
-        .transform(lambda s: s.rolling(wsiz_med, center=True, min_periods= int(wsiz_med/2)).median()))
+        .transform(lambda s: s.rolling(wsiz_med, center=True, 
+                                       min_periods = int(wsiz_med/2)
+                                       ).median()))
     df[var_name_ma] = (df.groupby("disease")[var_name_ma]
-        .transform(lambda s: s.rolling(wsiz_mea, center=True, min_periods= int(wsiz_mea/2)).mean()))
+        .transform(lambda s: s.rolling(wsiz_mea, center=True, 
+                                       min_periods = int(wsiz_mea/2)
+                                       ).mean()))
     # NEW - extrapolate edges 
     if n_extrap > 1:
         df[var_name_ma] = df.groupby("disease")[var_name_ma].transform(lambda s: extrapolate_trend_edges(s, n_edge=n_extrap)) 
     # get residuals 
     df[var_name_res] = df[outcome] - df[var_name_ma]
     df = df.drop(columns=[outcome])
-  
     return df
 
 
