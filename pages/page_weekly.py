@@ -11,7 +11,7 @@ with st.sidebar:
     st.markdown("""
     :primary[Summary:] Explore short-term trend from weekly incidence (only 2 diseases available).
     """)
-    st.divider()
+    # st.divider()
 
 # title at top 
 titl = """

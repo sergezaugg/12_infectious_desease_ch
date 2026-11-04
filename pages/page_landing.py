@@ -14,7 +14,7 @@ with st.sidebar:
 
     :primary[Lower panel:] Review past 2 years of diseases with monthly data.  
     """)
-    st.divider()
+    # st.divider()
 
 with st.sidebar:
     with st.container(border=True):

@@ -3,7 +3,6 @@
 # Description : define big UI elements plot rendering code here 
 #--------------------
 
-# import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
@@ -15,19 +14,17 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     """
     """
     with st.sidebar:
-            with st.container(border=True):
-                radio_labels = {"incValue" : "Incidence", "value" : "Count", }
-                selected_outcome = st.radio("Select outcome", options = radio_labels.keys(), index=0, key = key + "sel_outcome_", 
-                    persist_state = "session", horizontal=True, 
-                    format_func=lambda x: radio_labels[x],
-                    )
-        
-            # select via form
-            with st.form(key="disease_form0"):
-                opt_disea = data['dis_abbrev'].unique().tolist()
-                sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:6], key = key + "disease_form1")
-                # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
-                submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
+        # select via form
+        with st.form(key="disease_form0"):    
+            radio_labels = {"incValue" : "Incidence", "value" : "Count", }
+            selected_outcome = st.radio("Select outcome", options = radio_labels.keys(), index=0, key = key + "sel_outcome_", 
+                persist_state = "session", horizontal=True, 
+                format_func=lambda x: radio_labels[x],
+                )
+    
+            opt_disea = data['dis_abbrev'].unique().tolist()
+            sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:6], key = key + "disease_form1")
+            submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
 
     # apply user selection upon user's confirmation
     n_dis = len(sel_dis)
@@ -44,26 +41,21 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
     """
     """
     with st.sidebar:
-        # select outcome 
-        with st.container(border=True):
-            outcome_options = ["Incidence", "Count"] 
-            selected_outcome = st.radio("Select outcome", options = outcome_options, index=0, key = key + "sel_outcome_", 
-                persist_state = "session", horizontal=True, 
-                # format_func=lambda x: ss.labels[x],
-                )
-            # temp 
-            if selected_outcome == "Incidence": 
-                yvars = ["incValue", "incValue_ma", "incValue_residuals"]     
-            if selected_outcome == "Count":
-                yvars = ["value", "value_ma", "value_residuals"]
-
-        # select diseases via form
-        with st.form(key="disease_form0"):
+        # select outcome and diseases via form
+        with st.form(key="sel_outcome_0"):
+            selected_outcome = st.radio("Select outcome", options = ["Incidence", "Count"], index=0, key = key + "sel_outcome_1", 
+                persist_state = "session", horizontal=True,)
+    
             opt_disea = dat_wide['dis_abbrev'].unique().tolist()
             sel_dis = st.multiselect("Select diseases", options=opt_disea, default=opt_disea[0:2], 
                 max_selections=10, key = key + "disease_form1")
-            # sel_dis = st.multiselect("Select diseases", options=opt_disea, default=[' FLU', ' TBE', ' HEPB'], key = key + "disease_form1")
             submitted = st.form_submit_button("Render plots", key = key + "disease_form2")
+
+    # temp 
+    if selected_outcome == "Incidence": 
+        yvars = ["incValue", "incValue_ma", "incValue_residuals"]     
+    if selected_outcome == "Count":
+        yvars = ["value", "value_ma", "value_residuals"]
 
     n_dis = len(sel_dis)
     # df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
