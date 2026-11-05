@@ -1,5 +1,0 @@
-# default for deployment on streamlit.io
-# successfully deployed to streamlit.io on 20261105
-plotly==7.1.0
-streamlit==1.64.0
-
