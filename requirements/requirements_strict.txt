@@ -1,4 +1,5 @@
 # exact versions used to develop app
+# successfully deployed to streamlit.io on 20261105
 altair==6.3.0
 anyio==4.16.0
 attrs==26.1.0
