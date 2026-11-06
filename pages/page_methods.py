@@ -10,16 +10,16 @@ with col_aa:
     with st.container(border=True, ):
         
         st.markdown('''
-            ### CASE REPORTING BIAS   
+            ### Case reporting bias   
             Reported cases do not necessarily reflect the true incidence of a disease.
-            Underreporting may occur due to limited testing, asymptomatic infections, or incomplete reporting.
+            Under-reporting may occur due to limited testing, asymptomatic infections, or incomplete reporting.
             Reporting practices can vary across regions, time periods, and healthcare settings.
             Observed trends should therefore be interpreted with caution, as changes may reflect reporting differences 
             rather than actual disease dynamics.
             ''')
 
         st.markdown('''
-            ### MEDIAN–MEAN SMOOTHER  
+            ### Median–mean smoother  
             Most of this app shows purely descriptive plots.
             Long-Term and short-term trends are estimated from monthly and weekly data.
             A median–mean smoother is used. This is a two-step operation passing the data first through a moving median stage (window size 12 months / 10 weeks) 

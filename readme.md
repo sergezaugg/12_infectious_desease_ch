@@ -1,7 +1,7 @@
 # Swiss Infectious Disease Explorer
 
 ### Features
-- Visualizes weekly, monthly, and yearly incidence of 42 infectious diseases in Switzerland
+- Visualizes weekly, monthly, and yearly incidence of infectious diseases in Switzerland
 - Detailed summary of data freshness for each disease
 - Select custom disease subset to compare
 - simple moving-window-based estimation of trends 

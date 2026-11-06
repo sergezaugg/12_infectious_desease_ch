@@ -10,11 +10,9 @@ from src.utils_ui import ui_render_landing_page
 
 with st.sidebar:
     st.markdown("""
-    :primary[Upper panel:] Review past 6 months of diseases with weekly data.  
-
-    :primary[Lower panel:] Review past 2 years of diseases with monthly data.  
+    :primary[Summary:] Past 6 months of diseases with weekly data (Upper panel)
+    and past 2 years of diseases with monthly data (Lower panel).  
     """)
-    # st.divider()
 
 with st.sidebar:
     with st.container(border=True):

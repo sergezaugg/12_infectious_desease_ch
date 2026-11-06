@@ -5,13 +5,12 @@
 
 import streamlit as st
 
-col_aa, col_bb, = st.columns([0.50, 0.40])
+col_aa, col_bb, = st.columns([0.50, 0.50])
 with col_aa: 
     with st.container(border=True):
         st.markdown('''
         ### About this web-app
-        The Swiss Infectious Disease Explorer gives quick and descriptive overview of latest available data on 
-        42 infectious disease in Switzerland.
+        The Swiss Infectious Disease Explorer gives quick and descriptive overview of latest available data on infectious disease in Switzerland.
         Simple and general analysis methods are used intentionally and the focus is on transparent and informative visualization.
         ''') 
 

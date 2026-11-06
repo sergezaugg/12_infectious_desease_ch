@@ -3,14 +3,16 @@
 # Description : Page with disease info 
 #--------------------
 
-import pandas as pd 
 import streamlit as st
 from streamlit import session_state as ss
 
-n_dis = ss.df_overview.shape[0]
+with st.sidebar:
+    st.markdown("""
+    :primary[Summary:] Tabular overview of mandatory reported (oblig) diseases.  
+    """)
 
+# prepare data for table display 
 df_display = ss.df_overview
-
 cols = ['disease', 'dis_abbrev', 'type', 'description', 'yearly', 'monthly', 'weekly', ]
 df_display = df_display[cols]
 
@@ -27,10 +29,10 @@ st.dataframe(
     df_display.style.map(highlight_yes),
     hide_index=True,
     width="content",
-    height=1600,
+    height=600,
     column_config={
         "disease": st.column_config.Column("Disease", width=200),
-        "description": st.column_config.Column("Description", width=500),
+        "description": st.column_config.Column("Description", width=600),
         'dis_abbrev': st.column_config.Column("Shortname", width=100), 
         'type': st.column_config.Column("Transm.", width=100),  
         'yearly': st.column_config.Column("Avail. yearly", width=100), 
@@ -39,5 +41,5 @@ st.dataframe(
     }
 )
 
-
+st.text("Tip: This table is scrollable & sortable, see options in table's header")
 
