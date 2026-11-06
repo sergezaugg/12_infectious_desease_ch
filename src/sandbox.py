@@ -9,6 +9,15 @@ import pandas as pd
 from src.utils_dataprep import download_all_data
 
 
+
+
+# # download and perp once
+# di_downloded = download_all_data()
+# di_downloded
+# di_downloded[0].keys()
+# di_downloded[0]['YELLOWFEVER_oblig']
+
+
 # import pickle
 
 # # download and perp once

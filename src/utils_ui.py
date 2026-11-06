@@ -58,7 +58,6 @@ def ui_render_ma_resid_page(dat_wide, key, left_title, seasonality):
         yvars = ["value", "value_ma", "value_residuals"]
 
     n_dis = len(sel_dis)
-    # df_plot_long = dat_long[dat_long['dis_abbrev'].isin(sel_dis)]
     df_plot_wide = dat_wide[dat_wide['dis_abbrev'].isin(sel_dis)]
 
     # make plot with trend and data  
@@ -102,21 +101,19 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
     with c0:
         st.text(col_tit[0])
         st.plotly_chart(fig_bar, use_container_width=False, key = "landing_barplot_" + key, 
-                        # config={"staticPlot": True}
-                        config={
-                            "displayModeBar": False,  # Hide toolbar
-                            "scrollZoom": False,      # Disable scroll zoom
-                        },
-                        )
+            config={
+                "displayModeBar": False,  # Hide toolbar
+                "scrollZoom": False,      # Disable scroll zoom
+            },
+        )
     with c1:
         st.text(col_tit[1])
         st.plotly_chart(fig_grid, use_container_width=use_contw, key = "landing_gridplot_" + key, 
-                        # config={"staticPlot": True}
-                        config={
-                            "displayModeBar": False,  # Hide toolbar
-                            "scrollZoom": False,      # Disable scroll zoom
-                        },
-                        )
+            config={
+                "displayModeBar": False,  # Hide toolbar
+                "scrollZoom": False,      # Disable scroll zoom
+            },
+        )
 
 
 # ---------------------------

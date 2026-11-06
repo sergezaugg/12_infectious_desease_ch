@@ -11,7 +11,6 @@ with st.sidebar:
     st.markdown("""
     :primary[Summary:] Explore long-term trend from monthly incidence data for multiple diseases.
     """)
-    # st.divider()
 
 # title at top 
 titl = """

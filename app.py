@@ -119,7 +119,8 @@ if "di_prep" not in ss:
 
 #------------------------------
 # (3) Protects ss keys from being deleted (for multi-page consistency across clicks)
-# exclude key of forms which have their own Widget state management
+
+# spec to exclude key of forms (which have their own Widget state management)
 my_list = list(st.session_state.keys())
 my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
@@ -149,11 +150,11 @@ p01 = st.Page("pages/page_landing.py", title="Epi-Radar", default=True)
 p02 = st.Page("pages/page_weekly.py", title="Weekly History")
 p03 = st.Page("pages/page_monthly.py", title="Monthly History")
 p04 = st.Page("pages/page_yearly.py", title="Yearly History")
-p05 = st.Page("pages/page_info.py", title="Diseases")
+p05 = st.Page("pages/page_dis_info.py", title="Diseases")
 p06 = st.Page("pages/page_about.py", title="About")
 p07 = st.Page("pages/page_methods.py", title="Methods")
 p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
-p09 = st.Page("pages/page_refresh.py", title="Maintenance")
+p09 = st.Page("pages/page_maintenance.py", title="Maintenance")
 
 # navigation
 pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")

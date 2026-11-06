@@ -1,6 +1,6 @@
 #--------------------             
 # Author : Serge Zaugg
-# Description : Data-analytic Functions (no plots and streamlit here [xpt st.cache_data])
+# Description : Data-analytic Functions (no plots and streamlit here)
 #--------------------
 
 import numpy as np
