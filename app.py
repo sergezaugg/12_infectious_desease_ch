@@ -119,7 +119,8 @@ if "di_prep" not in ss:
 
 #------------------------------
 # (3) Protects ss keys from being deleted (for multi-page consistency across clicks)
-# exclude key of forms which have their own Widget state management
+
+# spec to exclude key of forms (which have their own Widget state management)
 my_list = list(st.session_state.keys())
 my_list = [x for x in my_list if not x.startswith("ui_trend_m_disease_form2")]
 my_list = [x for x in my_list if not x.startswith("ui_trend_w_disease_form2")]
