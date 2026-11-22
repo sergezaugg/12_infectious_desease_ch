@@ -4,6 +4,17 @@ font = "sans serif"
 baseRadius = "large"
 
 # ---------------------------
+# Dark theme
+# ---------------------------
+[theme.dark]
+primaryColor="#23a7e4"
+backgroundColor="#000000"
+secondaryBackgroundColor="#0E1117"
+textColor="#ffffff"
+linkColor='#0055cc'
+borderColor = "#3B3F4A"
+
+# ---------------------------
 # Light theme
 # ---------------------------
 [theme.light]
@@ -14,15 +25,6 @@ textColor = "#262730"
 linkColor='#0055cc'
 borderColor = "#747880"
 
-# ---------------------------
-# Dark theme
-# ---------------------------
-[theme.dark]
-primaryColor="#23a7e4"
-backgroundColor="#000000"
-secondaryBackgroundColor="#0E1117"
-textColor="#ffffff"
-linkColor='#0055cc'
-borderColor = "#3B3F4A"
+
 
 
