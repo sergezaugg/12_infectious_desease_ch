@@ -1,9 +1,27 @@
 [theme]
-base="dark"
+base = "dark"
+font = "sans serif"
+baseRadius = "large"
+
+# ---------------------------
+# Light theme
+# ---------------------------
+[theme.light]
+primaryColor = "#1685c5"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
+borderColor = "#D8DDE5"
+
+# ---------------------------
+# Dark theme
+# ---------------------------
+[theme.dark]
 primaryColor="#23a7e4"
 backgroundColor="#000000"
 secondaryBackgroundColor="#0E1117"
 textColor="#ffffff"
-font="sans serif"
 linkColor='#0055cc'
-baseRadius = "large"
+borderColor = "#3B3F4A"
+
+
