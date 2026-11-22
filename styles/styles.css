@@ -52,13 +52,13 @@ div[data-testid="stElementContainer"]:has(
 }
 
 /* Header background */
-.stAppHeader {
-    background-color: #0E1117;
-}
+/* .stAppHeader {
+    background-color: #445533;
+} */
 
 /* Default navigation tab */
 .stAppHeader a {
-    background-color: #2f2f3f !important;
+    /* background-color: var(--secondary-background-color) !important; */
 
     /* Fixed tab width */
     width: 120px !important;
@@ -73,19 +73,22 @@ div[data-testid="stElementContainer"]:has(
 }
 
 /* Hover state */
-.stAppHeader a:hover {
-    background-color: #3b4d63 !important;
-}
+
+/* .stAppHeader a:hover {
+    background-color: #b1bcc0 !important;
+} */
 
 /* Click state */
-.stAppHeader a:active {
+
+/* .stAppHeader a:active {
     background-color: #dddddd !important;
-}
+} */
 
 /* Active page */
-.stAppHeader a[aria-current="page"] {
-    background-color: #23a7e4 !important;
-}
+
+/* .stAppHeader [aria-current="page"] {
+    background-color: var(--st-primary-color) !important;
+} */
 
 
 /* ------------------------------------------------------------

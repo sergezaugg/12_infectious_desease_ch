@@ -7,6 +7,10 @@ import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
 
+
+colrs = ["#eeeeee", "#009dbd", "#f5630f"]
+# colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+
 # ---------------------------
 # ui elements  
 
@@ -30,7 +34,7 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     n_dis = len(sel_dis)
     df_plot = data[data['dis_abbrev'].isin(sel_dis)]
     fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
-        labels = ss.labels, show_x_grid = True, facet_labels = True)
+        labels = ss.labels, show_x_grid = False, facet_labels = True)
     
     with st.container(border=True):
         st.plotly_chart(fig_a, use_container_width=True, key = "k_fig_a")
@@ -231,8 +235,7 @@ def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
     spacing_px = 60
     height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
     facet_row_spacing = spacing_px / height_b
-
-    colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+ 
 
     fig_res = px.line(
         data_frame = df_wide,
@@ -242,7 +245,7 @@ def make_plot_resid(df_wide, xvar, outcome, labels, n_facets):
         facet_row_spacing = facet_row_spacing,
         height = height_b,
         labels=labels,
-        color_discrete_sequence=[colrs[0]],
+        color_discrete_sequence=[colrs[1]],
         )
     # add margin left and right 
     x_min = df_wide["date"].min()
@@ -299,7 +302,7 @@ def make_plot_smo(df_plot, y_var1, y_var2, labels, n_facets):
     height_b = (n_facets * facet_height + (n_facets - 1) * spacing_px + 200)
     facet_row_spacing = spacing_px / height_b
 
-    colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+    
 
     fig_smo = px.line(
         data_frame = df_long,
@@ -366,7 +369,7 @@ def make_mini_trend_plot_grid(df_plot, height, width, facet_col_spacing, y_var1,
         value_name= "resp_var")
 
 
-    colrs = ["#eeeeee", "#494848", "#ff521e"]
+    
     fig = px.line(
         data_frame = df_plot,
         x = "date",
