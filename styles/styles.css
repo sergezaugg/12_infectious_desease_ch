@@ -58,7 +58,7 @@ div[data-testid="stElementContainer"]:has(
 
 /* Default navigation tab */
 .stAppHeader a {
-    background-color: #2f2f3f !important;
+    background-color: var(--secondary-background-color) !important;
 
     /* Fixed tab width */
     width: 120px !important;
@@ -74,7 +74,7 @@ div[data-testid="stElementContainer"]:has(
 
 /* Hover state */
 .stAppHeader a:hover {
-    background-color: #3b4d63 !important;
+    background-color: #b1bcc0 !important;
 }
 
 /* Click state */
