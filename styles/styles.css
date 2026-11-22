@@ -1,0 +1,110 @@
+/* ============================================================
+   Author      : Serge Zaugg
+   Description : Global styles affecting all Streamlit pages
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. Main content container
+   ------------------------------------------------------------ */
+
+.block-container {
+    max-width: 1500px;
+    min-width: 1400px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+
+/* ------------------------------------------------------------
+   2. Divider spacing
+   ------------------------------------------------------------ */
+
+div[data-testid="stElementContainer"]:has(
+    [data-testid="stMarkdownContainer"] hr
+) {
+    margin-top: -1.9rem !important;
+    margin-bottom: -1.0rem !important;
+}
+
+
+/* ------------------------------------------------------------
+   3. Main content area
+   ------------------------------------------------------------ */
+
+[data-testid="stMainBlockContainer"] {
+    padding-top: 5rem;
+    padding-left: 1.8rem;
+}
+
+
+/* ------------------------------------------------------------
+   4. Header / navigation bar
+   ------------------------------------------------------------ */
+
+/* Header height */
+[data-testid="stHeader"] {
+    height: 4rem;
+    min-height: 4rem;
+}
+
+/* Header background */
+.stAppHeader {
+    background-color: #0E1117;
+}
+
+/* Default navigation tab */
+.stAppHeader a {
+    background-color: #2f2f3f !important;
+
+    /* Fixed tab width */
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+
+    /* Alignment */
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+/* Hover state */
+.stAppHeader a:hover {
+    background-color: #3b4d63 !important;
+}
+
+/* Click state */
+.stAppHeader a:active {
+    background-color: #dddddd !important;
+}
+
+/* Active page */
+.stAppHeader a[aria-current="page"] {
+    background-color: #23a7e4 !important;
+}
+
+
+/* ------------------------------------------------------------
+   5. Application label / copyright notice
+   ------------------------------------------------------------ */
+
+.app-label {
+    position: fixed;
+    bottom: 15px;
+    left: 20px;
+
+    color: #9CA3AF;
+    font-size: 15px;
+    line-height: 1.4;
+
+    z-index: 999999;
+    pointer-events: none;
+}
+
+
+
+

@@ -6,16 +6,21 @@
 
 import streamlit as st
 from streamlit import session_state as ss
+from pathlib import Path
 import pandas as pd
 from src.utils_dataprep import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
 from src.utils_dataprep import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 from src.utils_dataprep import get_overview_df
-from resources.styles import apply_global_styles
 
 #------------------------------
 # (1) prepare app 
 st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_title="SID-Explorer", page_icon='pics/z_logo_blue.png')
-apply_global_styles() # apply custom CSS styles 
+
+# load styles 
+css = Path("styles/styles.css").read_text(encoding="utf-8")
+st.html(f"<style>{css}</style>")
+# beta info top-left, v & (c) info bottom-left, logo
+st.html("""<div class="app-label">v1.0.3<br>© 2026 Serge Zaugg</div>""")
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
 
