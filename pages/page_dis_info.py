@@ -22,7 +22,7 @@ def highlight_yes(v):
         if v == "yes":
             return "background-color: #23a7e4"
         if v == "no":
-            return "background-color: #770033"
+            return "background-color: #991144"
     return ""
 
 st.dataframe(

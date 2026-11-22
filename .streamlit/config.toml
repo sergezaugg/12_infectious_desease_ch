@@ -19,11 +19,11 @@ borderColor = "#3B3F4A"
 # ---------------------------
 [theme.light]
 primaryColor = "#1685c5"
-backgroundColor = "#e9fafa"
-secondaryBackgroundColor = "#c6e6eb"
-textColor = "#262730"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#cadfe9"
+textColor = "#03273b"
 linkColor='#0055cc'
-borderColor = "#747880"
+borderColor = "#6eabce"
 
 
 
