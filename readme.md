@@ -9,6 +9,9 @@
 - Data automatically downloaded via the official FOPH API
 - Protected maintenance page to manually re-download data via API
 
+### Preview
+<img src="pics/app_screenshot.png" width="500">
+
 ### Dependencies
 - Python 3.12 
 - Streamlit 1.64.0

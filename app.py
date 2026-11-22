@@ -6,16 +6,21 @@
 
 import streamlit as st
 from streamlit import session_state as ss
+from pathlib import Path
 import pandas as pd
 from src.utils_dataprep import download_all_data, data_pre_select, data_select_chfl, get_ma_based_trend
 from src.utils_dataprep import data_select_years, data_select_months, data_select_weeks, data_select_only_all_groups, stack_dict_of_dfs
 from src.utils_dataprep import get_overview_df
-from resources.styles import apply_global_styles
 
 #------------------------------
 # (1) prepare app 
 st.set_page_config(layout = "wide", initial_sidebar_state = "expanded", page_title="SID-Explorer", page_icon='pics/z_logo_blue.png')
-apply_global_styles() # apply custom CSS styles 
+
+# load styles 
+css = Path("styles/styles.css").read_text(encoding="utf-8")
+st.html(f"<style>{css}</style>")
+# beta info top-left, v & (c) info bottom-left, logo
+st.html("""<div class="app-label">v1.0.3<br>© 2026 Serge Zaugg</div>""")
 st.logo(image='pics/z_logo_blue.png', size="large", link="https://github.com/sergezaugg")
 pd.set_option('display.max_rows', 500)
 
@@ -151,10 +156,17 @@ p02 = st.Page("pages/page_weekly.py", title="Weekly History")
 p03 = st.Page("pages/page_monthly.py", title="Monthly History")
 p04 = st.Page("pages/page_yearly.py", title="Yearly History")
 p05 = st.Page("pages/page_dis_info.py", title="Diseases")
-p06 = st.Page("pages/page_about.py", title="About")
+p06 = st.Page("pages/page_about.py", title="About", visibility="hidden")
 p07 = st.Page("pages/page_methods.py", title="Methods")
-p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
-p09 = st.Page("pages/page_maintenance.py", title="Maintenance")
+p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer", visibility="hidden")
+p09 = st.Page("pages/page_maintenance.py", title="Maintenance", visibility="hidden")
+
+with st.sidebar:
+    st.page_link(p06, label="About", icon=":material/menu_book:", use_container_width=True)
+    st.page_link(p08, label="Disclaimer", icon=":material/info:", use_container_width=True)
+    st.page_link(p09, label="Maintenance", icon=":material/handyman:", use_container_width=True)
+    st.caption(" ") # small trick to have above text and link-regions aligned
+    st.divider()
 
 # navigation
 pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
