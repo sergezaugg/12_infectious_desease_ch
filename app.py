@@ -156,10 +156,17 @@ p02 = st.Page("pages/page_weekly.py", title="Weekly History")
 p03 = st.Page("pages/page_monthly.py", title="Monthly History")
 p04 = st.Page("pages/page_yearly.py", title="Yearly History")
 p05 = st.Page("pages/page_dis_info.py", title="Diseases")
-p06 = st.Page("pages/page_about.py", title="About")
+p06 = st.Page("pages/page_about.py", title="About", visibility="hidden")
 p07 = st.Page("pages/page_methods.py", title="Methods")
-p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer")
-p09 = st.Page("pages/page_maintenance.py", title="Maintenance")
+p08 = st.Page("pages/page_disclaimer.py", title="Disclaimer", visibility="hidden")
+p09 = st.Page("pages/page_maintenance.py", title="Maintenance", visibility="hidden")
+
+with st.sidebar:
+    st.page_link(p06, label="About", icon=":material/menu_book:", use_container_width=True)
+    st.page_link(p08, label="Disclaimer", icon=":material/info:", use_container_width=True)
+    st.page_link(p09, label="Maintenance", icon=":material/handyman:", use_container_width=True)
+    st.caption(" ") # small trick to have above text and link-regions aligned
+    st.divider()
 
 # navigation
 pg = st.navigation([p01, p02, p03, p04, p05, p06, p07, p08, p09], position = "top")
