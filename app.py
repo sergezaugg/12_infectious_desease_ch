@@ -136,12 +136,14 @@ for key in my_list:
 #------------------------------
 # (4) build frontend
 
+bg_color = st.get_option("theme.backgroundColor")
+
 # sidebar
 with st.sidebar:
     st.markdown(f"""## :primary[**Swiss Infectious Disease Explorer**]""")
     st.markdown("""
-        <div style="line-height: 1.3; margin-bottom: 0.9em;;">
-            <div>Data Version: <code>{}</code></div>
+        <div style="line-height: 1.3; margin-bottom: 0.9em;">
+            <div>Data Version: <code>{}</code></text>
             <div>Downloaded: <code>{}</code></div>
             <div>Reference date: <code>{}</code></div>
         </div>

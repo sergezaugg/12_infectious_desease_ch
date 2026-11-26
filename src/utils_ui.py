@@ -7,9 +7,15 @@ import streamlit as st
 from streamlit import session_state as ss
 import plotly.express as px
 
+# if st.context.theme.type == "dark":
+#     colrs = ["#eeeeee", "#009dbd", "#f5630f"]
+# if st.context.theme.type == "light":
+#     colrs = ["#eeeeee", "#15c157", "#be0cb2"]
+# # colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+# # st.write(st.context.theme.type)
 
-colrs = ["#eeeeee", "#009dbd", "#f5630f"]
-# colrs = ["#eeeeee", "#13bee0", "#f5630f"]
+colrs = ["#eeeeee", "#0075bd", "#f5630f"]
+
 
 # ---------------------------
 # ui elements  
@@ -33,7 +39,8 @@ def ui_render_basic_facet_plot_page(data, key, plotfun):
     # apply user selection upon user's confirmation
     n_dis = len(sel_dis)
     df_plot = data[data['dis_abbrev'].isin(sel_dis)]
-    fig_a = plotfun(x = df_plot, xvar = "date",  col_var = None, n_facets = n_dis, outcome = selected_outcome, 
+
+    fig_a = plotfun(x = df_plot, xvar = "date",  n_facets = n_dis, outcome = selected_outcome, 
         labels = ss.labels, show_x_grid = False, facet_labels = True)
     
     with st.container(border=True):
@@ -121,7 +128,8 @@ def ui_render_landing_page(df_trend, df_age, key, height, width, col_tit, use_co
 
 
 # ---------------------------
-# plots 
+# plots
+
 
 @st.cache_data(show_spinner="Creating plots")
 def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
@@ -179,26 +187,26 @@ def make_lineplot_all_by_disease(x, xvar, col_var, n_facets, outcome, labels, fa
 
 
 @st.cache_data(show_spinner="Creating plots")
-def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, labels, facet_labels, show_x_grid):
+def make_barplot_by_disease_dense_wrapped(x, xvar, n_facets, outcome, labels, facet_labels, show_x_grid):
     """
     """
     # pre-compute vertical spacings dependent on n_facets
     facet_height = 90
     spacing_px = 70
     height_b = ((n_facets/3) * facet_height + ((n_facets/3) - 1) * spacing_px + 200)
-    facet_row_spacing = 1.1*(spacing_px / height_b)
+    facet_row_spacing = 1.2*(spacing_px / height_b)
 
     fig = px.bar(
         data_frame = x,
         x = xvar,
         y = outcome,
-        color = col_var,
         facet_col= "disease",
         facet_col_wrap=3,
         facet_row_spacing = facet_row_spacing,
         facet_col_spacing = 0.05,
         height = height_b,
         labels=labels,
+        color_discrete_sequence=[colrs[1]]
         )
     fig.update_layout(
         showlegend=False,
@@ -221,6 +229,7 @@ def make_barplot_by_disease_dense_wrapped(x, xvar, col_var, n_facets, outcome, l
         ) 
     for annotation in fig.layout.annotations:
         annotation.text = annotation.text.replace("disease=", "")
+        annotation.yshift = 10  
     if facet_labels == False:
         fig.for_each_annotation(lambda a: a.update(text="")) 
     return fig
