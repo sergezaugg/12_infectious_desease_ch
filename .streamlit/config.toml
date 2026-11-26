@@ -9,7 +9,7 @@ baseRadius = "large"
 [theme.dark]
 primaryColor="#23a7e4"
 backgroundColor="#000000"
-secondaryBackgroundColor="#0E1117"
+secondaryBackgroundColor="#151923"
 textColor="#ffffff"
 linkColor='#0055cc'
 borderColor = "#3B3F4A"
@@ -19,8 +19,8 @@ borderColor = "#3B3F4A"
 # ---------------------------
 [theme.light]
 primaryColor = "#1685c5"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#cadfe9"
+backgroundColor = "#ebf0f2"
+secondaryBackgroundColor = "#bfc5c7"
 textColor = "#03273b"
 linkColor='#0055cc'
 borderColor = "#6eabce"
